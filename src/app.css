@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+    Hours wasted on making less than 300px screens work: 2hrs
+*/
+
+html {
+  font-family: "Nunito", sans-serif;
+  min-width: 300px;
+  @apply dark:bg-zinc-800 dark:text-white;
+}
+
+.b:disabled {
+  @apply opacity-50;
+}
+
+.b-menu {
+  @apply w-full b p-2 py-1 transition bg-black dark:bg-white bg-opacity-0 hover:bg-opacity-10 dark:bg-opacity-0 dark:hover:bg-opacity-10 px-2 dark:text-zinc-200 text-zinc-700 border-gray-300 dark:border-zinc-700;
+}
+
+.b-blue {
+  @apply text-white dark:text-white bg-blue-600 border-blue-600 hover:opacity-90 disabled:opacity-80 border-[1px] transition px-3 py-1.5  rounded-lg font-medium;
+}
+
+.b-green {
+  @apply text-white dark:text-white bg-green-600 border-green-600 hover:opacity-90 disabled:opacity-80 border-[1px] transition px-3 py-1.5  rounded-lg font-medium;
+}
+
+.b-red {
+  @apply text-white dark:text-white bg-red-500 border-red-500 hover:opacity-90 disabled:opacity-80 border-[1px] transition px-3 py-1.5  rounded-lg font-medium;
+}
+
+.b-primary {
+  @apply text-white dark:text-black bg-primary-700 dark:bg-primary-300 border-primary-700 dark:border-primary-300 hover:opacity-90 disabled:opacity-50 border-[1px] transition px-3 py-1.5  rounded-lg font-medium disabled:cursor-not-allowed;
+}
+
+.b-secondary {
+  @apply dark:text-white text-black bg-secondary-200 dark:bg-secondary-800 border-secondary-200 dark:border-secondary-800 hover:opacity-90 disabled:opacity-50 border-[1px] transition px-3 py-1.5  rounded-lg font-medium disabled:cursor-not-allowed;
+}
+
+.b-accent {
+  @apply bg-accent-500 dark:text-black border-accent-500 hover:opacity-90 disabled:opacity-80 border-[1px] transition px-3 py-1.5  rounded-lg font-medium disabled:cursor-not-allowed;
+}
+
+.b-clear {
+  @apply p-0 border-none font-normal;
+}
+
+.b-bold {
+  @apply b text-zinc-700 border-zinc-700 hover:bg-zinc-700 disabled:bg-white disabled:text-zinc-700 hover:text-white dark:text-zinc-200 dark:border-zinc-200 dark:hover:bg-zinc-200 dark:disabled:bg-inherit dark:hover:text-black dark:disabled:text-zinc-200  transition-colors px-3 py-1.5  rounded-lg border-[1px] font-medium;
+}
+
+.b-default {
+  @apply b text-zinc-500 border-border-light hover:bg-border-light disabled:bg-white disabled:text-zinc-200 hover:text-zinc-500 dark:text-zinc-400 dark:border-zinc-700 dark:hover:bg-zinc-700 dark:disabled:bg-inherit dark:disabled:text-zinc-700 transition-colors px-3 py-1.5 rounded-lg border-[1px] font-medium;
+}
+
+.tooltip {
+  @apply b hover:after:bg-black hover:after:p-1 hover:after:rounded-lg hover:after:text-sm hover:after:text-white;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 600,
+    "GRAD" 0,
+    "opsz" 48;
+}
+
+.material-symbols-rounded {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 700,
+    "GRAD" 0,
+    "opsz" 40;
+}
+
+.filled {
+  font-variation-settings:
+    "FILL" 1;
+}
+
+
+input {
+  @apply bg-zinc-200 dark:bg-zinc-700;
+}
+
+select {
+  @apply bg-zinc-200 dark:bg-zinc-700;
+}
+
+textarea {
+  @apply bg-zinc-200 dark:bg-zinc-700;
+}
+
+@layer utilities {
+  .inherit {
+    display: inherit;
+  }
+}

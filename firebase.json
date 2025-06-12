@@ -1,0 +1,21 @@
+{
+  "hosting": {
+    "public": "build/public",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": "ssrServer"
+      }
+    ]
+  },
+  "functions": {
+    "source": "build/functions"
+  },
+  "emulators": {
+    "hosting": {
+      "port": 5173,
+      "host": "0.0.0.0"
+    }
+  }
+}
