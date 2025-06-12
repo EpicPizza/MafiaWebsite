@@ -15,7 +15,12 @@ export async function load({ params }) {
             words: number, 
             messages: number, 
             name: string, 
-            show: boolean 
+            show: boolean,
+            reactions: {
+                reaction: string,
+                timestamp: number,
+            }[],
+            images: number,
         }[],
         name: string,
         day: number, 
