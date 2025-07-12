@@ -66,7 +66,7 @@
     sort("messages")
 </script>
 
-<div class="p-8 bg-white dark:bg-zinc-800 h-full overflow-hidden border-border-light dark:border-border-dark w-[40rem] max-w-[calc(100vw-2rem)] max-h-[calc(100svh-2rem)] border rounded-2xl">
+<div class="p-8 bg-white dark:bg-zinc-800 h-full overflow-x-hidden overflow-y-auto border-border-light dark:border-border-dark w-[40rem] max-w-[calc(100vw-2rem)] max-h-[calc(100svh-2rem)] border rounded-2xl">
     <div class="flex flex-col sm:flex-row items-start sm:items-end gap-0.5 justify-between">
         <h1 class="text-xl font-bold">Stats Day {data.day} > {data.name} Mafia</h1>
         <p class="opacity-50 text-sm">Generated {dnt.format(new Date(data.timestamp), "MMMM D, h:mm A")}</p>
@@ -79,7 +79,7 @@
                 <div class="w-1/5 pl-2 flex justify-between items-center">
                     Player
 
-                    <button on:click={() => { sort("name"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2">
+                    <button on:click={() => { sort("name"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
                         {#if sorting != "name"}
                             <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
                         {:else if type == "des"}
@@ -92,7 +92,7 @@
                 <div class="w-1/5 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
                     Messages
 
-                    <button on:click={() => { sort("messages"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2">
+                    <button on:click={() => { sort("messages"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
                         {#if sorting != "messages"}
                             <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
                         {:else if type == "des"}
@@ -105,7 +105,7 @@
                 <div class="w-1/5 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
                     Words
 
-                    <button on:click={() => { sort("words"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2">
+                    <button on:click={() => { sort("words"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
                         {#if sorting != "words"}
                             <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
                         {:else if type == "des"}
@@ -118,7 +118,7 @@
                 <div class="w-1/5 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
                     WPM
                     
-                    <button on:click={() => { sort("wpm"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2">
+                    <button on:click={() => { sort("wpm"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
                         {#if sorting != "wpm"}
                             <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
                         {:else if type == "des"}
@@ -131,7 +131,7 @@
                 <div class="w-1/5 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
                     Images
                     
-                    <button on:click={() => { sort("images"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2">
+                    <button on:click={() => { sort("images"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
                         {#if sorting != "images"}
                             <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
                         {:else if type == "des"}
