@@ -6,6 +6,11 @@
     import { getContext } from 'svelte';
   
     const { xRange, yScale } = getContext('LayerCake');
+
+    export let label;
+    if(label != undefined && label.length > 0) {
+      label = label.split(" ").map(word => word[0].toUpperCase() + word.substring(1)).join(" ");
+    }
   
     /** @type {Boolean} [tickMarks=false] - Show marks next to the tick label. */
     export let tickMarks = false;
@@ -99,7 +104,7 @@
         >{format(tick)}</div>
       </div>
     {/each}
-    <div class="absolute top-1/2 right-[100%] -translate-x-6 -translate-y-1/2 rotate-90 text-sm opacity-50">Words</div>
+    <div class="absolute top-1/2 right-[100%] -translate-x-6 -translate-y-1/2 rotate-90 text-sm opacity-50">{label}</div>
   </div>
   
   <style>

@@ -16,9 +16,11 @@ export async function load({ params }) {
             messages: number, 
             name: string, 
             show: boolean,
+            alive: boolean,
             reactions: {
                 reaction: string,
                 timestamp: number,
+                message: string,
             }[],
             images: number,
         }[],
