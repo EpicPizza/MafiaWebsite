@@ -13,12 +13,12 @@
     dnt.plugin(meridiem);
 
     export let data;
-    let statsMessages = JSON.parse(JSON.stringify(data.stats)).filter(stat => stat.alive);
-    let statsReactions = JSON.parse(JSON.stringify(data.stats));
+    let statsMessages = structuredClone(data.stats).filter(stat => stat.alive);
+    let statsReactions = structuredClone(data.stats);
 
     const xKeyMessages = 'messages';
     const yKeyMessages = 'words';
-    const xKeyReactions = 'reactions';
+    const xKeyReactions = 'reactionCount';
     const yKeyReactions = 'messages';
 
     const r = 4.5;
@@ -31,10 +31,10 @@
         d[yKeyMessages] = +d[yKeyMessages];
     });
 
-    statsReactions.forEach(d => {
-        d._reactions = (d.reactions ?? []).filter(reaction => reaction.message != undefined);
-        d[xKeyReactions] = d._reactions.length;
-        d[yKeyReactions] = (new Set(d._reactions.map(reaction => reaction.message))).size;
+    statsReactions.forEach((d) => {
+        const reactions = (d.reactions ?? []).filter(reaction => reaction.message != undefined);
+        d[xKeyReactions] = reactions.length;
+        d[yKeyReactions] = (new Set(reactions.map(reaction => reaction.message))).size;
     });
 
     $: shownMessages = statsMessages.filter(point => point.show);
@@ -86,7 +86,7 @@
 
         statsReactions = statsReactions.sort((a, b) => {
             if(which == "reactions") {
-                return typeReactions == "des" ? b.reactions - a.reactions : a.reactions - b.reactions;
+                return typeReactions == "des" ? b.reactions.length - a.reactions.length : a.reactions.length - b.reactions.length;
             } else if(which == "name") {
                 if(typeReactions == "des") {
                     return b.name < a.name ? 1 : a.name < b.name ? -1 : 0;
@@ -96,7 +96,7 @@
             } else if(which == "messages") {
                 return typeReactions == "des" ? b.messages - a.messages : a.messages - b.messages;
             } else if(which == "rpm") {
-                return typeReactions == "des" ?  (b.messages == 0 ? 0 : b.reactions / b.messages) - (a.messages == 0 ? 0 : a.reactions / a.messages) : (a.messages == 0 ? 0 : a.reactions / a.messages) - (b.messages == 0 ? 0 : b.reactions / b.messages);
+                return typeReactions == "des" ?  (b.messages == 0 ? 0 : b.reactions.length / b.messages) - (a.messages == 0 ? 0 : a.reactions.length / a.messages) : (a.messages == 0 ? 0 : a.reactions.length / a.messages) - (b.messages == 0 ? 0 : b.reactions.length / b.messages);
             } else {
                 return 0;
             }
@@ -311,7 +311,7 @@
                         {stat.messages}
                     </div>
                     <div class="w-1/4 pl-2 border-l border-zinc-400 dark:border-border-dark">
-                        {stat.messages == 0 ? (0).toFixed(2) : (stat.reactions / stat.messages).toFixed(2)}
+                        {stat.messages == 0 ? (0).toFixed(2) : (stat.reactions.length / stat.messages).toFixed(2)}
                     </div>
                 </div>
             {/each}

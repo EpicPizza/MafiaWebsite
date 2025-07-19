@@ -23,6 +23,7 @@ export async function load({ params }) {
                 message: string,
             }[],
             images: number,
+            reactionCount: number,
         }[],
         name: string,
         day: number, 
