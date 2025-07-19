@@ -305,7 +305,7 @@
                         {stat.name}
                     </div>
                     <div class="w-1/4 pl-2 border-l border-zinc-400 dark:border-border-dark">
-                        {stat.reactions}
+                        {stat.reactions.length}
                     </div>
                     <div class="w-1/4 pl-2 border-l border-zinc-400 dark:border-border-dark">
                         {stat.messages}
