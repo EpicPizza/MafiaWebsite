@@ -14,7 +14,7 @@
     dnt.plugin(meridiem);
 
     export let data;
-    let statsMessages = structuredClone(data.stats).filter(stat => stat.alive);
+    let statsMessages = structuredClone(data.stats).filter(stat => stat.alive || !('alive' in stat));
     let statsReactions = structuredClone(data.stats);
 
     const xKeyMessages = 'messages';
@@ -66,7 +66,7 @@
                 return typeMessages == "des" ? b.words - a.words : a.words - b.words;
             } else if(which == "wpm") {
                 return typeMessages == "des" ?  (b.messages == 0 ? 0 : b.words / b.messages) - (a.messages == 0 ? 0 : a.words / a.messages) : (a.messages == 0 ? 0 : a.words / a.messages) - (b.messages == 0 ? 0 : b.words / b.messages);
-            } else if(which == "images") {
+            } else if(which == "images" && a.images && b.images) {
                 return typeMessages == "des" ? b.images - a.images : a.images - b.images;
             } else {
                 return 0;
@@ -78,7 +78,11 @@
 
     sortMessages("messages");
 
+    const reactionCheck = !statsReactions.find(stat => !(stat.reactions) || stat.reactions.find(reaction => !(reaction.message)))
+
     function sortReactions(which: string) {
+        if(!reactionCheck) return;
+
         if(which == sortingReactions) {
             typeReactions = typeReactions == "des" ? "asc" : "des";
         } else {
@@ -86,6 +90,9 @@
         }
 
         statsReactions = statsReactions.sort((a, b) => {
+            if(!(a.reactions) || a.reactions.find(reaction => !(reaction.message))) return 0;
+            if(!(b.reactions) || b.reactions.find(reaction => !(reaction.message))) return 0;
+
             if(which == "reactions") {
                 return typeReactions == "des" ? b.reactions.length - a.reactions.length : a.reactions.length - b.reactions.length;
             } else if(which == "name") {
@@ -245,134 +252,135 @@
 
     <div class="pt-8"></div>
 
-    <div class="{reactionsOpen ? "border-border-light dark:border-border-dark border shadow-md dark:shadow-2xl" : "border border-zinc-200 dark:border-zinc-900 bg-zinc-200 dark:bg-zinc-900"}  p-3 pb-0 -m-3 mb-7 rounded-xl transition-all">
-        <div class="flex items-center justify-between mb-3">
-            <p class="text-lg font-bold">Reactions Stats</p>
-            
-            <button on:click={() => { reactionsOpen = !reactionsOpen; }} class="w-7 h-7 bg-zinc-200 dark:bg-zinc-700 border-zinc-400 border dark:border-0 rounded-full flex items-center justify-around">
-                {#if reactionsOpen}
-                    <Icon scale=1rem icon=collapse_all></Icon>
-                {:else}
-                    <Icon scale=1rem icon=expand_all></Icon>
-                {/if}
-            </button>
-        </div>
+    {#if reactionCheck}
+        <div class="{reactionsOpen ? "border-border-light dark:border-border-dark border shadow-md dark:shadow-2xl" : "border border-zinc-200 dark:border-zinc-900 bg-zinc-200 dark:bg-zinc-900"}  p-3 pb-0 -m-3 mb-7 rounded-xl transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <p class="text-lg font-bold">Reactions Stats</p>
+                
+                <button on:click={() => { reactionsOpen = !reactionsOpen; }} class="w-7 h-7 bg-zinc-200 dark:bg-zinc-700 border-zinc-400 border dark:border-0 rounded-full flex items-center justify-around">
+                    {#if reactionsOpen}
+                        <Icon scale=1rem icon=collapse_all></Icon>
+                    {:else}
+                        <Icon scale=1rem icon=expand_all></Icon>
+                    {/if}
+                </button>
+            </div>
 
-        {#if reactionsOpen}
-            <div transition:slide>
-                <div class="w-full overflow-auto">
-                    <div class="min-w-[35rem] w-full bg-zinc-200 dark:bg-zinc-900 rounded-xl p-2.5 text-sm mb-4">
-                        <div class="w-full flex bg-zinc-800 text-white dark:bg-zinc-800 px-0 py-2 rounded-md">
-                            <div class="w-1/4 pl-2 flex justify-between items-center">
-                                Player
+            {#if reactionsOpen}
+                <div transition:slide>
+                    <div class="w-full overflow-auto">
+                        <div class="min-w-[35rem] w-full bg-zinc-200 dark:bg-zinc-900 rounded-xl p-2.5 text-sm mb-4">
+                            <div class="w-full flex bg-zinc-800 text-white dark:bg-zinc-800 px-0 py-2 rounded-md">
+                                <div class="w-1/4 pl-2 flex justify-between items-center">
+                                    Player
 
-                                <button on:click={() => { sortReactions("name"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
-                                    {#if sortingReactions != "name"}
-                                        <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
-                                    {:else if typeReactions == "des"}
-                                        <Icon class="absolute" scale=1rem icon=arrow_downward></Icon>
-                                    {:else if typeReactions == "asc"}
-                                        <Icon class="absolute" scale=1rem icon=arrow_upward></Icon>
-                                    {/if}
-                                </button>
-                            </div>
-                            <div class="w-1/4 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
-                                Reactions
+                                    <button on:click={() => { sortReactions("name"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
+                                        {#if sortingReactions != "name"}
+                                            <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
+                                        {:else if typeReactions == "des"}
+                                            <Icon class="absolute" scale=1rem icon=arrow_downward></Icon>
+                                        {:else if typeReactions == "asc"}
+                                            <Icon class="absolute" scale=1rem icon=arrow_upward></Icon>
+                                        {/if}
+                                    </button>
+                                </div>
+                                <div class="w-1/4 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
+                                    Reactions
 
-                                <button on:click={() => { sortReactions("reactions"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
-                                    {#if sortingReactions != "reactions"}
-                                        <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
-                                    {:else if typeReactions == "des"}
-                                        <Icon class="absolute" scale=1rem icon=arrow_downward></Icon>
-                                    {:else if typeReactions == "asc"}
-                                        <Icon class="absolute" scale=1rem icon=arrow_upward></Icon>
-                                    {/if}
-                                </button>
-                            </div>
-                            <div class="w-1/4 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
-                                Messages
+                                    <button on:click={() => { sortReactions("reactions"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
+                                        {#if sortingReactions != "reactions"}
+                                            <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
+                                        {:else if typeReactions == "des"}
+                                            <Icon class="absolute" scale=1rem icon=arrow_downward></Icon>
+                                        {:else if typeReactions == "asc"}
+                                            <Icon class="absolute" scale=1rem icon=arrow_upward></Icon>
+                                        {/if}
+                                    </button>
+                                </div>
+                                <div class="w-1/4 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
+                                    Messages
 
-                                <button on:click={() => { sortReactions("messages"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
-                                    {#if sortingReactions != "messages"}
-                                        <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
-                                    {:else if typeReactions == "des"}
-                                        <Icon class="absolute" scale=1rem icon=arrow_downward></Icon>
-                                    {:else if typeReactions == "asc"}
-                                        <Icon class="absolute" scale=1rem icon=arrow_upward></Icon>
-                                    {/if}
-                                </button>
+                                    <button on:click={() => { sortReactions("messages"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
+                                        {#if sortingReactions != "messages"}
+                                            <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
+                                        {:else if typeReactions == "des"}
+                                            <Icon class="absolute" scale=1rem icon=arrow_downward></Icon>
+                                        {:else if typeReactions == "asc"}
+                                            <Icon class="absolute" scale=1rem icon=arrow_upward></Icon>
+                                        {/if}
+                                    </button>
+                                </div>
+                                <div class="w-1/4 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
+                                    RPM
+                                    
+                                    <button on:click={() => { sortReactions("rpm"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
+                                        {#if sortingReactions != "rpm"}
+                                            <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
+                                        {:else if typeReactions == "des"}
+                                            <Icon class="absolute" scale=1rem icon=arrow_downward></Icon>
+                                        {:else if typeReactions == "asc"}
+                                            <Icon class="absolute" scale=1rem icon=arrow_upward></Icon>
+                                        {/if}
+                                    </button>
+                                </div>
                             </div>
-                            <div class="w-1/4 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
-                                RPM
-                                
-                                <button on:click={() => { sortReactions("rpm"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
-                                    {#if sortingReactions != "rpm"}
-                                        <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
-                                    {:else if typeReactions == "des"}
-                                        <Icon class="absolute" scale=1rem icon=arrow_downward></Icon>
-                                    {:else if typeReactions == "asc"}
-                                        <Icon class="absolute" scale=1rem icon=arrow_upward></Icon>
-                                    {/if}
-                                </button>
-                            </div>
+
+                            {#each statsReactions as stat}
+                                <div class="mt-2 flex">
+                                    <div class="w-1/4 pl-2">
+                                        {stat.name}
+                                    </div>
+                                    <div class="w-1/4 pl-2 border-l border-zinc-400 dark:border-border-dark">
+                                        {stat.reactions?.length}
+                                    </div>
+                                    <div class="w-1/4 pl-2 border-l border-zinc-400 dark:border-border-dark">
+                                        {stat.messages}
+                                    </div>
+                                    <div class="w-1/4 pl-2 border-l border-zinc-400 dark:border-border-dark">
+                                        {stat.messages == 0 ? (0).toFixed(2) : (stat.reactions?.length ?? 0 / stat.messages).toFixed(2)}
+                                    </div>
+                                </div>
+                            {/each}
                         </div>
+                    </div>  
 
-                        {#each statsReactions as stat}
-                            <div class="mt-2 flex">
-                                <div class="w-1/4 pl-2">
-                                    {stat.name}
-                                </div>
-                                <div class="w-1/4 pl-2 border-l border-zinc-400 dark:border-border-dark">
-                                    {stat.reactions.length}
-                                </div>
-                                <div class="w-1/4 pl-2 border-l border-zinc-400 dark:border-border-dark">
-                                    {stat.messages}
-                                </div>
-                                <div class="w-1/4 pl-2 border-l border-zinc-400 dark:border-border-dark">
-                                    {stat.messages == 0 ? (0).toFixed(2) : (stat.reactions.length / stat.messages).toFixed(2)}
-                                </div>
-                            </div>
+                    <div class="chart-container">
+                        <LayerCake
+                        ssr
+                        percentRange
+                        padding={{ top: 10, right: 5, bottom: 20, left: 65 }}
+                        x={xKeyReactions}
+                        y={yKeyReactions}
+                        xPadding={[padding, padding]}
+                        yPadding={[padding, padding]}
+                        data={shownReactions}
+                        >
+                    
+                        <Html>
+                            <AxisX label={xKeyReactions} />
+                            <AxisY label={yKeyReactions} />
+                            <Scatter
+                            {r}
+                            {fill}
+                            {stroke}
+                            {strokeWidth}
+                            />
+                        </Html>
+                    
+                        </LayerCake>
+                    </div>
+                    <div class="mt-8 flex gap-1 flex-wrap pb-4">
+                        {#each statsReactions as point}
+                            <button on:click={() => { point.show = point.show ? false : true; }} class="p-1 px-2 {point.show ? "" : "opacity-25"} transition-all rounded-md text-sm bg-zinc-100 dark:bg-zinc-900">
+                                {point.name}
+                            </button>
                         {/each}
                     </div>
-                </div>  
-
-                <div class="chart-container">
-                    <LayerCake
-                    ssr
-                    percentRange
-                    padding={{ top: 10, right: 5, bottom: 20, left: 65 }}
-                    x={xKeyReactions}
-                    y={yKeyReactions}
-                    xPadding={[padding, padding]}
-                    yPadding={[padding, padding]}
-                    data={shownReactions}
-                    >
-                
-                    <Html>
-                        <AxisX label={xKeyReactions} />
-                        <AxisY label={yKeyReactions} />
-                        <Scatter
-                        {r}
-                        {fill}
-                        {stroke}
-                        {strokeWidth}
-                        />
-                    </Html>
-                
-                    </LayerCake>
                 </div>
-                <div class="mt-8 flex gap-1 flex-wrap pb-4">
-                    {#each statsReactions as point}
-                        <button on:click={() => { point.show = point.show ? false : true; }} class="p-1 px-2 {point.show ? "" : "opacity-25"} transition-all rounded-md text-sm bg-zinc-100 dark:bg-zinc-900">
-                            {point.name}
-                        </button>
-                    {/each}
-                </div>
-            </div>
-        {/if}
+            {/if}
 
-    </div>
-
+        </div>
+    {/if}
     
     <p class="opacity-50 mt-4 text-sm">The messages count in the reactions section refers to the number of messages to which a user has reacted. All information on this page was generated and saved on request, so some information like nicknames may be out of date.</p>
 </div>
