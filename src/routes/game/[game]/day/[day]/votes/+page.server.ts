@@ -7,109 +7,96 @@ export async function load({ params }) {
 
     const db = firebaseAdmin.getFirestore();
 
-    const ref = db.collection('day').doc(params.day).collection('votes').doc('history').collection('logs');
+    const ref = db.collection('day').doc(params.day).collection('votes');
 
     const docs = (await ref.get()).docs;
-
-    const logs = [] as { id: string, name: string, for: string | null, replacing: string | null, type: 'unvote' | 'vote', timestamp: Date, messageId: string | null }[]
-
+   
     const game = await getGameByID(params.game);
-
     const users = await getUsers(game);
  
-    for(let i = 0; i < docs.length; i++) {
-        const doc = docs[i];
+    const logs = docs.map(doc => doc.data()) as Log[];
 
-        const data = doc.data() as { id: string, message: string, timestamp: number, type: 'vote' | 'unvote', for: string | null, messageId?: string } | undefined;
-
-        if(data == undefined) continue;
-
-        const voter = users.get(data.id);
-        const voted = users.get(data.for ?? "");
-
-        if(voter == null || (data.type == 'vote' && voted == null)) continue;
-
-        logs.push({
-            id: doc.ref.id,
-            timestamp: new Date(data.timestamp),
-            for: voted?.nickname ?? null,
-            name: voter.nickname,
-            replacing: null,
-            type: data.type,
-            messageId: data.message ?? null,
-        });
-    }
+    logs.filter(log => log.type == 'standard').map(log => {
+        log.search = {
+            for: users.get(log.vote.for == "unvote" ? "---" : log.vote.for)?.nickname,
+            replace: users.get(log.vote.replace ?? "---")?.nickname,
+            name: users.get(log.vote.id)?.nickname ?? "<@" + log.vote.id + ">",
+        }
+    });
 
     logs.sort((a, b) => a.timestamp.valueOf() - b.timestamp.valueOf());
 
-    const votes = new Map() as Map<string, string[]>;
-
-    const snapshots = [] as { votes: { votes: number, message: string }[], vote: { id: string, name: string, timestamp: Date, replacing: string | null, type: 'vote' | 'unvote', for: string | null, messageId: string | null } }[];
-
-    for(let i = 0; i < logs.length; i++) {
-        const vote = logs[i];
-
-        if(vote.name == null) continue;
-
-        if(vote.type == "vote") {       
-            if(vote.for == null) continue;
-
-            votes.forEach((counted, key) => {
-                if(counted.includes(vote.name)) {
-                    counted.splice(counted.indexOf(vote.name), 1)[0];
-
-                    vote.replacing = key;
-
-                    votes.set(key, counted);
-                }
-            })
-
-            const counted = votes.get(vote.for);
-
-            if(counted == undefined) {
-                votes.set(vote.for, [ vote.name ]);
-            } else {
-                votes.set(vote.for, [ ...counted, vote.name ]);
-            }
-        } else if(vote.type == "unvote") {
-            votes.forEach((counted, key) => {
-                if(counted.includes(vote.name)) {
-                    counted.splice(counted.indexOf(vote.name), 1);
-
-                    vote.replacing = key;
-
-                    votes.set(key, counted);
-                }
-            })
-        }
-
-        const messages = [] as { votes: number, message: string }[];
-
-        let voting = Array.from(votes.keys());
-
-        voting = voting.sort((a, b) => (votes.get(b)?.length ?? -1) - (votes.get(a)?.length ?? -1));
-
-        for(let i = 0; i < voting.length; i++) {
-            const voted = votes.get(voting[i]) ?? [];
-
-            if(voted.length == 0) continue;
-
-            messages.push({ votes: voted.length, message: voted.length + " - " + voting[i] + " « " + voted.join(", ")});
-        }
-
-        messages.sort((a, b) => b.votes - a.votes);
-
-        snapshots.push({
-            votes: messages,
-            vote: vote,
-        });
-    }
-    
-    console.log(snapshots);
+    const tags = await getTags();
 
     return {
-        snapshots: snapshots,
+        logs, 
+        users,
         day: params.day,
         name: game.name,
+        tags
     }
+}
+
+interface Vote {
+    id: string,
+    for: string | 'unvote',
+    replace?: string,
+    timestamp: number,
+}
+
+type Log = (StandardLog & Search) | CustomLog | ResetLog;
+
+interface Search {
+    search: { //for vote history search, add nicknames
+        for?: string,
+        replace?: string,
+        name: string,
+    },
+}
+
+interface StandardLog {
+    vote: Vote,
+    board: string,
+    messageId: string | null, 
+    type: 'standard',
+    timestamp: number,
+}
+
+interface CustomLog {
+    search: { //for vote history search, add nicknames
+        for?: string,
+        replace?: string,
+        name: string,
+    },
+    message: string,
+    prefix: boolean, //prefix nickname to the beginning of the name
+    board: string,
+    messageId: string | null,
+    type: 'custom'
+    timestamp: number,
+}
+
+interface ResetLog {
+    message: string,
+    board: string,
+    messageId: string | null,
+    type: 'reset',
+    timestamp: number,
+}
+
+interface Tag {
+    color: string,
+    id: string,
+    nickname: string,
+    pfp: string,
+}
+
+async function getTags() {
+    const db = firebaseAdmin.getFirestore();
+
+    const ref = db.collection('tags');
+
+    const docs = (await ref.get()).docs;
+
+    return docs.map(doc => doc.data() as Tag);
 }
