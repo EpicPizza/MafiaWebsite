@@ -6,6 +6,11 @@
     import { getContext } from 'svelte';
   
     const { width, height, xScale, yRange } = getContext('LayerCake');
+
+    export let label;
+    if(label != undefined && label.length > 0) {
+      label = label.split(" ").map(word => word[0].toUpperCase() + word.substring(1)).join(" ");
+    }
   
     /** @type {Boolean} [tickMarks=false] - Show a vertical mark for each tick. */
     export let tickMarks = false;
@@ -86,7 +91,7 @@
         >{format(tick)}</div>
       </div>
     {/each}
-    <div class="absolute left-1/2 top-[100%] translate-y-5 -translate-x-1/2 text-sm opacity-50">Messages</div>
+    <div class="absolute left-1/2 top-[100%] translate-y-5 -translate-x-1/2 text-sm opacity-50">{label}</div>
   </div>
   
   <style>

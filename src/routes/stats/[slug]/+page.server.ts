@@ -16,11 +16,14 @@ export async function load({ params }) {
             messages: number, 
             name: string, 
             show: boolean,
-            reactions: {
+            alive?: boolean,
+            reactions?: {
                 reaction: string,
                 timestamp: number,
+                message?: string,
             }[],
-            images: number,
+            images?: number,
+            reactionCount: number,
         }[],
         name: string,
         day: number, 
