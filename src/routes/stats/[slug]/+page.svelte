@@ -118,7 +118,7 @@
     let reactionsOpen = false;
 </script>
 
-<div class="p-8 bg-white dark:bg-zinc-800 h-full overflow-auto border-border-light dark:border-border-dark w-[40rem] max-w-[calc(100vw-2rem)] max-h-[calc(100svh-2rem)] border rounded-2xl">
+<div class="p-8 bg-white dark:bg-zinc-800 h-full overflow-x-auto overflow-y-auto border-border-light dark:border-border-dark w-[40rem] max-w-[calc(100vw-2rem)] max-h-[calc(100svh-2rem)] border rounded-2xl">
     <div class="flex flex-col sm:flex-row items-start sm:items-end gap-0.5 justify-between">
         <h1 class="text-xl font-bold">Stats Day {data.day} > {data.name} Mafia</h1>
         <p class="opacity-50 text-sm">Generated {dnt.format(new Date(data.timestamp), "MMMM D, h:mm A")}</p>
