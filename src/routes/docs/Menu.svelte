@@ -52,7 +52,7 @@
                 {#if subpage != undefined}
                     <a href="/docs/{subpage.route}{edit ? "/edit" : ""}" class="w-full text-left inline-block relative mb-1">
                         {#if subpage.route == current}
-                            <div class="w-0.5 absolute -left-[10px] top-1/2 -translate-y-1/2 h-6 bg-white"></div>
+                            <div class="w-0.5 absolute -left-[10px] top-1/2 -translate-y-1/2 h-6 bg-black dark:bg-white"></div>
                         {/if}
                         <p class="font-bold text-sm">{subpage.title}</p>
                     </a>
@@ -62,7 +62,7 @@
     {/if}
 {/each}
 
-<div class="mt-auto pt-4 flex flex-col items-center mr-8 pb-4 w-[10rem] -ml-[0.5rem] sticky bottom-0 translate-y-4 bg-zinc-200 dark:bg-zinc-900">
+<div class="mt-auto pt-4 flex flex-col items-center mr-8 pb-4 w-[10rem] -ml-[0.5rem] sticky bottom-0 translate-y-4 bg-zinc-100 dark:bg-zinc-900">
     {#if edit}
         <a class="mb-2 text-sm opacity-50" href="/docs/{current}">Leave Edit Mode</a>
 

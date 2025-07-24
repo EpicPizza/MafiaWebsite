@@ -6,10 +6,6 @@ export const handle = (async ({ event, resolve }) => {
     response.headers.set("Cross-Origin-Resource-Policy", "same-origin");
     response.headers.set("Cross-Origin-Embedder-Policy", "same-origin");
     response.headers.set("Access-Control-Max-Age", "86400");
-    response.headers.set(
-        "Access-Control-Allow-Headers",
-        "uploader-chunk-number,uploader-chunks-total,uploader-file-id",
-    );
     response.headers.set("Cache-Control", "no-cache, private");
     response.headers.set("X-Frame-Options", "SAMEORIGIN");
     response.headers.set("X-Content-Type-Options", "nosniff");
