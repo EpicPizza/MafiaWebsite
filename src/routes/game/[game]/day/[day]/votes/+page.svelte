@@ -137,7 +137,7 @@
         {/if}
     </div>
 
-    {#each logs.filter(log => log.type == 'standard' && log.vote.for != log.vote.replace) as log (log.timestamp)}
+    {#each logs.filter(log => (log.type == 'standard' && log.vote.for != log.vote.replace) || log.type != 'standard') as log (log.timestamp)}
         {#if log.type == 'standard'}
             {@const vote = log.vote}
         

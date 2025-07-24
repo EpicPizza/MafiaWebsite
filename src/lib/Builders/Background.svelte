@@ -2,11 +2,38 @@
     import { page } from "$app/stores";
     import { getContext, onMount } from "svelte";
     import Icon from "./Icon.svelte";
+    import ImageScatter from "./ImageScatter.svelte";
+
+    // Props for customizing the background
+    export let enableScatter: boolean = false;
+    export let scatterImages: string[] = [];
+    export let scatterMinImageSize: number = 60;
+    export let scatterMaxImageSize: number = 120;
+    export let scatterPadding: number = 30;
 
     let bottom = "1rem";
     let offset = 0;
 
     let dark = false;
+    let windowWidth = -1;
+    let windowHeight = -1;
+
+    // Default background images (used if scatterImages is empty)
+    const defaultBackgroundImages = [
+        'https://picsum.photos/80/80?random=1',
+        'https://picsum.photos/80/80?random=2',
+        'https://picsum.photos/80/80?random=3',
+        'https://picsum.photos/80/80?random=4',
+        'https://picsum.photos/80/80?random=5',
+        'https://picsum.photos/80/80?random=6',
+        'https://picsum.photos/80/80?random=7',
+        'https://picsum.photos/80/80?random=8',
+        'https://picsum.photos/80/80?random=9',
+        'https://picsum.photos/80/80?random=10'
+    ];
+
+    // Use provided images or fall back to defaults
+    $: backgroundImages = scatterImages.length > 0 ? scatterImages : defaultBackgroundImages;
 
     onMount(() => {
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -16,16 +43,33 @@
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
             dark = event.matches;
         });
-    })
+    });
   </script>
+  
+  <svelte:window bind:innerWidth={windowWidth} bind:innerHeight={windowHeight}></svelte:window>
   
   <div
     style="padding-bottom: {bottom}; padding-top: {bottom};"
-    class="px-4 h-[calc(100dvh)] border-border-light dark:border-border-dark w-full bg-white dark:bg-zinc-800 bg-opacity-70 {dark ? "dark-pattern" : "light-pattern"}"
+    class="px-4 h-[calc(100dvh)] border-border-light dark:border-border-dark w-full bg-white dark:bg-zinc-800 bg-opacity-70 {dark ? "dark-pattern" : "light-pattern"} relative"
   >
+    <!-- Background scatter effect (optional) -->
+    {#if enableScatter}
+      <div class="absolute inset-0 pointer-events-none opacity-70">
+        <ImageScatter 
+          images={backgroundImages}
+          width={windowWidth}
+          height={windowHeight}
+          minImageSize={scatterMinImageSize}
+          maxImageSize={scatterMaxImageSize}
+          padding={scatterPadding}
+          cacheKey="background"
+        />
+      </div>
+    {/if}
+    
     <div
       style="min-height: calc(100svh - 2rem);"
-      class="flex flex-col items-center w-full"
+      class="flex flex-col items-center w-full relative z-10"
     >
       <slot />
     </div>

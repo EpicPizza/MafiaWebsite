@@ -141,6 +141,4 @@
   }
 </style>
 
-<Background>
-    <slot></slot>
-</Background>
+<slot></slot>
