@@ -54,21 +54,8 @@
 
             <div class="flex flex-col sm:flex-row gap-5 sm:items-center justify-between opacity-75 dark:opacity-100">
                 <p class="text-base opacity-80 flex items-center gap-2 italic">
-                    “mafia server with a side interest in robotics”
+                    “hmmmmm, is this website a clone of something?”
                 </p>
-                <div class="opacity-80 flex gap-2">
-                    <a aria-label="Discord" target="_blank" href="https://discord.com/invite/NPyexQ2ucU" class="text-2xl -mb-1.5">
-                        <Icon icon="ic:baseline-discord"></Icon>
-                    </a>
-
-                    <a aria-label="My Email" href="mailto:kabir@ramzan.me" class="text-2xl -mb-1.5">
-                        <Icon icon="ic:baseline-email"></Icon>
-                    </a>
-
-                    <a aria-label="Github" target="_blank" href="https://github.com/EpicPizza/MafiaBot" class="text-2xl -mb-1.5">
-                        <Icon icon="mdi:github"></Icon>
-                    </a>     
-                </div>
             </div>
         </div>
     </div>
