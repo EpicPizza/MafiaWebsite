@@ -5,6 +5,7 @@
     import Icon from "@iconify/svelte";
     import { onMount } from "svelte";
    import type { Page } from '../pages.server';
+    import { browser } from "$app/environment";
 
     export let data;
 
@@ -12,9 +13,12 @@
 
     let page: Page | undefined = data.pages.find(page => data.page == page.route);
 
+    let pageElement: HTMLElement | undefined = undefined;
+
     $: {
         if(page?.route != data.page) {
             page = data.pages.find(page => data.page == page.route);
+            if(pageElement) pageElement.scrollTo({ top: 0, behavior: "instant" });
         }
     }
     
@@ -26,7 +30,7 @@
 </svelte:head>
 
 
-<div class="p-8 bg-white dark:bg-zinc-800 overflow-auto border-border-light dark:border-border-dark w-[40rem] max-w-[calc(100vw-2rem)] h-[calc(100svh-2rem)] border rounded-2xl">
+<div bind:this={pageElement} class="p-8 bg-white dark:bg-zinc-800 overflow-auto border-border-light dark:border-border-dark w-[40rem] max-w-[calc(100vw-2rem)] h-[calc(100svh-2rem)] border rounded-2xl">
    {#if page != undefined}
          <div class="flex items-center justify-between">
             <h1 class="flex items-center gap-1.5 font-bold text-xl">
