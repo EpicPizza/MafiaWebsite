@@ -70,6 +70,8 @@
             Add
         </button>
     {:else} 
+        <a class="mb-2 text-sm opacity-50" href="/">Go Home</a>
+
         <a data-sveltekit-preload-data={false} href="/docs/register?route={current}" class="w-36 h-12 flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark">
             Edit
         </a>

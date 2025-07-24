@@ -17,7 +17,7 @@
 
 <Background>
     <div class="flex ml-0 md:-ml-12">
-        <div class="md:flex overflow-y-auto max-h-[calc(100dvh-2rem)] hidden flex-col gap-2 p-4 pr-8 bg-zinc-100 dark:bg-zinc-900 border-l translate-x-12 min-w-[14rem] max-w-[14rem] z-[0] border-y border-border-light dark:border-border-dark rounded-2xl rounded-r-none">
+        <div class="md:flex overflow-y-auto overflow-x-hidden max-h-[calc(100dvh-2rem)] hidden flex-col gap-2 p-4 pr-8 bg-zinc-100 dark:bg-zinc-900 border-l translate-x-12 min-w-[14rem] max-w-[14rem] z-[0] border-y border-border-light dark:border-border-dark rounded-2xl rounded-r-none">
             <Menu {edit} current={current ?? "---"} pages={data.pages}></Menu>
         </div>
         <div class="z-[1]">

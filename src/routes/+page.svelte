@@ -40,21 +40,21 @@
 
             <div class="mb-8">
                 <div class="grid sm:grid-cols-2 gap-3">
-                    <a href="/help/join-mafia" class="p-4 bg-orange-200 dark:bg-orange-900 border-2 border-orange-400 rounded-md relative overflow-hidden">
+                    <a href="/docs/join-mafia" class="p-4 bg-orange-200 dark:bg-orange-900 border-2 border-orange-400 rounded-md relative overflow-hidden">
                         <div class="flex items-center gap-1.5 text-lg mb-2">
                             <Icon width=1.25rem icon="material-symbols:diamond-shine-outline"></Icon>
                             <p class="font-bold">Play Mafia</p>
                         </div>
                         <p class="text-sm opacity-80">Join the #FRCBayAreaGang discord server.</p>
                     </a>
-                    <a href="/help/overview" class="p-4 bg-zinc-200 dark:bg-zinc-900 border-2 border-border-light dark:border-border-dark rounded-md relative overflow-hidden">
+                    <a href="/docs/overview" class="p-4 bg-zinc-200 dark:bg-zinc-900 border-2 border-border-light dark:border-border-dark rounded-md relative overflow-hidden">
                         <div class="flex items-center gap-1.5 text-lg mb-2">
                             <Icon width=1.25rem icon="material-symbols:book-outline"></Icon>
                             <p class="font-bold">Rules</p>
                         </div>
                         <p class="text-sm opacity-80">View how to play and all the rules of BAG mafia.</p>
                     </a>
-                    <a href="/help/help" class="p-4 bg-zinc-200 dark:bg-zinc-900 border-2 border-border-light dark:border-border-dark rounded-md relative overflow-hidden">
+                    <a href="/docs/help" class="p-4 bg-zinc-200 dark:bg-zinc-900 border-2 border-border-light dark:border-border-dark rounded-md relative overflow-hidden">
                         <div class="flex items-center gap-1.5 text-lg mb-2">
                             <Icon width=1.25rem icon="material-symbols:code-blocks-outline"></Icon>
                             <p class="font-bold">Help</p>
