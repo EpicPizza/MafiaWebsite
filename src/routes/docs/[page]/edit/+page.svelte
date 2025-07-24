@@ -134,7 +134,7 @@
             </h1>
 
             <div class="mr-10 md:mr-0">   
-                <button disabled={save == false} on:click={() => { savePage(); }}  class="w-full transition-all px-3 text-sm py-1 flex items-center justify-around font-bold rounded-lg border-2 { save ? "bg-orange-200 dark:bg-orange-800 border-orange-400" : "bg-white opacity-50 dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
+                <button disabled={save == false} on:click={() => { savePage(); }}  class="w-full transition-all px-3 text-sm py-1 flex items-center justify-around font-bold rounded-lg border-2 { save ? "bg-teal-200 dark:bg-teal-800 border-teal-400" : "bg-white opacity-50 dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
                     Save
                 </button>
             </div>
@@ -143,16 +143,16 @@
         <Line class="mb-4 mt-2"></Line>
 
         <div class="flex gap-2.5">
-            <button on:click={() => { tab = "edit"; }}  class="w-full h-12 flex items-center justify-around font-bold rounded-full border-2 {tab == "edit" ? "bg-orange-200 dark:bg-orange-800 border-orange-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
+            <button on:click={() => { tab = "edit"; }}  class="w-full h-12 flex items-center justify-around font-bold rounded-full border-2 {tab == "edit" ? "bg-teal-200 dark:bg-teal-800 border-teal-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
                 Edit
             </button>
-            <button on:click={() => { tab = "view"; }} class="w-full h-12 flex items-center justify-around font-bold rounded-full border-2 {tab == "view" ? "bg-orange-200 dark:bg-orange-800 border-orange-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
+            <button on:click={() => { tab = "view"; }} class="w-full h-12 flex items-center justify-around font-bold rounded-full border-2 {tab == "view" ? "bg-teal-200 dark:bg-teal-800 border-teal-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
                 View
             </button>
-            <button on:click={() => { tab = "sub"; }} class="w-full h-12 flex items-center justify-around font-bold rounded-full border-2 {tab == "sub" ? "bg-orange-200 dark:bg-orange-800 border-orange-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
+            <button on:click={() => { tab = "sub"; }} class="w-full h-12 flex items-center justify-around font-bold rounded-full border-2 {tab == "sub" ? "bg-teal-200 dark:bg-teal-800 border-teal-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
                 Subpages
             </button>
-            <button on:click={() => { tab = "other"; }} class="w-full h-12 flex items-center justify-around font-bold rounded-full border-2 {tab == "other" ? "bg-orange-200 dark:bg-orange-800 border-orange-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
+            <button on:click={() => { tab = "other"; }} class="w-full h-12 flex items-center justify-around font-bold rounded-full border-2 {tab == "other" ? "bg-teal-200 dark:bg-teal-800 border-teal-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
                 Settings
             </button>
         </div>
@@ -184,7 +184,7 @@
                         <p class="text-red-500 font-bold pt-2">This page has no subpages.</p>
                     {/each}
                     
-                    <button on:click={() => { addSubpage(); }} class="w-full h-12 mt-8 flex items-center justify-around font-bold rounded-full border-2 bg-orange-200 dark:bg-orange-800 border-orange-400">
+                    <button on:click={() => { addSubpage(); }} class="w-full h-12 mt-8 flex items-center justify-around font-bold rounded-full border-2 bg-teal-200 dark:bg-teal-800 border-teal-400">
                         Add Subpage
                     </button>
                 {:else}

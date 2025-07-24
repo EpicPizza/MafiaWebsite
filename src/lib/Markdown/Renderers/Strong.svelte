@@ -1,3 +1,3 @@
-<strong class="text-orange-800 dark:text-orange-300">
+<strong class="text-teal-800 dark:text-teal-300">
   <slot />
 </strong>

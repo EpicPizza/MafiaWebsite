@@ -11,36 +11,17 @@
     <meta property="og:description" content="The (not) official FRC mafia server with a side interest in robotics." />
 </svelte:head>
 
-<Background enableScatter scatterMinImageSize={200} scatterMaxImageSize={300} scatterImages={[
-    "/1.png",
-    "/2.png",
-    "/3.png",
-    "/4.png",
-    "/5.png",
-    "/6.png",
-    "/7.png",
-    "/8.png",
-    "/9.png",
-    "/10.png",
-    "/11.png",
-    "/12.png",
-    "/13.png",
-    "/14.png",
-    "/15.png",
-    "/16.png",
-    "/17.png",
-    "/18.png",
-]}>
+<Background>
     <div class="h-[calc(100dvh-2rem)] flex flex-col justify-around items-center">
         <div class="max-w-[calc(100vw-2rem)] overflow-auto w-[42rem] bg-white dark:bg-zinc-800 border border-border-light dark:border-border-dark p-8 rounded-2xl">
             <div class="flex flex-col sm:flex-row items-start sm:items-end gap-0.5 justify-between">
-                <h1 class="text-2xl font-bold"><span class="line-through opacity-50">#FRCBayAreaGang</span> FRC Mafia</h1>
+                <h1 class="text-2xl font-bold">UCSC '29 Mafia</h1>
             </div>
             <Line class="mb-6 mt-2"></Line>
 
             <div class="mb-8">
                 <div class="grid sm:grid-cols-2 gap-3">
-                    <a href="/docs/join-mafia" class="p-4 bg-orange-200 dark:bg-orange-900 border-2 border-orange-400 rounded-md relative overflow-hidden">
+                    <a href="/docs/join-mafia" class="p-4 bg-teal-200 dark:bg-teal-900 border-2 border-teal-400 rounded-md relative overflow-hidden">
                         <div class="flex items-center gap-1.5 text-lg mb-2">
                             <Icon width=1.25rem icon="material-symbols:diamond-shine-outline"></Icon>
                             <p class="font-bold">Play Mafia</p>

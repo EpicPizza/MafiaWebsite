@@ -40,7 +40,7 @@
 {#each pages.filter(page => page.hide != true).sort((a, b) => a.order - b.order) as page}
     {@const parent = findParent(pages.find(page => page.route == current))}
 
-    <a href="/docs/{page.route}{edit ? "/edit" : ""}" class="w-36 min-h-12 h-12 flex items-center justify-around font-bold rounded-lg border-2 {current == page.route || parent?.route == page.route ? "bg-orange-200 dark:bg-orange-800 border-orange-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
+    <a href="/docs/{page.route}{edit ? "/edit" : ""}" class="w-36 min-h-12 h-12 flex items-center justify-around font-bold rounded-lg border-2 {current == page.route || parent?.route == page.route ? "bg-teal-200 dark:bg-teal-800 border-teal-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
         {page.title}
     </a>
 

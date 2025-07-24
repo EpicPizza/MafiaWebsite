@@ -24,7 +24,7 @@
 {:else}
   <!-- svelte-ignore a11y-missing-attribute -->
   <a
-    class="text-orange-600 leading-7 break-all dark:text-orange-500 hover:underline inline"
+    class="text-teal-600 leading-7 break-all dark:text-teal-500 hover:underline inline"
     target="{href.startsWith("/") ? "_self" : "_blank"}"
     {href}
     {title}><slot /></a
