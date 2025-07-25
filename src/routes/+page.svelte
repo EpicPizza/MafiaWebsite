@@ -8,7 +8,7 @@
 
 <svelte:head>
     <meta property="og:title" content="FRC (BAG) Mafia" />
-    <meta property="og:description" content="The (not) antique moose with an antique moose" />
+    <meta property="og:description" content="The (not) official FRC mafia server with a side interest in robotics." />
 </svelte:head>
 
 <Background enableScatter scatterMinImageSize={200} scatterMaxImageSize={300} scatterImages={[
@@ -34,7 +34,7 @@
     <div class="h-[calc(100dvh-2rem)] flex flex-col justify-around items-center">
         <div class="max-w-[calc(100vw-2rem)] overflow-auto w-[42rem] bg-white dark:bg-zinc-800 border border-border-light dark:border-border-dark p-8 rounded-2xl">
             <div class="flex flex-col sm:flex-row items-start sm:items-end gap-0.5 justify-between">
-                <h1 class="text-2xl font-bold"><span class="line-through opacity-50">#FRCBayAreaGang</span> antique moose</h1>
+                <h1 class="text-2xl font-bold"><span class="line-through opacity-50">#FRCBayAreaGang</span> FRC Mafia</h1>
             </div>
             <Line class="mb-6 mt-2"></Line>
 
@@ -43,28 +43,28 @@
                     <a href="/docs/join-mafia" class="p-4 bg-orange-200 dark:bg-orange-900 border-2 border-orange-400 rounded-md relative overflow-hidden">
                         <div class="flex items-center gap-1.5 text-lg mb-2">
                             <Icon width=1.25rem icon="material-symbols:diamond-shine-outline"></Icon>
-                            <p class="font-bold">Play antique moose</p>
+                            <p class="font-bold">Play Mafia</p>
                         </div>
-                        <p class="text-sm opacity-80">Join the antique moose antique moose.</p>
+                        <p class="text-sm opacity-80">Join the #FRCBayAreaGang discord server.</p>
                     </a>
                     <a href="/docs/overview" class="p-4 bg-zinc-200 dark:bg-zinc-900 border-2 border-border-light dark:border-border-dark rounded-md relative overflow-hidden">
                         <div class="flex items-center gap-1.5 text-lg mb-2">
                             <Icon width=1.25rem icon="material-symbols:book-outline"></Icon>
-                            <p class="font-bold">antique moose</p>
+                            <p class="font-bold">Rules</p>
                         </div>
-                        <p class="text-sm opacity-80">View how to play and all the rules of antique moose.</p>
+                        <p class="text-sm opacity-80">View how to play and all the rules of BAG mafia.</p>
                     </a>
                     <a href="/docs/help" class="p-4 bg-zinc-200 dark:bg-zinc-900 border-2 border-border-light dark:border-border-dark rounded-md relative overflow-hidden">
                         <div class="flex items-center gap-1.5 text-lg mb-2">
                             <Icon width=1.25rem icon="material-symbols:code-blocks-outline"></Icon>
-                            <p class="font-bold">antique moose</p>
+                            <p class="font-bold">Help</p>
                         </div>
-                        <p class="text-sm opacity-80">How to use antique moose to join, play, and mod games.</p>
+                        <p class="text-sm opacity-80">How to use Mafia Bot to join, play, and mod games.</p>
                     </a>
                     <a href="https://docs.frcmafia.com/" class="p-4 bg-zinc-200 dark:bg-zinc-900 border-2 border-border-light dark:border-border-dark rounded-md relative overflow-hidden">
                         <div class="flex items-center gap-1.5 text-lg mb-2">
                             <Icon width=1.25rem icon="material-symbols:document-search-outline"></Icon>
-                            <p class="font-bold">antique moose</p>
+                            <p class="font-bold">Documentation</p>
                         </div>
                         <p class="text-sm opacity-80"><span class="line-through">In progress</span> documentation on the inner workings of Mafia Bot.</p>
                     </a>
@@ -73,7 +73,7 @@
 
             <div class="flex flex-col sm:flex-row gap-5 sm:items-center justify-between opacity-75 dark:opacity-100">
                 <p class="text-base opacity-80 flex items-center gap-2 italic">
-                    “antique moose with a side interest in antique moose”
+                    “mafia server with a side interest in robotics”
                 </p>
                 <div class="opacity-80 flex gap-2">
                     <a aria-label="Discord" target="_blank" href="https://discord.com/invite/NPyexQ2ucU" class="text-2xl -mb-1.5">
