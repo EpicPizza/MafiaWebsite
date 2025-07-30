@@ -99,7 +99,7 @@
             {/if}
             <Icon scale=1.2rem class="ml-auto {$open ? "rotate-180" : ""} -mr-1" icon="arrow_drop_down"></Icon>
         </button>
-        <div use:melt={$menu} class="bg-zinc-100 dark:bg-zinc-900 border-zinc-400 dark:border-zinc-600 border-2 w-[9.5rem] rounded-md py-1">
+        <div use:melt={$menu} class="bg-zinc-100 dark:bg-zinc-900 border-zinc-400 dark:border-zinc-600 border-2 w-[9.5rem] rounded-md py-1 z-50">
             <button on:click={() => { type = "votedFor"; }} class="px-3 py-2 w-full flex items-center gap-1.5 hover:bg-black hover:bg-opacity-10 dark:hover:bg-white dark:hover:bg-opacity-10 transition-all" use:melt={$item}>
                 <Icon scale=1.2rem icon="keyboard_double_arrow_right"></Icon>
                 Voted for
@@ -117,7 +117,7 @@
         </div>
         <input use:melt={$input} placeholder="Search" class="bg-zinc-100 dark:bg-zinc-900 px-4 w-full py-2 rounded-l-sm rounded-r-lg">
         {#if $comboOpen}
-            <div use:melt={$comboMenu} class="bg-zinc-100 dark:bg-zinc-900 border-zinc-400 dark:border-zinc-600 border-2 w-[9.5rem] rounded-md py-1 max-h-[calc(100dvh-10rem)] overflow-auto">
+            <div use:melt={$comboMenu} class="bg-zinc-100 z-50 dark:bg-zinc-900 border-zinc-400 dark:border-zinc-600 border-2 w-[9.5rem] rounded-md py-1 max-h-[calc(100dvh-10rem)] overflow-auto">
                 {#each filteredNames as name}
                     {@const tag = getTag(name)}
                     <button style="color: {tag.color};" class="px-3 py-2 w-full flex items-center gap-1.5  data-[highlighted]:bg-black  data-[highlighted]:bg-opacity-10  dark:data-[highlighted]:bg-white  dark:data-[highlighted]:bg-opacity-10  transition-all" use:melt={$option({ value: name })}>
