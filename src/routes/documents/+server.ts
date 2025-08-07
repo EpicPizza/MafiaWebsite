@@ -114,4 +114,5 @@ const Page = z.object({
     subpages: z.string().array(),
     hide: z.boolean(),
     order: z.number().optional(),
+    integration: z.string().optional(),
 })
