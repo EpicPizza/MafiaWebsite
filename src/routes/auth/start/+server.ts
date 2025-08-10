@@ -2,12 +2,13 @@ import { redirect } from '@sveltejs/kit';
 import keys from '../../../../google_client.json';
 import { CodeChallengeMethod, OAuth2Client } from 'google-auth-library';
 import { hash } from '$lib/Google/helpers.server';
+import { DOMAIN } from '$env/static/private';
 
 export async function GET({ locals }) {
     const client = new OAuth2Client({
         clientId: keys.web.client_id,
         clientSecret: keys.web.client_secret,
-        redirectUri: keys.web.redirect_uris[0],
+        redirectUri: DOMAIN + "/auth/flow",
     });
 
     const authorizeUrl = client.generateAuthUrl({
