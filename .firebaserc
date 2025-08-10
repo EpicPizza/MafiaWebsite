@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "mafia-bot-ucsc"
+    "bag": "mafia-bot-5047d",
+    "ucsc": "mafia-bot-ucsc"
   }
 }
