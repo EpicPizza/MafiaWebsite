@@ -36,9 +36,6 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: build
-          path: |
-            build
-            !build/**/node_modules
       - name: Set Firebase Project
         uses: w9jds/firebase-action@master
         with:
