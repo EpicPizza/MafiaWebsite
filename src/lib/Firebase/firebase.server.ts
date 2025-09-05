@@ -1,5 +1,5 @@
 import { dev } from '$app/environment';
-import { FIREBASE_ADMIN } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import admin from 'firebase-admin'
 import FirebaseAdmin from 'firebase-admin';
 const firebaseAuth = FirebaseAdmin.auth;
@@ -16,11 +16,11 @@ function getFirebaseAdmin() {
         if(app == undefined) { //this get reruns on every change durring preview, but firebase admin still sees the pervious instance made, so this just checks if we can use a previous firebase instance, otherwise it will cause an error because firebase thinks we are reintializing
             if(admin.apps == null) {
                 app = admin.initializeApp({
-                    credential: (admin.credential.cert(JSON.parse(FIREBASE_ADMIN as string) as admin.ServiceAccount))
+                    credential: (admin.credential.cert(JSON.parse(env.FIREBASE_ADMIN) as admin.ServiceAccount))
                 }, "Server");
             } else if(admin.apps.length == 0) {
                 app = admin.initializeApp({
-                    credential: (admin.credential.cert(JSON.parse(FIREBASE_ADMIN as string) as admin.ServiceAccount))
+                    credential: (admin.credential.cert(JSON.parse(env.FIREBASE_ADMIN) as admin.ServiceAccount))
                 }, "Server");
             } else {
                 var found = false;

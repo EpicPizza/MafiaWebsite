@@ -1,4 +1,4 @@
-import { GOOGLE_KEY } from "$env/static/private";
+import { env } from "$env/dynamic/private";
 import { firebaseAdmin } from "$lib/Firebase/firebase.server";
 import { randomBytes, createCipheriv, createDecipheriv, createHash } from "node:crypto";
 import { Buffer } from "node:buffer";
@@ -43,7 +43,7 @@ export async function getVerifier() {
 }
 
 export async function encrypt(value: string) {
-	const key = Buffer.from(GOOGLE_KEY, "hex");
+	const key = Buffer.from(env.GOOGLE_KEY, "hex");
 	const iv = randomBytes(16);
 
 	const cipher = createCipheriv("aes-256-cbc", key, iv);
@@ -55,7 +55,7 @@ export async function encrypt(value: string) {
 }
 
 export async function decrypt(encryptedValue: string, iv: string) {
-	const key = Buffer.from(GOOGLE_KEY, "hex");
+	const key = Buffer.from(env.GOOGLE_KEY, "hex");
 
 	const decipher = createDecipheriv("aes-256-cbc", key, Buffer.from(iv, "hex"));
 
