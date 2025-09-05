@@ -15,13 +15,18 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
-      - name: Archive Production Artifact
+      - name: Archive Production Function Artifact
         uses: actions/upload-artifact@master
         with:
-          name: build
+          name: ssrServer
           path: |
-            build
-            !build/**/node_modules
+            build/functions/ssrServer
+      - name: Archive Production Hosting Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: public
+          path: |
+            build/public
   deploy:
     name: Deploy
     needs: build
@@ -35,8 +40,13 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@master
         with:
-          name: build
-          path: .
+          name: public
+          path: build/public
+      - name: Download Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: ssrServer
+          path: build/functions/ssrServer
       - name: Inspect downloaded files
         run: |
           echo "Listing contents of build..."
