@@ -1,10 +1,10 @@
-import { CLIENT, DOMAIN, SECRET } from "$env/static/private";
+import { env } from "$env/dynamic/private";
 import { firebaseAdmin } from "$lib/Firebase/firebase.server.js";
 import { error, redirect } from "@sveltejs/kit";
 import * as arctic from "arctic";
 
 export async function GET({ url, cookies }) {
-    const discord = new arctic.Discord(CLIENT, SECRET, DOMAIN + "/docs/start");
+    const discord = new arctic.Discord(env.CLIENT, env.SECRET, env.DOMAIN + "/docs/start");
 
     const code = url.searchParams.get("code");
     const state = url.searchParams.get("state");

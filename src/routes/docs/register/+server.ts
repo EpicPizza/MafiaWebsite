@@ -1,4 +1,4 @@
-import { CLIENT, DOMAIN, SECRET } from "$env/static/private";
+import { env } from "$env/dynamic/private";
 import { redirect } from "@sveltejs/kit";
 import * as arctic from "arctic";
 import { getAllowed, getSession } from "../users.server";
@@ -9,7 +9,7 @@ export async function GET({ request, cookies, url }) {
 
     if(session && users.includes(session.username)) throw redirect(307, `/docs/${url.searchParams.get("route")}/edit`);
 
-    const discord = new arctic.Discord(CLIENT, SECRET, DOMAIN + "/docs/start");
+    const discord = new arctic.Discord(env.CLIENT, env.SECRET, env.DOMAIN + "/docs/start");
 
     const state = arctic.generateState();
     const codeVerifier = arctic.generateCodeVerifier();
