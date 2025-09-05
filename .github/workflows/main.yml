@@ -34,6 +34,13 @@ jobs:
         run: npm install
       - name: Download Artifact
         uses: actions/download-artifact@master
+        with:
+          name: build
+          path: .
+      - name: Inspect downloaded files
+        run: |
+          echo "Listing contents of build..."
+          ls -R build/
       - name: Set Firebase Project
         uses: w9jds/firebase-action@master
         with:
