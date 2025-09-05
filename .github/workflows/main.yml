@@ -18,8 +18,10 @@ jobs:
       - name: Archive Production Artifact
         uses: actions/upload-artifact@master
         with:
-          name: dist
-          path: dist
+          name: build
+          path: |
+            build
+            !build/**/node_modules
   deploy:
     name: Deploy
     needs: build
@@ -30,8 +32,10 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@master
         with:
-          name: dist
-          path: dist
+          name: build
+          path: |
+            build
+            !build/**/node_modules
       - name: Set Firebase Project
         uses: w9jds/firebase-action@master
         with:
