@@ -34,8 +34,6 @@ jobs:
         run: npm install
       - name: Download Artifact
         uses: actions/download-artifact@master
-        with:
-          name: build
       - name: Set Firebase Project
         uses: w9jds/firebase-action@master
         with:
