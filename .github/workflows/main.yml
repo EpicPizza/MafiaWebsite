@@ -1,0 +1,65 @@
+name: Build and Deploy
+on:
+  push:
+    branches:
+      - ucsc
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Install Dependencies
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Archive Production Function Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: ssrServer
+          path: |
+            build/functions/ssrServer
+      - name: Archive Production Hosting Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: public
+          path: |
+            build/public
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Install Dependencies
+        working-directory: ./build/functions
+        run: npm install
+      - name: Download Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: public
+          path: build/public
+      - name: Download Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: ssrServer
+          path: build/functions/ssrServer
+      - name: Inspect downloaded files
+        run: |
+          echo "Listing contents of build..."
+          ls -R build/
+      - name: Set Firebase Project
+        uses: w9jds/firebase-action@master
+        with:
+          args: use ucsc
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_UCSC }}
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --force
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_UCSC }}
