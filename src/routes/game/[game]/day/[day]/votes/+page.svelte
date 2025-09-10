@@ -164,11 +164,11 @@
 
                 {#if log.messageId != null}
                     <div class="flex gap-1">
-                        <a target="_blank" href="https://discord.com/channels/569988266657316884/695129859147694174/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 p-2 py-1 rounded-md font-bold text-xs">
+                        <a target="_blank" href="https://discord.com/channels/1357450274247151820/1397889550906429481/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 p-2 py-1 rounded-md font-bold text-xs">
                             Jump
                         </a>
 
-                    <Copy link="https://discord.com/channels/569988266657316884/695129859147694174/{log.messageId}"></Copy>
+                    <Copy link="https://discord.com/channels/1357450274247151820/1397889550906429481/{log.messageId}"></Copy>
                     </div>
                 {/if}
             </div>
@@ -196,11 +196,11 @@
                     <div class="flex items-center gap-1">
                         <p class="text-sm opacity-50 mr-3">{dnt.format(new Date(log.timestamp), "MMMM D, h:mm:ss A")}</p>
 
-                        <a target="_blank" href="https://discord.com/channels/569988266657316884/695129859147694174/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 p-2 py-1 rounded-md font-bold text-xs">
+                        <a target="_blank" href="https://discord.com/channels/1357450274247151820/1397889550906429481/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 p-2 py-1 rounded-md font-bold text-xs">
                             Jump
                         </a>
 
-                        <Copy link="https://discord.com/channels/569988266657316884/695129859147694174/{log.messageId}"></Copy>
+                        <Copy link="https://discord.com/channels/1357450274247151820/1397889550906429481/{log.messageId}"></Copy>
                     </div>
                 {/if}
             </div>
@@ -215,11 +215,11 @@
 
                 {#if log.messageId != null}
                     <div class="flex gap-1">
-                        <a target="_blank" href="https://discord.com/channels/569988266657316884/695129859147694174/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 p-2 py-1 rounded-md font-bold text-xs">
+                        <a target="_blank" href="https://discord.com/channels/1357450274247151820/1397889550906429481/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 p-2 py-1 rounded-md font-bold text-xs">
                             Jump
                         </a>
 
-                    <Copy link="https://discord.com/channels/569988266657316884/695129859147694174/{log.messageId}"></Copy>
+                    <Copy link="https://discord.com/channels/1357450274247151820/1397889550906429481/{log.messageId}"></Copy>
                     </div>
                 {/if}
             </div>
