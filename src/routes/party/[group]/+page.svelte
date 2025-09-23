@@ -210,9 +210,3 @@
         </div>
     {/if}
 </div>
-
-<pre>{JSON.stringify(me, null, 2)}</pre>
-
-<pre>{JSON.stringify(role, null, 2)}</pre>
-
-<pre>{JSON.stringify(message, null, 2)}</pre>

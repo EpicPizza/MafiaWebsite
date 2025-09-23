@@ -24,7 +24,7 @@
     <div class="p-8 bg-white dark:bg-zinc-800 h-full border-border-light dark:border-border-dark max-w-[40rem] w-[calc(100vw-2rem)] max-h-[calc(100svh-2rem)] overflow-auto border rounded-2xl">
         {#if data.username == null}
             <div class="flex justify-around">
-                <a href="/party/signin" class="px-4 py-3 bg-black rounded-md">
+                <a href="/party/signin" class="px-4 py-3 bg-black text-white rounded-md">
                     <div class="flex items-center gap-3">
                         <Icon class="text-2xl" icon=ic:baseline-discord></Icon>
                         <p>Sign in with Discord</p>

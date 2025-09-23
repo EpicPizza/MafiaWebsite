@@ -16,12 +16,12 @@ export function firebaseClient() {
 
     if (app == undefined) {
         const firebaseConfig = {
-            apiKey: "AIzaSyCxffEECf9KUcaYj-8Zk8WMAaQwxZj2src",
-            authDomain: "mafia-bot-dev-a30a9.firebaseapp.com",
-            projectId: "mafia-bot-dev-a30a9",
-            storageBucket: "mafia-bot-dev-a30a9.firebasestorage.app",
-            messagingSenderId: "826904353477",
-            appId: "1:826904353477:web:9d5a9bac30c97fbb15aeac"
+          apiKey: "AIzaSyBdcjtuQcsVp6dpEgR84IFlqmtrm4rNVr8",
+          authDomain: "mafia-bot-ucsc.firebaseapp.com",
+          projectId: "mafia-bot-ucsc",
+          storageBucket: "mafia-bot-ucsc.firebasestorage.app",
+          messagingSenderId: "243263308170",
+          appId: "1:243263308170:web:b1e6ef3b7b2734010f0873"
         };
 
       app = initializeApp(firebaseConfig);
