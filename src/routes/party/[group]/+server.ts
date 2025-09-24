@@ -49,8 +49,6 @@ export async function PATCH({ request, params, cookies }) {
     const group = await getGroup(params.group);
     if(group == undefined) throw error(404);
 
-    if(group.state != 312) throw error(400, "Game started.");
-
     if(group.players.find(player => player.id == session.username)) return json({ joined: true });
 
     const db = firebaseAdmin.getFirestore();
