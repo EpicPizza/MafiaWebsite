@@ -92,7 +92,7 @@
             method: "POST",
             body: JSON.stringify({
                 action: "message",
-                id: me?.id ?? "---",
+                id: me?.message ?? "---",
             })
         });
         
@@ -132,6 +132,8 @@
         role.show = false;
         role.received = true;
     }
+
+    let debug = false;
 </script>
 
 <div class="bg-zinc-100 dark:bg-zinc-900 w-full h-[100dvh] p-4">
@@ -182,7 +184,7 @@
         {/if}
     {:else if party.state == 385}
         {#if showMessage}
-            <button on:click={() => { showMessage = false; }} class="bg-zinc-200 dark:bg-zinc-800 p-4 rounded-md w-full h-full flex items-center justify-around">
+            <button on:click={() => { showMessage = false; }} class="bg-zinc-200 dark:bg-zinc-800 p-4 rounded-md w-full h-full flex items-center justify-around overflow-y-auto">
                 <div class="flex flex-col gap-3 items-center">
                     <Icon class="text-8xl mb-2" icon=material-symbols:disabled-visible></Icon>
                     <p class="text-4xl font-bold text-center">{role.name}</p>
@@ -209,4 +211,9 @@
             </div>
         </div>
     {/if}
+</div>
+
+<div class="w-full px-8 py-4 bg-black text-white text-sm italic flex justify-between">
+    <p>You are {data.id}.</p>
+    <p>State {party?.state}</p>
 </div>

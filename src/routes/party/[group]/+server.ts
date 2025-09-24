@@ -16,13 +16,13 @@ export async function POST({ request, params, cookies }) {
     const playerRequest = await request.json() as PlayerRequest;
 
     if(playerRequest.action == "role") {
-        const role = group.encrypted.roles.find(role => role.id = session.username);
+        const role = group.encrypted.roles.find(role => role.id == session.username);
 
         if(role == undefined) throw error(404);
 
         return json(role);
     } else if(playerRequest.action == "message") {
-        const message = group.encrypted.messages.find(message => message.id = playerRequest.id);
+        const message = group.encrypted.messages.find(message => message.id == playerRequest.id);
 
         if(message == undefined) throw error(404);
         if(message.for != session.username) throw error(400);

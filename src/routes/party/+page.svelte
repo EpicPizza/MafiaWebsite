@@ -21,13 +21,19 @@
 </script>
 
 <Background>
-    <div class="p-8 bg-white dark:bg-zinc-800 h-full border-border-light dark:border-border-dark max-w-[40rem] w-[calc(100vw-2rem)] max-h-[calc(100svh-2rem)] overflow-auto border rounded-2xl">
+    <div class="p-8 bg-white dark:bg-zinc-800 h-full border-border-light dark:border-border-dark {data.username == null ? "max-w-[20rem]" : "max-w-[30rem]"} w-[calc(100vw-2rem)] max-h-[calc(100svh-2rem)] overflow-auto border rounded-2xl">
         {#if data.username == null}
-            <div class="flex justify-around">
-                <a href="/party/signin" class="px-4 py-3 bg-black text-white rounded-md">
+            <div class="flex justify-around flex-col gap-3">
+                <a href="/party/signin" class="px-4 py-3 bg-black text-white rounded-md flex justify-around">
                     <div class="flex items-center gap-3">
                         <Icon class="text-2xl" icon=ic:baseline-discord></Icon>
                         <p>Sign in with Discord</p>
+                    </div>
+                </a>
+                <a href="/party/username" class="px-4 py-3 bg-white text-black rounded-md flex justify-around">
+                    <div class="flex items-center gap-3">
+                        <Icon class="text-2xl" icon=ic:baseline-login></Icon>
+                        <p>Sign in without Discord</p>
                     </div>
                 </a>
             </div>
