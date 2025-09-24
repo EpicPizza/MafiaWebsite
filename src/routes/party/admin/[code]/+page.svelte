@@ -318,7 +318,7 @@
             {#each data.encrypted.roles as player}
                 <div class="px-4 py-3 rounded-lg h-44 bg-zinc-900 w-full flex items-center justify-around">
                     <div class="text-center w-full">
-                        <p class="text-3xl font-bold mb-3">{player.id} - {player ? player.name : "?"}</p>
+                        <p class="text-3xl font-bold mb-3">{player.id} - {player ? player.name : "?"} ({player.type})</p>
                         <textarea on:change={() => { edited = true; }} placeholder="Message" bind:value={player.message} class="px-3 py-2 mt-4 bg-zinc-800 rounded-md w-full min-h-12" />
                     </div>
                 </div>    
