@@ -1,6 +1,10 @@
 <script lang=ts>
     import { invalidateAll } from "$app/navigation";
+    import Icon from "@iconify/svelte";
     import type { getOrder, Page } from './pages.server';
+    import { fade } from "svelte/transition";
+    import { getContext } from "svelte";
+    import type { Writable } from "svelte/store";
 
     export let pages: Page[];
     export let current: string;
@@ -35,6 +39,12 @@
 
         invalidateAll();
     }
+
+    let homeButton = false;
+    let commandButton = false;
+    let editButton = false;
+
+    const mode = getContext('mode') as Writable<boolean>;
 </script>
 
 {#each pages.filter(page => page.hide != true).sort((a, b) => a.order - b.order) as page}
@@ -70,10 +80,33 @@
             Add
         </button>
     {:else} 
-        <a class="mb-2 text-sm opacity-50" href="/">Go Home</a>
+        {#if homeButton || commandButton || editButton }
+            <div transition:fade={{ duration: 100 }} class="bg-black text-white dark:bg-white dark:text-black rounded-md w-[calc(100%-0.75rem)] h-10 mb-2 -mt-12 font-bold tracking-tight flex items-center text-base justify-around">
+                {#if homeButton}
+                    Home
+                {:else if commandButton}
+                    Slash/Text Mode
+                {:else}
+                    Edit
+                {/if}
+            </div>
+        {/if}
 
-        <a data-sveltekit-preload-data={false} href="/docs/register?route={current}" class="w-36 h-12 flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark">
-            Edit
-        </a>
+
+        <div class="flex items-center gap-2">
+            <a on:mouseenter={() => { homeButton = true; }} on:mouseleave={() => { homeButton = false; }} on:touchstart={() => { homeButton = true; }} on:touchend={() => { homeButton = false; }} href="/" class="w-11 h-11 flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark">
+                <Icon width=1.25rem icon=material-symbols:home-outline></Icon>
+            </a>
+            <button on:click={() => { $mode = !$mode; }} on:mouseenter={() => { commandButton = true; }} on:mouseleave={() => { commandButton = false; }} on:touchstart={() => { commandButton = true; }} on:touchend={() => { commandButton = false; }} class="w-11 h-11  flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark text-lg">
+                {#if $mode}
+                    /
+                {:else}
+                    ?
+                {/if}
+            </button>
+            <a on:mouseenter={() => { editButton = true; }} on:mouseleave={() => { editButton = false; }} on:touchstart={() => { editButton = true; }} on:touchend={() => { editButton = false; }} data-sveltekit-preload-data={false} href="/docs/register?route={current}" class="w-11 h-11  flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark">
+                <Icon width=1.25rem icon=material-symbols:edit-outline></Icon>
+            </a>
+        </div>
     {/if}
 </div>

@@ -1,16 +1,51 @@
 <script lang=ts>
     import Background from "$lib/Builders/Background.svelte";
     import Icon from "@iconify/svelte";
-    import type { Page } from './pages.server';
 
     import { page } from "$app/stores";
     import Menu from "./Menu.svelte";
+    import { get, writable } from "svelte/store";
+    import { browser } from "$app/environment";
+    import { onMount, setContext } from "svelte";
 
     export let data;
 
     $: current = data.indicator;
 
     $: edit = $page.route.id?.includes("/edit");
+
+    function commandMode() {
+        const mode = writable(false);
+
+        function set(to: boolean) {
+            if(browser) {
+                localStorage.setItem("commandMode", to ? "true" : "false")
+            }
+
+            mode.set(to);
+        }
+
+        function inBrowser() {
+            const stored = localStorage.getItem("commandMode");
+
+            if(typeof stored == 'string') set(stored == "true" ? true : false);
+        }
+
+        return {
+            set,
+            subscribe: mode.subscribe,
+            update: mode.update,
+            inBrowser,
+        }
+    }
+
+    onMount(() => {
+        mode.inBrowser();
+    })
+
+    const mode = commandMode();
+
+    setContext("mode", mode);
 
     let open = false;
 </script>
