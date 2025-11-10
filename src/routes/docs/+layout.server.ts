@@ -12,10 +12,13 @@ export async function load({ params, route }) {
 
     const order = await getOrder();
 
+    const commands = ((await db.collection('commands').doc('help').get()).data()?.entries ?? {}) as { [key: string]: { type: string, name: string, slash?: string, text?: string, arguments: { name: string, description: string, type: 'slash' | 'text' }[], description: string, shorthand: string } };
+
     return {
         indicator: params.page,
         pages,
         order,
+        commands,
     }
 }
 
