@@ -31,20 +31,16 @@
     {@const command = commands["help-" + href.substring(1)]}
 
     {#if command}
-      <div class="rounded-lg dark:bg-zinc-900">
-        <div class="{href?.includes("+") ? "" : "-mt-6"} text-sm px-3 py-3 font-bold bg-zinc-200 dark:bg-zinc-800 border-2 border-border-light dark:border-border-dark rounded-lg">{$mode ? ('slash' in command ? command.slash : "No slash command version.") : ('text' in command ? command.text : "No text command version.")}</div>
+      {@const shorthand = $mode ? ('slash' in command ? command.slash : "No slash command version.") : ('text' in command ? command.text : "No text command version.")}
 
-        <div class="text-sm px-3 py-3 rounded-b-lg border-2 border-t-0 border-border-light dark:border-border-dark -mt-2 pt-4">
-          <p class="leading-normal">{command.description}</p>
+      <p class="leading-6"><span class="text-orange-800 inline-block dark:text-orange-300 font-bold ">{shorthand}</span> - {command.description}</p>
 
-          <div class="pl-2 mb-1 mt-1.5">
-            {#each command.arguments.filter(p => $mode ? p.type == 'slash' : p.type == 'text') as argument}
-              <p class="leading-normal"><span class="font-bold">{argument.name}</span> - {argument.description.replaceAll("*", "")}</p>
-            {:else}
-              <p class="leading-normal italic">No Arguments</p>
-            {/each}
-          </div>
-        </div>
+      <div class="pl-4 mt-2 dark:opacity-50 opacity-45 -mb-2 italic">
+        {#each command.arguments.filter(p => $mode ? p.type == 'slash' : p.type == 'text') as argument}
+          <p class="leading-normal"><span class="font-bold">{argument.name}</span> - {argument.description.replaceAll("*", "")}</p>
+        {:else}
+          <div class="h-0 w-full -mb-4"></div>
+        {/each}
       </div>
     {:else}
       Command not found.
