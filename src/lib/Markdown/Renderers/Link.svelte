@@ -33,7 +33,7 @@
     {#if command}
       {@const shorthand = $mode ? ('slash' in command ? command.slash : "No slash command version.") : ('text' in command ? command.text : "No text command version.")}
 
-      <p class="leading-6"><span class="text-orange-800 inline-block dark:text-orange-300 font-bold ">{shorthand}</span> - {command.description}</p>
+      <p class="leading-6 {command.arguments.filter(p => $mode ? p.type == 'slash' : p.type == 'text').length == 0 ? "pb-2" : ""}"><span class="{shorthand?.startsWith("No") ? "text-red-400 font-extrabold dark:font-bold dark:text-red-400" :  "text-orange-800 dark:text-orange-300"} font-bold ">{shorthand}</span> - {command.description.replaceAll("\n", " ")}</p>
 
       <div class="pl-4 mt-2 dark:opacity-50 opacity-45 -mb-2 italic">
         {#each command.arguments.filter(p => $mode ? p.type == 'slash' : p.type == 'text') as argument}
