@@ -73,7 +73,7 @@
 
             <div class="flex flex-col sm:flex-row gap-5 sm:items-center justify-between opacity-75 dark:opacity-100">
                 <p class="text-base opacity-80 flex items-center gap-2 italic">
-                    “mafia server with a side interest in robotics”
+                    #sendkabirtowar
                 </p>
                 <div class="opacity-80 flex gap-2">
                     <a aria-label="Discord" target="_blank" href="https://discord.com/invite/NPyexQ2ucU" class="text-2xl -mb-1.5">
