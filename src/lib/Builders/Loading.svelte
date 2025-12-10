@@ -1,5 +1,9 @@
 <script lang="ts">
-    export let clear = false;
+  interface Props {
+    clear?: boolean;
+  }
+
+  let { clear = false }: Props = $props();
   </script>
   
   <div

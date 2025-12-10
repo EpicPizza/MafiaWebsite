@@ -24,7 +24,11 @@
     Br,
   } from "./Renderers/index";
 
-  export let content: string;
+  interface Props {
+    content: string;
+  }
+
+  let { content }: Props = $props();
 
   const renderers = {
     heading: Heading,

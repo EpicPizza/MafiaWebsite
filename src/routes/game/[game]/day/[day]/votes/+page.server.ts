@@ -3,7 +3,7 @@ import { getGameByID, getUsers } from '$lib/users.server.js';
 import { error } from '@sveltejs/kit';
 
 export async function load({ params }) {
-    if(params.day == '0') throw error(400, "Day 0 Doesn't Exist");
+    if(params.day == '0') error(400, "Day 0 Doesn't Exist");
 
     const db = firebaseAdmin.getFirestore();
 

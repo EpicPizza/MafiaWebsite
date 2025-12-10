@@ -54,7 +54,7 @@
 
             <div class="flex flex-col sm:flex-row gap-5 sm:items-center justify-between opacity-75 dark:opacity-100">
                 <p class="text-base opacity-80 flex items-center gap-2 italic">
-                    “hmmmmm, is this website a clone of something?”
+                    #sendkabirtowar
                 </p>
             </div>
         </div>

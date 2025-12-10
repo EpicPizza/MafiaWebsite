@@ -13,9 +13,9 @@
 
     dnt.plugin(meridiem);
 
-    export let data;
-    let statsMessages = structuredClone(data.stats).filter(stat => stat.alive || !('alive' in stat));
-    let statsReactions = structuredClone(data.stats);
+  let { data } = $props();
+    let statsMessages = $state(structuredClone(data.stats).filter(stat => stat.alive || !('alive' in stat)));
+    let statsReactions = $state(structuredClone(data.stats));
 
     const xKeyMessages = 'messages';
     const yKeyMessages = 'words';
@@ -38,13 +38,13 @@
         d[yKeyReactions] = (new Set(reactions.map(reaction => reaction.message))).size;
     });
 
-    $: shownMessages = statsMessages.filter(point => point.show);
-    $: shownReactions = statsReactions.filter(point => point.show);
+    let shownMessages = $derived(statsMessages.filter(point => point.show));
+    let shownReactions = $derived(statsReactions.filter(point => point.show));
 
-    let sortingMessages = "-";
-    let typeMessages = "des";
-    let sortingReactions = "-";
-    let typeReactions = "des";
+    let sortingMessages = $state("-");
+    let typeMessages = $state("des");
+    let sortingReactions = $state("-");
+    let typeReactions = $state("des");
 
     function sortMessages(which: string) {
         if(which == sortingMessages) {
@@ -115,7 +115,7 @@
 
     sortReactions("reactions");
 
-    let reactionsOpen = false;
+    let reactionsOpen = $state(false);
 </script>
 
 <div class="p-8 bg-white dark:bg-zinc-800 h-full overflow-x-auto overflow-y-auto border-border-light dark:border-border-dark w-[40rem] max-w-[calc(100vw-2rem)] max-h-[calc(100svh-2rem)] border rounded-2xl">
@@ -131,7 +131,7 @@
                 <div class="w-1/5 pl-2 flex justify-between items-center">
                     Player
 
-                    <button on:click={() => { sortMessages("name"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
+                    <button onclick={() => { sortMessages("name"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
                         {#if sortingMessages != "name"}
                             <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
                         {:else if typeMessages == "des"}
@@ -144,7 +144,7 @@
                 <div class="w-1/5 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
                     Messages
 
-                    <button on:click={() => { sortMessages("messages"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
+                    <button onclick={() => { sortMessages("messages"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
                         {#if sortingMessages != "messages"}
                             <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
                         {:else if typeMessages == "des"}
@@ -157,7 +157,7 @@
                 <div class="w-1/5 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
                     Words
 
-                    <button on:click={() => { sortMessages("words"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
+                    <button onclick={() => { sortMessages("words"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
                         {#if sortingMessages != "words"}
                             <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
                         {:else if typeMessages == "des"}
@@ -170,7 +170,7 @@
                 <div class="w-1/5 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
                     WPM
                     
-                    <button on:click={() => { sortMessages("wpm"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
+                    <button onclick={() => { sortMessages("wpm"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
                         {#if sortingMessages != "wpm"}
                             <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
                         {:else if typeMessages == "des"}
@@ -183,7 +183,7 @@
                 <div class="w-1/5 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
                     Images
                     
-                    <button on:click={() => { sortMessages("images"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
+                    <button onclick={() => { sortMessages("images"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
                         {#if sortingMessages != "images"}
                             <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
                         {:else if typeMessages == "des"}
@@ -244,7 +244,7 @@
     </div>
     <div class="mt-8 flex gap-1 flex-wrap">
         {#each statsMessages as point}
-            <button on:click={() => { point.show = point.show ? false : true; }} class="p-1 px-2 {point.show ? "" : "opacity-25"} transition-all rounded-md text-sm bg-zinc-100 dark:bg-zinc-900">
+            <button onclick={() => { point.show = point.show ? false : true; }} class="p-1 px-2 {point.show ? "" : "opacity-25"} transition-all rounded-md text-sm bg-zinc-100 dark:bg-zinc-900">
                 {point.name}
             </button>
         {/each}
@@ -257,7 +257,7 @@
             <div class="flex items-center justify-between mb-3">
                 <p class="text-lg font-bold">Reactions Stats</p>
                 
-                <button on:click={() => { reactionsOpen = !reactionsOpen; }} class="w-7 h-7 bg-zinc-200 dark:bg-zinc-700 border-zinc-400 border dark:border-0 rounded-full flex items-center justify-around">
+                <button onclick={() => { reactionsOpen = !reactionsOpen; }} class="w-7 h-7 bg-zinc-200 dark:bg-zinc-700 border-zinc-400 border dark:border-0 rounded-full flex items-center justify-around">
                     {#if reactionsOpen}
                         <Icon scale=1rem icon=collapse_all></Icon>
                     {:else}
@@ -274,7 +274,7 @@
                                 <div class="w-1/4 pl-2 flex justify-between items-center">
                                     Player
 
-                                    <button on:click={() => { sortReactions("name"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
+                                    <button onclick={() => { sortReactions("name"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
                                         {#if sortingReactions != "name"}
                                             <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
                                         {:else if typeReactions == "des"}
@@ -287,7 +287,7 @@
                                 <div class="w-1/4 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
                                     Reactions
 
-                                    <button on:click={() => { sortReactions("reactions"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
+                                    <button onclick={() => { sortReactions("reactions"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
                                         {#if sortingReactions != "reactions"}
                                             <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
                                         {:else if typeReactions == "des"}
@@ -300,7 +300,7 @@
                                 <div class="w-1/4 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
                                     Messages
 
-                                    <button on:click={() => { sortReactions("messages"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
+                                    <button onclick={() => { sortReactions("messages"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
                                         {#if sortingReactions != "messages"}
                                             <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
                                         {:else if typeReactions == "des"}
@@ -313,7 +313,7 @@
                                 <div class="w-1/4 pl-2 border-l border-zinc-500 dark:border-border-dark flex justify-between items-center">
                                     RPM
                                     
-                                    <button on:click={() => { sortReactions("rpm"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
+                                    <button onclick={() => { sortReactions("rpm"); }} class="h-5 w-5 bg-white/20 rounded-sm flex items-center justify-around mr-2 relative">
                                         {#if sortingReactions != "rpm"}
                                             <Icon class="absolute" scale=1rem icon=check_indeterminate_small></Icon>
                                         {:else if typeReactions == "des"}
@@ -371,7 +371,7 @@
                     </div>
                     <div class="mt-8 flex gap-1 flex-wrap pb-4">
                         {#each statsReactions as point}
-                            <button on:click={() => { point.show = point.show ? false : true; }} class="p-1 px-2 {point.show ? "" : "opacity-25"} transition-all rounded-md text-sm bg-zinc-100 dark:bg-zinc-900">
+                            <button onclick={() => { point.show = point.show ? false : true; }} class="p-1 px-2 {point.show ? "" : "opacity-25"} transition-all rounded-md text-sm bg-zinc-100 dark:bg-zinc-900">
                                 {point.name}
                             </button>
                         {/each}

@@ -23,6 +23,6 @@ export async function GET({ locals }) {
         code_challenge_method: CodeChallengeMethod.S256,
     });
 
-    throw redirect(307, authorizeUrl);
+    redirect(307, authorizeUrl);
     
 }

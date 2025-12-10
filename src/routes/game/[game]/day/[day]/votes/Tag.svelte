@@ -6,7 +6,11 @@
         pfp: string,
     }
 
-    export let tag: Tag;
+    interface Props {
+        tag: Tag;
+    }
+
+    let { tag }: Props = $props();
 </script>
 
 <div class="flex items-center gap-1.5">

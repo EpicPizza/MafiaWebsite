@@ -1,3 +1,11 @@
+<script lang="ts">
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+
+  let { children }: Props = $props();
+</script>
+
 <blockquote class="w-fit">
-  <slot />
+  {@render children?.()}
 </blockquote>

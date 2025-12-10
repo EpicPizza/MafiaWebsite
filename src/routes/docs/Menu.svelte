@@ -6,9 +6,13 @@
     import { getContext } from "svelte";
     import type { Writable } from "svelte/store";
 
-    export let pages: Page[];
-    export let current: string;
-    export let edit: boolean = false;
+    interface Props {
+        pages: Page[];
+        current: string;
+        edit?: boolean;
+    }
+
+    let { pages, current, edit = false }: Props = $props();
 
     function findParent(page: Page | undefined): Page | undefined {
         if(page == undefined) return undefined;
@@ -40,9 +44,9 @@
         invalidateAll();
     }
 
-    let homeButton = false;
-    let commandButton = false;
-    let editButton = false;
+    let homeButton = $state(false);
+    let commandButton = $state(false);
+    let editButton = $state(false);
 
     const mode = getContext('mode') as Writable<boolean>;
 </script>
@@ -76,11 +80,11 @@
     {#if edit}
         <a class="mb-2 text-sm opacity-50" href="/docs/{current}">Leave Edit Mode</a>
 
-        <button on:click={() => { addPage(); }} class="w-36 h-12 flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark">
+        <button onclick={() => { addPage(); }} class="w-36 h-12 flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark">
             Add
         </button>
     {:else} 
-        {#if homeButton || commandButton || editButton }
+        {#if homeButton || commandButton || editButton}
             <div transition:fade={{ duration: 100 }} class="bg-black text-white dark:bg-white dark:text-black rounded-md w-[calc(100%-0.75rem)] h-10 mb-2 -mt-12 font-bold tracking-tight flex items-center text-base justify-around">
                 {#if homeButton}
                     Home
@@ -94,17 +98,17 @@
 
 
         <div class="flex items-center gap-2">
-            <a on:mouseenter={() => { homeButton = true; }} on:mouseleave={() => { homeButton = false; }} on:touchstart={() => { homeButton = true; }} on:touchend={() => { homeButton = false; }} href="/" class="w-11 h-11 flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark">
+            <a onmouseenter={() => { homeButton = true; }} onmouseleave={() => { homeButton = false; }} ontouchstart={() => { homeButton = true; }} ontouchend={() => { homeButton = false; }} href="/" class="w-11 h-11 flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark">
                 <Icon width=1.25rem icon=material-symbols:home-outline></Icon>
             </a>
-            <button on:click={() => { $mode = !$mode; }} on:mouseenter={() => { commandButton = true; }} on:mouseleave={() => { commandButton = false; }} on:touchstart={() => { commandButton = true; }} on:touchend={() => { commandButton = false; }} class="w-11 h-11  flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark text-lg">
+            <button onclick={() => { $mode = !$mode; }} onmouseenter={() => { commandButton = true; }} onmouseleave={() => { commandButton = false; }} ontouchstart={() => { commandButton = true; }} ontouchend={() => { commandButton = false; }} class="w-11 h-11  flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark text-lg">
                 {#if $mode}
                     /
                 {:else}
                     ?
                 {/if}
             </button>
-            <a on:mouseenter={() => { editButton = true; }} on:mouseleave={() => { editButton = false; }} on:touchstart={() => { editButton = true; }} on:touchend={() => { editButton = false; }} data-sveltekit-preload-data={false} href="/docs/register?route={current}" class="w-11 h-11  flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark">
+            <a onmouseenter={() => { editButton = true; }} onmouseleave={() => { editButton = false; }} ontouchstart={() => { editButton = true; }} ontouchend={() => { editButton = false; }} data-sveltekit-preload-data={false} href="/docs/register?route={current}" class="w-11 h-11  flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark">
                 <Icon width=1.25rem icon=material-symbols:edit-outline></Icon>
             </a>
         </div>

@@ -1,4 +1,6 @@
 <script lang=ts>
+   import { run } from 'svelte/legacy';
+
     import Line from "$lib/Builders/Line.svelte";
     import Input from "$lib/Input.svelte";
     import Markdown from "$lib/Markdown/Markdown.svelte";
@@ -7,21 +9,21 @@
     import type { Page } from '../../pages.server';
     import { goto, invalidateAll } from "$app/navigation";
 
-    export let data;
+   let { data = $bindable() } = $props();
 
-    let tab = "edit";
+    let tab = $state("edit");
 
-    let page: Page | undefined = undefined;
-    let unedited: Page | undefined = undefined;
+    let page: Page | undefined = $state(undefined);
+    let unedited: Page | undefined = $state(undefined);
 
-    $: {
+    run(() => {
         if(unedited?.route != data.page) {
             page = data.pages.find(page => data.page == page.route);
-            unedited = structuredClone(page);
+            unedited = JSON.parse(JSON.stringify(page));
         }
-    }
+    });
 
-    $: save = JSON.stringify(unedited) != JSON.stringify(page);
+    let save = $derived(JSON.stringify(unedited) != JSON.stringify(page));
 
     async function savePage() {
         if(page == undefined) return;
@@ -129,12 +131,12 @@
    {#if page != undefined}
          <div class="flex items-center justify-between">
             <h1 class="flex items-center gap-1.5 font-bold text-xl">
-                <Icon width=1.25rem icon=material-symbols:{page.icon}></Icon>
+                <Icon width=1.25rem icon="material-symbols:{page.icon}"></Icon>
                 {page.title}
             </h1>
 
             <div class="mr-10 md:mr-0">   
-                <button disabled={save == false} on:click={() => { savePage(); }}  class="w-full transition-all px-3 text-sm py-1 flex items-center justify-around font-bold rounded-lg border-2 { save ? "bg-teal-200 dark:bg-teal-800 border-teal-400" : "bg-white opacity-50 dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
+                <button disabled={save == false} onclick={() => { savePage(); }}  class="w-full transition-all px-3 text-sm py-1 flex items-center justify-around font-bold rounded-lg border-2 { save ? "bg-teal-200 dark:bg-teal-800 border-teal-400" : "bg-white opacity-50 dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
                     Save
                 </button>
             </div>
@@ -143,22 +145,22 @@
         <Line class="mb-4 mt-2"></Line>
 
         <div class="flex gap-2.5">
-            <button on:click={() => { tab = "edit"; }}  class="w-full h-12 flex items-center justify-around font-bold rounded-full border-2 {tab == "edit" ? "bg-teal-200 dark:bg-teal-800 border-teal-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
+            <button onclick={() => { tab = "edit"; }}  class="w-full h-12 flex items-center justify-around font-bold rounded-full border-2 {tab == "edit" ? "bg-teal-200 dark:bg-teal-800 border-teal-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
                 Edit
             </button>
-            <button on:click={() => { tab = "view"; }} class="w-full h-12 flex items-center justify-around font-bold rounded-full border-2 {tab == "view" ? "bg-teal-200 dark:bg-teal-800 border-teal-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
+            <button onclick={() => { tab = "view"; }} class="w-full h-12 flex items-center justify-around font-bold rounded-full border-2 {tab == "view" ? "bg-teal-200 dark:bg-teal-800 border-teal-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
                 View
             </button>
-            <button on:click={() => { tab = "sub"; }} class="w-full h-12 flex items-center justify-around font-bold rounded-full border-2 {tab == "sub" ? "bg-teal-200 dark:bg-teal-800 border-teal-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
+            <button onclick={() => { tab = "sub"; }} class="w-full h-12 flex items-center justify-around font-bold rounded-full border-2 {tab == "sub" ? "bg-teal-200 dark:bg-teal-800 border-teal-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
                 Subpages
             </button>
-            <button on:click={() => { tab = "other"; }} class="w-full h-12 flex items-center justify-around font-bold rounded-full border-2 {tab == "other" ? "bg-teal-200 dark:bg-teal-800 border-teal-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
+            <button onclick={() => { tab = "other"; }} class="w-full h-12 flex items-center justify-around font-bold rounded-full border-2 {tab == "other" ? "bg-teal-200 dark:bg-teal-800 border-teal-400" : "bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark"}">
                 Settings
             </button>
         </div>
 
         {#if tab == "edit"}
-            <textarea bind:value={page.content} class="dark:bg-zinc-900 bg-zinc-200 w-full min-h-[100rem] max-w-full min-w-full p-4 rounded-lg mt-4"/>
+            <textarea bind:value={page.content} class="dark:bg-zinc-900 bg-zinc-200 w-full min-h-[100rem] max-w-full min-w-full p-4 rounded-lg mt-4"></textarea>
         {:else if tab == "view"}
             <div class="dark:bg-zinc-900 bg-zinc-200 p-4 rounded-lg mt-4">
                 <Markdown content={page.content}></Markdown>
@@ -184,7 +186,7 @@
                         <p class="text-red-500 font-bold pt-2">This page has no subpages.</p>
                     {/each}
                     
-                    <button on:click={() => { addSubpage(); }} class="w-full h-12 mt-8 flex items-center justify-around font-bold rounded-full border-2 bg-teal-200 dark:bg-teal-800 border-teal-400">
+                    <button onclick={() => { addSubpage(); }} class="w-full h-12 mt-8 flex items-center justify-around font-bold rounded-full border-2 bg-teal-200 dark:bg-teal-800 border-teal-400">
                         Add Subpage
                     </button>
                 {:else}
@@ -207,10 +209,10 @@
                     <h1 class="text-xl mb-2 font-bold">Order</h1>
 
                     <div class="flex gap-2 mb-6">
-                        <button on:click={() => { reorder(page?.id ?? "---", "up"); }} disabled={page.order == data.order.top} class="disabled:opacity-25 w-full h-12 mt-2 flex items-center justify-around font-bold rounded-full border-2 bg-zinc-200 dark:bg-zinc-800 border-zinc-400">
+                        <button onclick={() => { reorder(page?.id ?? "---", "up"); }} disabled={page.order == data.order.top} class="disabled:opacity-25 w-full h-12 mt-2 flex items-center justify-around font-bold rounded-full border-2 bg-zinc-200 dark:bg-zinc-800 border-zinc-400">
                             <Icon width=1.5rem icon=material-symbols:keyboard-double-arrow-up></Icon>
                         </button>
-                        <button on:click={() => { reorder(page?.id ?? "---", "down"); }}  disabled={page.order == data.order.bottom} class="disabled:opacity-25 w-full h-12 mt-2 flex items-center justify-around font-bold rounded-full border-2 bg-zinc-200 dark:bg-zinc-800 border-zinc-400">
+                        <button onclick={() => { reorder(page?.id ?? "---", "down"); }}  disabled={page.order == data.order.bottom} class="disabled:opacity-25 w-full h-12 mt-2 flex items-center justify-around font-bold rounded-full border-2 bg-zinc-200 dark:bg-zinc-800 border-zinc-400">
                             <Icon width=1.5rem icon=material-symbols:keyboard-double-arrow-down></Icon>
                         </button>
                     </div>
@@ -227,7 +229,7 @@
 
                 <h1 class="text-xl mb-4 font-bold">Danger</h1>
 
-                <button disabled={page.route == "overview"} on:click={() => { deletePage(); }} class="w-full disabled:opacity-25 h-12 mt-4 flex items-center justify-around font-bold rounded-full border-2 bg-red-200 dark:bg-red-800 border-red-400">
+                <button disabled={page.route == "overview"} onclick={() => { deletePage(); }} class="w-full disabled:opacity-25 h-12 mt-4 flex items-center justify-around font-bold rounded-full border-2 bg-red-200 dark:bg-red-800 border-red-400">
                     Delete
                 </button>
             </div>

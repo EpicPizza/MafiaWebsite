@@ -4,19 +4,32 @@
     import Icon from "./Icon.svelte";
     import ImageScatter from "./ImageScatter.svelte";
 
+    
+  interface Props {
     // Props for customizing the background
-    export let enableScatter: boolean = false;
-    export let scatterImages: string[] = [];
-    export let scatterMinImageSize: number = 60;
-    export let scatterMaxImageSize: number = 120;
-    export let scatterPadding: number = 30;
+    enableScatter?: boolean;
+    scatterImages?: string[];
+    scatterMinImageSize?: number;
+    scatterMaxImageSize?: number;
+    scatterPadding?: number;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    enableScatter = false,
+    scatterImages = [],
+    scatterMinImageSize = 60,
+    scatterMaxImageSize = 120,
+    scatterPadding = 30,
+    children
+  }: Props = $props();
 
     let bottom = "1rem";
     let offset = 0;
 
-    let dark = false;
-    let windowWidth = -1;
-    let windowHeight = -1;
+    let dark = $state(false);
+    let windowWidth = $state(-1);
+    let windowHeight = $state(-1);
 
     // Default background images (used if scatterImages is empty)
     const defaultBackgroundImages = [
@@ -33,7 +46,7 @@
     ];
 
     // Use provided images or fall back to defaults
-    $: backgroundImages = scatterImages.length > 0 ? scatterImages : defaultBackgroundImages;
+    let backgroundImages = $derived(scatterImages.length > 0 ? scatterImages : defaultBackgroundImages);
 
     onMount(() => {
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -71,11 +84,11 @@
       style="min-height: calc(100svh - 2rem);"
       class="flex flex-col items-center w-full relative z-10"
     >
-      <slot />
+      {@render children?.()}
     </div>
     {#if ( $page.url.pathname.startsWith('/account') && !$page.url.pathname.includes("delete") )}
       <button
-        on:click={() => {
+        onclick={() => {
           history.back();
         }}
         style="top: {88 + offset}px;"

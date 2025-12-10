@@ -1,6 +1,11 @@
-<script>
+<script lang="ts">
     import Background from "$lib/Builders/Background.svelte";
   import "../app.css";
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+
+  let { children }: Props = $props();
 </script>
 
 <svelte:head>
@@ -141,4 +146,4 @@
   }
 </style>
 
-<slot></slot>
+{@render children?.()}

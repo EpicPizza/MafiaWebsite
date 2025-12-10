@@ -14,7 +14,7 @@ export async function getSession(session: string | undefined, skip: boolean = fa
         if(skip) {
             return undefined;
         } else {
-            throw error(401);
+            error(401);
         }
     }
 
@@ -24,7 +24,7 @@ export async function getSession(session: string | undefined, skip: boolean = fa
         if(skip) {
             return undefined;
         } else {
-            throw error(401);
+            error(401);
         }
     }
 
@@ -38,11 +38,11 @@ export async function getSession(session: string | undefined, skip: boolean = fa
         if(skip) {
             return undefined;
         } else {
-            throw error(403);
+            error(403);
         }
     }
 
-    if(new Date().valueOf() - user.timestamp > (1000 * 60 * 60 * 254 * 7)) throw redirect(307, "/docs/register");
+    if(new Date().valueOf() - user.timestamp > (1000 * 60 * 60 * 254 * 7)) redirect(307, "/docs/register");
 
     return user;
 }

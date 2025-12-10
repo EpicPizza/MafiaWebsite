@@ -1,12 +1,17 @@
 <script lang="ts">
-  export let ordered: Boolean;
-  export let start: number | null | undefined;
+  interface Props {
+    ordered: Boolean;
+    start: number | null | undefined;
+    children?: import('svelte').Snippet;
+  }
+
+  let { ordered, start, children }: Props = $props();
 </script>
 
 {#if ordered}
-  <ol {start} class="mb-4"><slot /></ol>
+  <ol {start} class="mb-4">{@render children?.()}</ol>
 {:else}
-  <ul class="mb-4"><slot /></ul>
+  <ul class="mb-4">{@render children?.()}</ul>
 {/if}
 
 <style lang="postcss">
