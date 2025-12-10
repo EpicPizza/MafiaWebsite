@@ -1,16 +1,19 @@
 {
   "hosting": {
-    "public": "build/public",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "public": "functions/build/client",
+		"ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "**",
-        "function": "ssrServer"
+        "function": {
+					"functionId": "ssrServer",
+					"region": "us-west2"
+				}
       }
     ]
   },
   "functions": {
-    "source": "build/functions"
+    "source": "functions"
   },
   "emulators": {
     "hosting": {

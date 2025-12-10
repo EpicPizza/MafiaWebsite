@@ -12,21 +12,15 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@master
       - name: Install Dependencies
-        run: npm install
+        run: npm install --force
       - name: Build
         run: npm run build
-      - name: Archive Production Function Artifact
+      - name: Archive Production Build Artifact
         uses: actions/upload-artifact@master
         with:
           name: ssrServer
           path: |
-            build/functions/ssrServer
-      - name: Archive Production Hosting Artifact
-        uses: actions/upload-artifact@master
-        with:
-          name: public
-          path: |
-            build/public
+            functions/build
   deploy:
     name: Deploy
     needs: build
@@ -35,22 +29,13 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@master
       - name: Install Dependencies
-        working-directory: ./build/functions
+        working-directory: ./functions
         run: npm install
       - name: Download Artifact
         uses: actions/download-artifact@master
         with:
-          name: public
-          path: build/public
-      - name: Download Artifact
-        uses: actions/download-artifact@master
-        with:
           name: ssrServer
-          path: build/functions/ssrServer
-      - name: Inspect downloaded files
-        run: |
-          echo "Listing contents of build..."
-          ls -R build/
+          path: functions/build
       - name: Set Firebase Project
         uses: w9jds/firebase-action@master
         with:
