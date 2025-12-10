@@ -8,11 +8,11 @@
     import { browser } from "$app/environment";
     import { onMount, setContext } from "svelte";
 
-    export let data;
+    let { data, children } = $props();
 
-    $: current = data.indicator;
+    let current = $derived(data.indicator);
 
-    $: edit = $page.route.id?.includes("/edit");
+    let edit = $derived($page.route.id?.includes("/edit"));
 
     function commandMode() {
         const mode = writable(false);
@@ -47,7 +47,7 @@
 
     setContext("mode", mode);
 
-    let open = false;
+    let open = $state(false);
 </script>
 
 <Background>
@@ -56,17 +56,17 @@
             <Menu {edit} current={current ?? "---"} pages={data.pages}></Menu>
         </div>
         <div class="z-[1]">
-            <slot></slot>
+            {@render children?.()}
         </div>
     </div>
 
     
 </Background>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 {#if open}
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div on:click={() => { open = false; }} class="absolute overflow-x-hidden top-4 left-4 flex overflow-y-auto max-h-[calc(100dvh-2rem)] flex-col gap-2 p-4 bg-zinc-100 dark:bg-zinc-900 border min-w-[11rem] max-w-[10rem] z-20 border-border-light dark:border-border-dark rounded-2xl">
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <div onclick={() => { open = false; }} class="absolute overflow-x-hidden top-4 left-4 flex overflow-y-auto max-h-[calc(100dvh-2rem)] flex-col gap-2 p-4 bg-zinc-100 dark:bg-zinc-900 border min-w-[11rem] max-w-[10rem] z-20 border-border-light dark:border-border-dark rounded-2xl">
         <Menu {edit} current={current ?? "---"} pages={data.pages}></Menu>
     </div>
 {/if}
@@ -77,6 +77,6 @@
     </div>
 {/if}
 
-<button on:click={() => { open = !open; }} class="md:hidden z-20 bg-zinc-200 dark:bg-zinc-900 w-10 h-10 top-8 right-8 absolute rounded-lg border border-border-light dark:border-border-dark flex items-center justify-around">
+<button onclick={() => { open = !open; }} class="md:hidden z-20 bg-zinc-200 dark:bg-zinc-900 w-10 h-10 top-8 right-8 absolute rounded-lg border border-border-light dark:border-border-dark flex items-center justify-around">
     <Icon width=1.5rem icon="material-symbols:{open ? "hide" : "menu"}"></Icon>
 </button>

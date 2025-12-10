@@ -1,7 +1,11 @@
 <script lang="ts">
   import Code from "./Code.svelte";
 
-  export let text: string;
+  interface Props {
+    text: string;
+  }
+
+  let { text }: Props = $props();
 </script>
 
 <Code raw={text} />

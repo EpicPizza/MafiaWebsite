@@ -1,10 +1,14 @@
 <script lang="ts">
-    let style: string = "";
+  interface Props {
+    class?: string;
+  }
+
+  let { class: style = "" }: Props = $props();
   
-    export { style as class };
+    
   </script>
   
   <div
     class="border-border-light dark:border-border-dark border-t-[1px] w-full {style}"
-  />
+></div>
   

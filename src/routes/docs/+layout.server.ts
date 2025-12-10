@@ -7,7 +7,7 @@ export async function load({ params, route }) {
     const ref = db.collection('documents');
 
     const docs = (await ref.get()).docs;
-
+    
     const pages = docs.map(doc => ({ ...doc.data(), id: doc.ref.id } as Page));
 
     const order = await getOrder();

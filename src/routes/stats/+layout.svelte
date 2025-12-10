@@ -1,7 +1,12 @@
-<script>
+<script lang="ts">
     import Background from "$lib/Builders/Background.svelte";
+    interface Props {
+        children?: import('svelte').Snippet;
+    }
+
+    let { children }: Props = $props();
 
 </script>
 <Background>
-    <slot></slot>
+    {@render children?.()}
 </Background>

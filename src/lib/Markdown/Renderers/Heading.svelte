@@ -1,17 +1,27 @@
 <script lang="ts">
-  export let depth: number;
-  export let raw: string;
-  export let text: string;
+  interface Props {
+    depth: number;
+    raw: string;
+    text: string;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    depth,
+    raw,
+    text,
+    children
+  }: Props = $props();
 
   text; //to clear annoying warning
 </script>
 
 {#if depth === 1}
-  <h1><slot /></h1>
+  <h1>{@render children?.()}</h1>
 {:else if depth === 2}
-  <h2><slot /></h2>
+  <h2>{@render children?.()}</h2>
 {:else if depth === 3}
-  <h3><slot /></h3>
+  <h3>{@render children?.()}</h3>
 {:else}
   {raw}
 {/if}

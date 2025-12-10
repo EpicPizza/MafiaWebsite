@@ -1,14 +1,28 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	
-	export let images: string[] = [];
-	export let width: number = 800;
-	export let height: number = 600;
-	export let minImageSize: number = 60;
-	export let maxImageSize: number = 120;
-	export let padding: number = 20;
-	export let cacheKey: string = 'default'; // Unique key for this scatter instance
+	interface Props {
+		images?: string[];
+		width?: number;
+		height?: number;
+		minImageSize?: number;
+		maxImageSize?: number;
+		padding?: number;
+		cacheKey?: string; // Unique key for this scatter instance
+	}
+
+	let {
+		images = [],
+		width = 800,
+		height = 600,
+		minImageSize = 60,
+		maxImageSize = 120,
+		padding = 20,
+		cacheKey = 'default'
+	}: Props = $props();
 
 	interface ScatteredImage {
 		src: string;
@@ -31,9 +45,9 @@
 		timestamp: number;
 	}
 
-	let scatteredImages: ScatteredImage[] = [];
-	let previousWidth = width;
-	let previousHeight = height;
+	let scatteredImages: ScatteredImage[] = $state([]);
+	let previousWidth = $state(width);
+	let previousHeight = $state(height);
 	let resizeTimeout: ReturnType<typeof setTimeout>;
 	let imageDimensionsCache = new Map<string, { width: number; height: number }>();
 
@@ -363,19 +377,21 @@
 	}
 
 	// Re-scatter when dimensions change (debounced) - but only if not loading from cache
-	$: if (browser && (width !== previousWidth || height !== previousHeight)) {
-		const cached = browser ? loadFromCache() : null;
-		const shouldUseCache = cached && isCacheValid(cached);
-		
-		previousWidth = width;
-		previousHeight = height;
-		
-		if (!shouldUseCache) {
-			debouncedResize();
+	run(() => {
+		if (browser && (width !== previousWidth || height !== previousHeight)) {
+			const cached = browser ? loadFromCache() : null;
+			const shouldUseCache = cached && isCacheValid(cached);
+			
+			previousWidth = width;
+			previousHeight = height;
+			
+			if (!shouldUseCache) {
+				debouncedResize();
+			}
 		}
-	}
+	});
 
-	let mounted = false;
+	let mounted = $state(false);
 
 	// Handle client-side mounting
 	onMount(() => {
@@ -383,9 +399,9 @@
 		mounted = true;
 	});
 
-	let initialized = false;
+	let initialized = $state(false);
 
-	$: {
+	run(() => {
 		if(!initialized && mounted && width != -1 && height != -1) {
 			initialized = true;
 
@@ -393,7 +409,7 @@
 				scatterImages();
 			}
 		}
-	}
+	});
 
 	// Function to re-scatter images manually
 	export function reshuffle() {

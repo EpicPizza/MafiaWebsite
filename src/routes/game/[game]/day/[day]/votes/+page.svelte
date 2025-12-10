@@ -1,4 +1,6 @@
 <script lang=ts>
+    import { run } from 'svelte/legacy';
+
     import Line from '$lib/Builders/Line.svelte';
     import dnt from 'date-and-time';
     import meridiem from 'date-and-time/plugin/meridiem'
@@ -9,7 +11,7 @@
 
     dnt.plugin(meridiem);
 
-    export let data;
+    let { data } = $props();
 
     function getTag(nickname: string) {
         return data.tags.find(tag => tag.nickname == nickname) ?? { nickname: nickname, pfp: "/favicon.png", id: nickname, color: "#ffffff" } satisfies (typeof data)["tags"][0];
@@ -44,18 +46,17 @@
         forceVisible: true,
     });
 
-    $: if (!$comboOpen) {
-        $inputValue = $selected?.label ?? '';
-    }
+    run(() => {
+        if (!$comboOpen) {
+            $inputValue = $selected?.label ?? '';
+        }
+    });
 
-    $: searching = inputValue;
+    let searching = $derived(inputValue);
 
-    let type: 'votedFor' | 'person' = "votedFor";
+    let type: 'votedFor' | 'person' = $state("votedFor");
 
-    let logs: (typeof data)["logs"];
-    
-    $: {
-        logs = data.logs.filter((log) => { 
+    let logs: (typeof data)["logs"] = $derived(data.logs.filter((log) => { 
             if(log.type == 'reset') return true;
 
             if($selected == undefined) return true;
@@ -67,18 +68,17 @@
             } else {
                 return true;
             }
-        });
-    }
+        }));
+    
+    
 
-    let filteredNames: string[];
-
-    $: {
-        filteredNames = names.filter((name) => {
+    let filteredNames: string[] = $derived(names.filter((name) => {
             const normalizedInput = $inputValue.toLowerCase().trim();
 
             return name.toLowerCase().includes(normalizedInput);
-        })
-    }
+        }));
+
+    
 </script>
 
 <div class="p-8 pb-2 bg-white dark:bg-zinc-800 h-full border-border-light dark:border-border-dark max-w-[40rem] w-[calc(100vw-2rem)] max-h-[calc(100svh-2rem)] overflow-auto border rounded-2xl">
@@ -100,14 +100,14 @@
             <Icon scale=1.2rem class="ml-auto {$open ? "rotate-180" : ""} -mr-1" icon="arrow_drop_down"></Icon>
         </button>
         <div use:melt={$menu} class="bg-zinc-100 dark:bg-zinc-900 border-zinc-400 dark:border-zinc-600 border-2 w-[9.5rem] rounded-md py-1 z-50">
-            <button on:click={() => { type = "votedFor"; }} class="px-3 py-2 w-full flex items-center gap-1.5 hover:bg-black hover:bg-opacity-10 dark:hover:bg-white dark:hover:bg-opacity-10 transition-all" use:melt={$item}>
+            <button onclick={() => { type = "votedFor"; }} class="px-3 py-2 w-full flex items-center gap-1.5 hover:bg-black hover:bg-opacity-10 dark:hover:bg-white dark:hover:bg-opacity-10 transition-all" use:melt={$item}>
                 <Icon scale=1.2rem icon="keyboard_double_arrow_right"></Icon>
                 Voted for
                 {#if type == "votedFor"}
                     <Icon scale=1.2rem class="ml-auto -mr-1" icon="check"></Icon>
                 {/if}
             </button>
-            <button on:click={() => { type = "person"; }} class="px-3 py-2 w-full flex items-center gap-1.5 hover:bg-black hover:bg-opacity-10 dark:hover:bg-white dark:hover:bg-opacity-10 transition-all" use:melt={$item}>
+            <button onclick={() => { type = "person"; }} class="px-3 py-2 w-full flex items-center gap-1.5 hover:bg-black hover:bg-opacity-10 dark:hover:bg-white dark:hover:bg-opacity-10 transition-all" use:melt={$item}>
                 <Icon scale=1.2rem icon="person"></Icon>
                 Person
                 {#if type == "person"}
@@ -131,7 +131,7 @@
             </div>
         {/if}
         {#if $selected}
-            <button on:click={() => { $selected = undefined; $inputValue = ""; }} class="absolute top-1/2 -translate-y-1/2 right-1 p-2">
+            <button onclick={() => { $selected = undefined; $inputValue = ""; }} class="absolute top-1/2 -translate-y-1/2 right-1 p-2">
                 <Icon scale=1.2rem icon=close></Icon>
             </button>
         {/if}

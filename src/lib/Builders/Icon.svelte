@@ -1,13 +1,25 @@
 <script lang="ts">
-    export let icon: string;
-    export let scale: string | 0 = "1.5rem";
-    export let color: string = "inherit";
-    export let style: string = "";
-    export let rounded: boolean = false;
-    export let filled: boolean = false;
-    export let classStyle: string = "";
+  interface Props {
+    icon: string;
+    scale?: string | 0;
+    color?: string;
+    style?: string;
+    rounded?: boolean;
+    filled?: boolean;
+    class?: string;
+  }
+
+  let {
+    icon,
+    scale = "1.5rem",
+    color = "inherit",
+    style = "",
+    rounded = false,
+    filled = false,
+    class: classStyle = ""
+  }: Props = $props();
   
-    export { classStyle as class };
+    
   </script>
   
   <div

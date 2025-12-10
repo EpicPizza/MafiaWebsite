@@ -1,6 +1,7 @@
 <script lang="ts">
-  export let header: boolean;
-  export let align:
+  interface Props {
+    header: boolean;
+    align: 
     | "left"
     | "center"
     | "right"
@@ -8,16 +9,20 @@
     | "char"
     | null
     | undefined;
+    children?: import('svelte').Snippet;
+  }
+
+  let { header, align, children }: Props = $props();
 </script>
 
 {#if header}
   <th
     class="px-2 py-1 border-[1px] border-b-[3px] border-border-light dark:border-border-dark border-b-text-light dark:border-b-text-dark"
-    {align}><slot /></th
+    {align}>{@render children?.()}</th
   >
 {:else}
   <td
     class="px-2 py-2 border-[1px] border-border-light dark:border-border-dark"
-    {align}><slot /></td
+    {align}>{@render children?.()}</td
   >
 {/if}

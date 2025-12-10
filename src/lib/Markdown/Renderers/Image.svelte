@@ -1,7 +1,11 @@
 <script lang="ts">
-  export let href: string = "";
-  export let title: string | undefined = undefined;
-  export let text: string = "";
+  interface Props {
+    href?: string;
+    title?: string | undefined;
+    text?: string;
+  }
+
+  let { href = "", title = undefined, text = "" }: Props = $props();
 </script>
 
 <!--<img src={href} {title} alt={text}>-->

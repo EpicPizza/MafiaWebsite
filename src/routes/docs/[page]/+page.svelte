@@ -1,4 +1,6 @@
 <script lang=ts>
+   import { run } from 'svelte/legacy';
+
     import Line from "$lib/Builders/Line.svelte";
     import Input from "$lib/Input.svelte";
     import Markdown from "$lib/Markdown/Markdown.svelte";
@@ -7,20 +9,20 @@
    import type { Page } from '../pages.server';
     import { browser } from "$app/environment";
 
-    export let data;
+   let { data } = $props();
 
     let tab = "sub";
 
-    let page: Page | undefined = data.pages.find(page => data.page == page.route);
+    let page: Page | undefined = $derived(data.pages.find(page => data.page == page.route));
 
-    let pageElement: HTMLElement | undefined = undefined;
+    let pageElement: HTMLElement | undefined = $state(undefined);
 
-    $: {
+    run(() => {
         if(page?.route != data.page) {
             page = data.pages.find(page => data.page == page.route);
             if(pageElement) pageElement.scrollTo({ top: 0, behavior: "instant" });
         }
-    }
+    });
     
 </script>
 
@@ -34,7 +36,7 @@
    {#if page != undefined}
          <div class="flex items-center justify-between">
             <h1 class="flex items-center gap-1.5 font-bold text-xl">
-                <Icon width=1.25rem icon=material-symbols:{page.icon}></Icon>
+                <Icon width=1.25rem icon="material-symbols:{page.icon}"></Icon>
                 {page.title}
             </h1>
         </div>
