@@ -1,4 +1,4 @@
-import { INSTANCE } from "$env/static/private";
+import { env } from '$env/dynamic/private';
 import { firebaseAdmin } from "./Firebase/firebase.server";
 
 export async function getUser(id: string): Promise<User | undefined> {
@@ -48,7 +48,7 @@ export interface Game {
 export async function getGameByID(id: string) {
     const db = firebaseAdmin.getFirestore();
 
-    const ref = db.collection('instances').doc(INSTANCE).collection('settings').doc('game').collection('games').doc(id);
+    const ref = db.collection('instances').doc(env.INSTANCE).collection('settings').doc('game').collection('games').doc(id);
 
     const doc = (await ref.get());
 

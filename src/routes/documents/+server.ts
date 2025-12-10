@@ -2,10 +2,9 @@ import { firebaseAdmin } from '$lib/Firebase/firebase.server.js';
 import { error, text } from '@sveltejs/kit';
 import z from 'zod';
 import { getAllowed, getSession } from '../docs/users.server';
-import { DocumentData, FieldValue } from 'firebase-admin/firestore';
+import { type DocumentData, FieldValue } from 'firebase-admin/firestore';
 import { getOrder } from '../docs/pages.server';
-import { page } from '$app/stores';
-import { Page as PageEntry } from '../docs/pages.server';
+import type { Page as PageEntry } from '../docs/pages.server';
 
 export async function PATCH({ request, cookies }) {
     const users = await getAllowed();
