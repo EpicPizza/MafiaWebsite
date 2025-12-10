@@ -11,7 +11,7 @@ export async function PATCH({ request, cookies }) {
     const users = await getAllowed();
     const session = await getSession(cookies.get("__session"));
 
-    if(!session || !users.includes(session.username)) throw error(403);
+    if(!session || !users.includes(session.username)) error(403);
 
     const page = Page.parse(await request.json());
 
@@ -30,7 +30,7 @@ export async function DELETE({ request, cookies }) {
     const users = await getAllowed();
     const session = await getSession(cookies.get("__session"));
 
-    if(!session || !users.includes(session.username)) throw error(403);
+    if(!session || !users.includes(session.username)) error(403);
 
     const page = Delete.parse(await request.json());
 
@@ -53,7 +53,7 @@ export async function PUT({ request, cookies }) {
     const users = await getAllowed();
     const session = await getSession(cookies.get("__session"));
 
-    if(!session || !users.includes(session.username)) throw error(403);
+    if(!session || !users.includes(session.username)) error(403);
 
     const reorder = Reorder.parse(await request.json());
 
@@ -63,10 +63,10 @@ export async function PUT({ request, cookies }) {
 
     const page = (await db.collection('documents').doc(reorder.id).get()).data() as PageEntry;
 
-    if(page.order == -1) throw error(400);
+    if(page.order == -1) error(400);
 
-    if(ranges.top == page.order && reorder.type == 'up') throw error(400);
-    if(ranges.bottom == page.order && reorder.type == 'down') throw error(400);
+    if(ranges.top == page.order && reorder.type == 'up') error(400);
+    if(ranges.bottom == page.order && reorder.type == 'down') error(400);
 
     const query = db.collection('documents').where('order', '==', reorder.type == 'up' ? page.order - 1 : page.order + 1);
 
@@ -80,7 +80,7 @@ export async function POST({ request, cookies }) {
     const users = await getAllowed();
     const session = await getSession(cookies.get("__session"));
 
-    if(!session || !users.includes(session.username)) throw error(403);
+    if(!session || !users.includes(session.username)) error(403);
 
     const page = Page.parse(await request.json());
 

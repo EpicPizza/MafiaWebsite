@@ -5,7 +5,7 @@ export async function load({ params, cookies }) {
     const users = await getAllowed();
     const session = await getSession(cookies.get("__session"));
 
-    if(!session || !users.includes(session.username)) throw error(403);
+    if(!session || !users.includes(session.username)) error(403);
 
     return {
         page: params.page,

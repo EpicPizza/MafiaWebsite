@@ -8,7 +8,7 @@ export async function load({ params }) {
 
     const data = (await ref.get()).data();
 
-    if(data == undefined) throw error(404, "Stats graph not found.");
+    if(data == undefined) error(404, "Stats graph not found.");
 
     return data as { 
         stats: { 

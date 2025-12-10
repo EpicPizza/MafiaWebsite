@@ -10,14 +10,14 @@ export async function GET({ url, cookies }) {
     const state = url.searchParams.get("state");
 
     const session = cookies.get("__session");
-    if(session == undefined) throw error(401);
+    if(session == undefined) error(401);
     const cookie = JSON.parse(session);
-    if(!('codeVerifier' in cookie) || !('state' in cookie)) throw error(401);
+    if(!('codeVerifier' in cookie) || !('state' in cookie)) error(401);
 
     const storedState = cookie.state;
     const storedCodeVerifier = cookie.codeVerifier;
 
-    if (code === null || storedState === undefined || state !== storedState || storedCodeVerifier === undefined) throw error(400, "Invalid request.");
+    if (code === null || storedState === undefined || state !== storedState || storedCodeVerifier === undefined) error(400, "Invalid request.");
 
     const tokens = await discord.validateAuthorizationCode(code, storedCodeVerifier);
 
@@ -47,5 +47,5 @@ export async function GET({ url, cookies }) {
         maxAge: 60 * 60 * 24 * 7
     });
 
-    throw redirect(307, "/docs/overview/edit");
+    redirect(307, "/docs/overview/edit");
 }

@@ -7,7 +7,7 @@ export async function GET({ request, cookies, url }) {
     const users = await getAllowed();
     const session = await getSession(cookies.get("__session"), true);
 
-    if(session && users.includes(session.username)) throw redirect(307, `/docs/${url.searchParams.get("route")}/edit`);
+    if(session && users.includes(session.username)) redirect(307, `/docs/${url.searchParams.get("route")}/edit`);
 
     const discord = new arctic.Discord(env.CLIENT, env.SECRET, env.DOMAIN + "/docs/start");
 
@@ -26,5 +26,5 @@ export async function GET({ request, cookies, url }) {
 
     const redirectURL = discord.createAuthorizationURL(state, codeVerifier, ["identify"]);
 
-    throw redirect(307, redirectURL);
+    redirect(307, redirectURL);
 }
