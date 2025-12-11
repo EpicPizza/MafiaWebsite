@@ -108,7 +108,7 @@
                     ?
                 {/if}
             </button>
-            <a onmouseenter={() => { editButton = true; }} onmouseleave={() => { editButton = false; }} ontouchstart={() => { editButton = true; }} ontouchend={() => { editButton = false; }} data-sveltekit-preload-data={false} href="/docs/register?route={current}" class="w-11 h-11  flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark">
+            <a onmouseenter={() => { editButton = true; }} onmouseleave={() => { editButton = false; }} ontouchstart={() => { editButton = true; }} ontouchend={() => { editButton = false; }} data-sveltekit-preload-data={false} data-sveltekit-external href="/docs/register?route={current}" class="w-11 h-11  flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark">
                 <Icon width=1.25rem icon=material-symbols:edit-outline></Icon>
             </a>
         </div>
