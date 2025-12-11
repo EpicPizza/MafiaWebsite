@@ -30,9 +30,9 @@ app.use(express.static(join(__dirname, 'build', 'prerendered')));
 
 export const ssrServer = onRequest({ region: 'us-west2', concurrency: 8, memory: "1GiB" }, async (req, res) => {
 	// logger.info("Hello logs!", {structuredData: true});
-	if (prerendered.has(req.url)) {
-		return app(req, res);
-	}
+	// if (prerendered.has(req.url)) {
+	// 	return app(req, res);
+	// }
 
 	const server = new Server(manifest);
 	await server.init({ env: process.env });

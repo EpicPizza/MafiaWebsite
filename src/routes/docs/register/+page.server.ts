@@ -3,7 +3,7 @@ import { redirect } from "@sveltejs/kit";
 import * as arctic from "arctic";
 import { getAllowed, getSession } from "../users.server";
 
-export async function GET({ request, cookies, url }) {
+export async function load({ request, cookies, url }) {
     const users = await getAllowed();
     const session = await getSession(cookies.get("__session"), true);
 
