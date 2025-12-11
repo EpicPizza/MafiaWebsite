@@ -7,8 +7,8 @@
 </script>
 
 <svelte:head>
-    <meta property="og:title" content="FRC (BAG) Mafia" />
-    <meta property="og:description" content="The (not) official FRC mafia server with a side interest in robotics." />
+    <meta property="og:title" content="UCSC '29 Mafia" />
+    <meta property="og:description" content="Play mafia on the UCSC '29 discord server!" />
 </svelte:head>
 
 <Background>
@@ -54,7 +54,7 @@
 
             <div class="flex flex-col sm:flex-row gap-5 sm:items-center justify-between opacity-75 dark:opacity-100">
                 <p class="text-base opacity-80 flex items-center gap-2 italic">
-                    #sendkabirtowar
+                    we are not a cult
                 </p>
             </div>
         </div>
