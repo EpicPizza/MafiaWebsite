@@ -50,6 +50,7 @@ function getFirebaseAdmin() {
     const getFirestore = (): Firestore => {
         if(firestore == undefined) {
             firestore = getFirebaseFirestore(getFirebaseApp());
+            firestore.settings({ ignoreUndefinedProperties: true });
         }
 
         return firestore;

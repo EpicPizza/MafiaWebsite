@@ -1,3 +1,4 @@
+import { building } from "$app/environment";
 import { env } from "$env/dynamic/private";
 import { Client, Collection, GatewayIntentBits, Partials } from "discord.js";
 
@@ -16,7 +17,7 @@ const client = new Client({
     ],
 });
 
-client.login(env.TOKEN);
+if(!building) await client.login(env.TOKEN);
 
 const shutdown = () => {
     console.log('Destroying Discord client...');
