@@ -1,15 +1,14 @@
 import { env } from "$env/dynamic/private";
 import { redirect } from "@sveltejs/kit";
 import * as arctic from "arctic";
-import { getAllowed, getSession } from "../users.server";
+import { getAllowed } from "../users.server";
+import { safeParse } from "$lib/tools";
 
 export async function load({ request, cookies, url }) {
-    const users = await getAllowed();
-    const session = await getSession(cookies.get("__session"), true);
+    const session = safeParse(cookies.get("__session") ?? "-");
+    const redirectTo = url.searchParams.get("redirect") ?? "/";
 
-    if(session && users.includes(session.username)) redirect(307, `/docs/${url.searchParams.get("route")}/edit`);
-
-    const discord = new arctic.Discord(env.CLIENT, env.SECRET, env.DOMAIN + "/docs/start");
+    const discord = new arctic.Discord(env.CLIENT, env.SECRET, env.DOMAIN + "/session/start");
 
     const state = arctic.generateState();
     const codeVerifier = arctic.generateCodeVerifier();
@@ -17,6 +16,8 @@ export async function load({ request, cookies, url }) {
     cookies.set("__session", JSON.stringify({
         state: state,
         codeVerifier: codeVerifier,
+        redirectTo: redirectTo,
+        step: 0,
     }), {
         secure: true, // set to false in localhost
         path: "/",

@@ -5,6 +5,9 @@
     import { fade } from "svelte/transition";
     import { getContext } from "svelte";
     import type { Writable } from "svelte/store";
+    import { page } from "$app/state";
+    import User from "../User.svelte";
+    import type { Client } from "$lib/Firebase/firebase.svelte";
 
     interface Props {
         pages: Page[];
@@ -49,6 +52,8 @@
     let editButton = $state(false);
 
     const mode = getContext('mode') as Writable<boolean>;
+
+    const client = getContext("client") as Client;
 </script>
 
 {#each pages.filter(page => page.hide != true).sort((a, b) => a.order - b.order) as page}
@@ -76,13 +81,19 @@
     {/if}
 {/each}
 
-<div class="mt-auto pt-4 flex flex-col items-center mr-8 pb-4 w-[10rem] -ml-[0.5rem] sticky bottom-0 translate-y-4 bg-zinc-100 dark:bg-zinc-900">
+<div class="mt-auto pt-2 flex flex-col items-center mr-8 pb-4 w-[10rem] -ml-[0.5rem] sticky bottom-0 translate-y-4 bg-zinc-100 dark:bg-zinc-900">
     {#if edit}
         <a class="mb-2 text-sm opacity-50" href="/docs/{current}">Leave Edit Mode</a>
 
         <button onclick={() => { addPage(); }} class="w-36 h-12 flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark">
             Add
         </button>
+
+        {#if client.user}
+            <div class="mt-2 px-2 w-full">
+                <User {client} user={client.user} width=full size=small border={false} redirect="/docs/{current}"></User>
+            </div>
+        {/if}
     {:else} 
         {#if homeButton || commandButton || editButton}
             <div transition:fade={{ duration: 100 }} class="bg-black text-white dark:bg-white dark:text-black rounded-md w-[calc(100%-0.75rem)] h-10 mb-2 -mt-12 font-bold tracking-tight flex items-center text-base justify-around">
@@ -108,7 +119,7 @@
                     ?
                 {/if}
             </button>
-            <a onmouseenter={() => { editButton = true; }} onmouseleave={() => { editButton = false; }} ontouchstart={() => { editButton = true; }} ontouchend={() => { editButton = false; }} data-sveltekit-preload-data={false} href="/docs/register?route={current}" class="w-11 h-11  flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark">
+            <a onmouseenter={() => { editButton = true; }} onmouseleave={() => { editButton = false; }} ontouchstart={() => { editButton = true; }} ontouchend={() => { editButton = false; }} data-sveltekit-preload-data={false} href="{page.url.pathname + "/edit"}" class="w-11 h-11  flex items-center justify-around font-bold rounded-lg border-2 bg-white dark:bg-zinc-800 border-border-light dark:border-border-dark">
                 <Icon width=1.25rem icon=material-symbols:edit-outline></Icon>
             </a>
         </div>

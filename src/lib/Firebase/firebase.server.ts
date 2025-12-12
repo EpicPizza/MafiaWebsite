@@ -61,3 +61,13 @@ function getFirebaseAdmin() {
         getFirestore: getFirestore,
     }
 }
+
+export async function getUser(session: string): Promise<UserRecord | undefined> {
+    const decodedToken = await firebaseAdmin.getAuth().verifySessionCookie(session, true).catch(() => undefined);
+
+    if(decodedToken == undefined) return undefined;
+
+    const user = await firebaseAdmin.getAuth().getUser(decodedToken.uid);
+    
+    return user;
+}

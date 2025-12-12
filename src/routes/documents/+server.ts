@@ -1,16 +1,15 @@
-import { firebaseAdmin } from '$lib/Firebase/firebase.server.js';
+import { firebaseAdmin, getUser } from '$lib/Firebase/firebase.server.js';
 import { error, text } from '@sveltejs/kit';
 import z from 'zod';
-import { getAllowed, getSession } from '../docs/users.server';
+import { getAllowed } from '../session/users.server';
 import { type DocumentData, FieldValue } from 'firebase-admin/firestore';
 import { getOrder } from '../docs/pages.server';
 import type { Page as PageEntry } from '../docs/pages.server';
 
-export async function PATCH({ request, cookies }) {
+export async function PATCH({ request, cookies, locals }) {
     const users = await getAllowed();
-    const session = await getSession(cookies.get("__session"));
-
-    if(!session || !users.includes(session.username)) error(403);
+    
+    if(!locals.profile || !users.includes(locals.profile.uid)) error(403);
 
     const page = Page.parse(await request.json());
 
@@ -25,11 +24,10 @@ export async function PATCH({ request, cookies }) {
     return new Response(null, { status: 200 });
 }
 
-export async function DELETE({ request, cookies }) {
+export async function DELETE({ request, cookies, locals }) {
     const users = await getAllowed();
-    const session = await getSession(cookies.get("__session"));
-
-    if(!session || !users.includes(session.username)) error(403);
+   
+     if(!locals.profile || !users.includes(locals.profile.uid)) error(403);
 
     const page = Delete.parse(await request.json());
 
@@ -48,11 +46,10 @@ export async function DELETE({ request, cookies }) {
     return new Response(null, { status: 200 });
 }
 
-export async function PUT({ request, cookies }) {
+export async function PUT({ request, cookies, locals }) {
     const users = await getAllowed();
-    const session = await getSession(cookies.get("__session"));
-
-    if(!session || !users.includes(session.username)) error(403);
+   
+    if(!locals.profile || !users.includes(locals.profile.uid)) error(403);
 
     const reorder = Reorder.parse(await request.json());
 
@@ -75,11 +72,10 @@ export async function PUT({ request, cookies }) {
     return new Response(null, { status: 200 });
 }
 
-export async function POST({ request, cookies }) {
+export async function POST({ request, cookies, locals }) {
     const users = await getAllowed();
-    const session = await getSession(cookies.get("__session"));
 
-    if(!session || !users.includes(session.username)) error(403);
+    if(!locals.profile || !users.includes(locals.profile.uid)) error(403);
 
     const page = Page.parse(await request.json());
 

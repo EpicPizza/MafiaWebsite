@@ -2,8 +2,14 @@
 <script lang="ts">
     import Background from "$lib/Builders/Background.svelte";
     import Line from "$lib/Builders/Line.svelte";
+    import type { Client } from "$lib/Firebase/firebase.svelte";
     import Icon from "@iconify/svelte";
+    import { getContext } from "svelte";
+    import User from "./User.svelte";
     
+    const client = getContext("client") as Client;
+
+    $inspect(client.user)
 </script>
 
 <svelte:head>
@@ -31,8 +37,8 @@
     "/17.png",
     "/18.png",
 ]}>
-    <div class="h-[calc(100dvh-2rem)] flex flex-col justify-around items-center">
-        <div class="max-w-[calc(100vw-2rem)] overflow-auto w-[42rem] bg-white dark:bg-zinc-800 border border-border-light dark:border-border-dark p-8 rounded-2xl">
+    <div class="h-[calc(100dvh-4rem)] md:h-[calc(100dvh-2rem)] flex flex-col justify-around items-center">
+        <div class="max-h-[calc(100dvh-10rem)] md:max-h-full max-w-[calc(100vw-2rem)] overflow-auto w-[42rem] bg-white dark:bg-zinc-800 border border-border-light dark:border-border-dark p-8 rounded-2xl">
             <div class="flex flex-col sm:flex-row items-start sm:items-end gap-0.5 justify-between">
                 <h1 class="text-2xl font-bold"><span class="line-through opacity-50">#FRCBayAreaGang</span> FRC Mafia</h1>
             </div>
@@ -91,4 +97,10 @@
             </div>
         </div>
     </div>
+    
+    {#if client.user}
+        <div class="bottom-4 left-4 fixed">
+            <User {client} user={client.user}></User>
+        </div>
+    {/if}
 </Background>
