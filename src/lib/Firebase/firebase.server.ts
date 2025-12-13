@@ -50,6 +50,7 @@ function getFirebaseAdmin() {
     const getFirestore = (): Firestore => {
         if(firestore == undefined) {
             firestore = getFirebaseFirestore(getFirebaseApp());
+            firestore.settings({ ignoreUndefinedProperties: true });
         }
 
         return firestore;
@@ -60,4 +61,14 @@ function getFirebaseAdmin() {
         getAuth: getAuth,
         getFirestore: getFirestore,
     }
+}
+
+export async function getUser(session: string): Promise<UserRecord | undefined> {
+    const decodedToken = await firebaseAdmin.getAuth().verifySessionCookie(session, true).catch(() => undefined);
+
+    if(decodedToken == undefined) return undefined;
+
+    const user = await firebaseAdmin.getAuth().getUser(decodedToken.uid);
+    
+    return user;
 }

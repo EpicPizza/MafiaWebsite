@@ -1,6 +1,4 @@
 <script lang=ts>
-   import { run } from 'svelte/legacy';
-
     import Line from "$lib/Builders/Line.svelte";
     import Input from "$lib/Input.svelte";
     import Markdown from "$lib/Markdown/Markdown.svelte";
@@ -16,10 +14,10 @@
     let page: Page | undefined = $state(undefined);
     let unedited: Page | undefined = $state(undefined);
 
-    run(() => {
+    $effect(() => {
         if(unedited?.route != data.page) {
             page = data.pages.find(page => data.page == page.route);
-            unedited = JSON.parse(JSON.stringify(page));
+            unedited = $state.snapshot(page);
         }
     });
 
@@ -43,7 +41,7 @@
         if(page.route != data.page) await goto("/docs/" + page.route + "/edit");
 
         page = data.pages.find(page => data.page == page.route);
-        unedited = structuredClone(page);
+        unedited = $state.snapshot(page);
     } 
 
     async function reorder(id: string, type: string) {
@@ -65,7 +63,7 @@
         await invalidateAll();
 
         page = data.pages.find(page => data.page == page.route);
-        unedited = structuredClone(page);
+        unedited = $state.snapshot(page);
     } 
 
     async function deletePage() {

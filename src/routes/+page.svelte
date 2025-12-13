@@ -2,8 +2,14 @@
 <script lang="ts">
     import Background from "$lib/Builders/Background.svelte";
     import Line from "$lib/Builders/Line.svelte";
+    import type { Client } from "$lib/Firebase/firebase.svelte";
     import Icon from "@iconify/svelte";
+    import { getContext } from "svelte";
+    import User from "./User.svelte";
     
+    const client = getContext("client") as Client;
+
+    $inspect(client.user)
 </script>
 
 <svelte:head>
@@ -59,4 +65,10 @@
             </div>
         </div>
     </div>
+    
+    {#if client.user}
+        <div class="bottom-4 left-4 fixed">
+            <User {client} user={client.user}></User>
+        </div>
+    {/if}
 </Background>

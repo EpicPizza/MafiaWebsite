@@ -3,7 +3,14 @@
 declare global {
 	namespace App {
 		// interface Error {}
-		// interface Locals {}
+		interface Locals {
+			token?: string
+			profile?: {
+				photoURL: string | undefined,
+				uid: string,
+				displayName: string | undefined,
+			}
+		}
 		// interface PageData {}
 		// interface PageState {}
 		// interface Platform {}

@@ -48,7 +48,7 @@ export interface Game {
 export async function getGameByID(id: string) {
     const db = firebaseAdmin.getFirestore();
 
-    const ref = db.collection('instances').doc(env.INSTANCE).collection('settings').doc('game').collection('games').doc(id);
+    const ref = db.collection('instances').doc(env.INSTANCE ?? "---").collection('settings').doc('game').collection('games').doc(id);
 
     const doc = (await ref.get());
 
