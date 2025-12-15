@@ -4,7 +4,7 @@ import { firebaseAdmin } from "./Firebase/firebase.server";
 export async function getUser(id: string): Promise<User | undefined> {
     const db = firebaseAdmin.getFirestore();
 
-    const ref = db.collection('users').doc(id);
+    const ref = db.collection('instances').doc(env.INSTANCE ?? "---").collection('users').doc(id);
 
     const doc = await ref.get();
 
