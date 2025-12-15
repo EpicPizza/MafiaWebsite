@@ -8,7 +8,7 @@ export async function load({ params }) {
 
     const db = firebaseAdmin.getFirestore();
 
-    const ref = db.collection('instance').doc(env.INSTANCE ?? "---").collection('day').doc(params.day).collection('votes');
+    const ref = db.collection('instances').doc(env.INSTANCE ?? "---").collection('day').doc(params.day).collection('votes');
 
     const docs = (await ref.get()).docs;
    
