@@ -1,3 +1,4 @@
+import { env } from '$env/dynamic/private';
 import { firebaseAdmin } from '$lib/Firebase/firebase.server.js';
 import { getGameByID, getUsers } from '$lib/users.server.js';
 import { error } from '@sveltejs/kit';
@@ -7,7 +8,7 @@ export async function load({ params }) {
 
     const db = firebaseAdmin.getFirestore();
 
-    const ref = db.collection('day').doc(params.day).collection('votes');
+    const ref = db.collection('instance').doc(env.INSTANCE ?? "---").collection('day').doc(params.day).collection('votes');
 
     const docs = (await ref.get()).docs;
    
