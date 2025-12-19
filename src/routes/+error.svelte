@@ -10,7 +10,7 @@
         <Icon class="mb-4" scale=3rem icon=error></Icon>
         <p class="text-2xl">{page.status}</p>
         <p class="text-lg">{page.error?.message}</p>
-        <a href="/" class="flex items-center gap-2 text-white mt-8">
+        <a href="/" class="flex items-center gap-2 text-black dark:text-white mt-8">
             <Icon icon=arrow_back scale=1.5rem></Icon>
             Back Home
         </a>

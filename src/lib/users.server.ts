@@ -60,9 +60,7 @@ export async function getGameByID(id: string) {
 export interface User {
     id: string,
     nickname: string,
-    emoji: string | false,
-    settings: {
-        auto_confirm: false,
-    },
-    channel: string | null;
+    lName: string,
+    pronouns: string | null,
+    channel: string | null
 }
