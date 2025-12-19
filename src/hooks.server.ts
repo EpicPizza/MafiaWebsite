@@ -1,6 +1,7 @@
 import { firebaseAdmin, getUser } from '$lib/Firebase/firebase.server';
 import { error } from 'console';
 import type { APIUser } from 'discord.js';
+import { getInstance, getInstances, type Instance } from '$lib/Discord/instance.server';
 
 export const handle = (async ({ event, resolve }) => {
     const sessionCookie = event.cookies.get("__session");
@@ -69,6 +70,20 @@ export const handle = (async ({ event, resolve }) => {
             }
         }
     })();
+
+    let instance: undefined | Promise<Instance | undefined>;
+
+    event.locals.getInstance = async () => {
+        if(event.params.instance == undefined) return undefined;
+
+        if(instance == undefined) {
+            instance = (async () => {
+                return await getInstance(event.params.instance ?? "---");
+            })();
+        } 
+
+        return instance;
+    }
     
     const response = await resolve(event);
 

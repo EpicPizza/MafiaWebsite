@@ -1,4 +1,7 @@
 // See https://kit.svelte.dev/docs/types#app
+
+import type { Instance } from "$lib/Discord/instance.server";
+
 // for information about these interfaces
 declare global {
 	namespace App {
@@ -9,7 +12,8 @@ declare global {
 				photoURL: string | undefined,
 				uid: string,
 				displayName: string | undefined,
-			}
+			},
+			getInstance: () => Promise<Instance | undefined>,
 		}
 		// interface PageData {}
 		// interface PageState {}
