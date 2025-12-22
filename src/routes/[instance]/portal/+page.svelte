@@ -4,29 +4,69 @@
     import type { Client } from '$lib/Firebase/firebase.svelte.js';
     import Icon from '@iconify/svelte';
     import { goto, invalidateAll } from '$app/navigation';
-    import User from '../../../../../User.svelte';
+    import User from '../../User.svelte';
     import { page } from '$app/state';
+    import Input from '$lib/Input.svelte';
 
     const { data } = $props();
 
     const client = getContext("client") as Client;
 
     let clicked = $state(false);
+    let command = $state("");
+
+    let call = $state({ initiated: false, sent: false, received: false, result: undefined as any });
+
+    async function startCommand() {
+        const response = await fetch('/' + data.instance.id + '/command', {
+            method: "POST",
+            body: JSON.stringify({
+                command: command,
+            })
+        });
+        
+        if (!response.body) return;
+
+        call = { initiated: true, sent: false, received: false, result: undefined };
+
+        const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            
+            switch(value) {
+                case '---1---':
+                    call.sent = true;
+                    break;
+                case '---2---':
+                    call.received = true;
+                    break;
+                default:
+                    if(value.length < 9) break;
+
+                    call.result = JSON.parse(value.substring(7));
+
+                    clicked = false;
+            }
+        }
+    }
+
+    $inspect(call);
 </script>
 
 {#if client.user}
     <div class="h-[calc(100dvh-4rem)] md:h-[calc(100dvh-2rem)] flex flex-col justify-around items-center">
         <div class="max-h-[calc(100dvh-10rem)] md:max-h-full max-w-[calc(100vw-2rem)] overflow-auto w-[30rem] bg-white dark:bg-zinc-800 border border-border-light dark:border-border-dark p-8 rounded-2xl relative">
-            <h1 class="text-xl font-bold">Starting {data.game.name} Mafia</h1>
+            <h1 class="text-xl font-bold">{data.instance.id.toUpperCase()} Portal</h1>
 
-            <Line class="mb-4 mt-2"></Line>
-        
-            {#await data.stream.command}
-                <div class="bg-black/10 dark:bg-white/5 rounded-lg p-4 flex items-center gap-3">
-                    <img alt="loading" width="24rem" src="/loading.gif">
-                    <p class="font-bold">Executing command...</p>
-                </div>
-            {:then result} 
+            <Line class="mb-6 mt-2"></Line>
+
+            <Input bind:value={command} light label=Command name=command />
+    
+            {#if call.result} 
+                {@const result = call.result}
+
                 {#if 'error' in result}
                     <div class="border-2 rounded-xl border-red-500 bg-red-500/20 p-4 flex items-center gap-4">
                         <Icon width=1.3rem icon=material-symbols:cancel></Icon>
@@ -102,15 +142,25 @@
                         </div>
                     {/each}
                 {/if}
+            {:else if call.received} 
+                <div class="bg-black/10 dark:bg-white/5 rounded-lg p-4 flex items-center gap-3">
+                    <img alt="loading" width="24rem" src="/loading.gif">
+                    <p class="font-bold">Executing command...</p>
+                </div>
+            {:else if call.sent}
+                <div class="bg-black/10 dark:bg-white/5 rounded-lg p-4 flex items-center gap-3">
+                    <Icon width=1.3rem icon=material-symbols:satellite-alt></Icon>
+                    <p class="font-bold">Executing command...</p>
+                </div>
+            {/if}
 
-                <button disabled={clicked} onclick={() => { clicked = true; goto(page.url.pathname.substring(0, page.url.pathname.length - 8)); }} class="w-full disabled:opacity-25 h-12 mt-8 flex items-center justify-around font-bold rounded-xl border-2 disabled:cursor-not-allowed bg-orange-200 dark:bg-orange-800 border-orange-400 transition-all">
-                    {#if clicked == false}
-                        Back
-                    {:else}
-                        <div class="w-[18.5px] h-[18.5px] rounded-full border-2 bg-none animate-spin border-t-black border-l-black dark:border-t-white dark:border-l-white border-r-transparent border-b-transparent"></div>
-                    {/if}
-                </button>
-            {/await}
+            <button disabled={clicked} onclick={() => { clicked = true; startCommand(); }} class="w-full disabled:opacity-25 h-12 mt-8 flex items-center justify-around font-bold rounded-xl border-2 disabled:cursor-not-allowed bg-orange-200 dark:bg-orange-800 border-orange-400 transition-all">
+                {#if clicked == false}
+                    Run
+                {:else}
+                    <div class="w-[18.5px] h-[18.5px] rounded-full border-2 bg-none animate-spin border-t-black border-l-black dark:border-t-white dark:border-l-white border-r-transparent border-b-transparent"></div>
+                {/if}
+            </button>
         </div>
     </div>
 

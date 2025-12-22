@@ -43,10 +43,10 @@
             {#each data.game.signups as signup, i}
                 {@const user = data.users.find(user => user.id == signup)}
 
-                <div class="flex h-11 items-center justify-between bg-black/10 dark:bg-white/5 px-2 mb-0.5 {i == 0 ? "rounded-t-xl" : "rounded-t-sm"} {i == data.game.signups.length - 1 ? "rounded-b-xl" : "rounded-b-sm"}">
+                <div class="flex h-11 items-center justify-between bg-black/10 dark:bg-zinc-900/75 px-2 mb-0.5 {i == 0 ? "rounded-t-xl" : "rounded-t-sm"} {i == data.game.signups.length - 1 ? "rounded-b-xl" : "rounded-b-sm"}">
                     {#if user}
-                        <div class="flex items-center gap-2">
-                            <img src="{user.pfp}" alt="{user.nickname}'s profile" class="w-7 h-7 rounded-full">
+                        <div class="flex items-center gap-2 ml-0.5">
+                            <img src="{user.pfp}" alt="{user.nickname}'s profile" class="w-6 h-6 rounded-full">
 
                             <p class="font-bold text-base" style="color: {user.color};">{user.nickname}</p>
                         </div>
@@ -54,18 +54,21 @@
                         {signup}
                     {/if}
 
-                    {#if data.game.confirmations.includes(signup)}
-                        <Icon class="text-green-600 dark:text-green-500" width=1.3rem icon=material-symbols:verified></Icon>
-                    {:else}
-                        <Icon class="text-red-600 dark:text-red-500" width=1.3rem icon=material-symbols:cancel></Icon>
-                    {/if}
+                    <div class="relative z-0">
+                        {#if data.game.confirmations.includes(signup)}
+                            <Icon class="text-green-600 dark:text-green-600" width=1.6rem icon=material-symbols:verified></Icon>
+                        {:else}
+                            <Icon class="text-red-600 dark:text-red-600" width=1.6rem icon=material-symbols:cancel></Icon>
+                        {/if}
+                        <div class="w-4 h-4 bg-white rounded-full absolute -z-10 left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2"></div>
+                    </div>
                 </div>
             {/each}
 
             <p class="font-semibold text-lg mb-4 pt-5">Extensions</p>
 
             {#each data.extensions as extension, i}  
-                <div class="flex h-11 items-center justify-between bg-black/10 dark:bg-white/5 px-3 mb-0.5 {i == 0 ? "rounded-t-xl" : "rounded-t-sm"} {i == data.extensions.length - 1 ? "rounded-b-xl" : "rounded-b-sm"}">
+                <div class="flex h-11 items-center justify-between bg-black/10 dark:bg-zinc-900/75 px-3 mb-0.5 {i == 0 ? "rounded-t-xl" : "rounded-t-sm"} {i == data.extensions.length - 1 ? "rounded-b-xl" : "rounded-b-sm"}">
                     <p class="font-semibold">{extension} Extension</p>
                 </div>
             {/each}
@@ -74,7 +77,7 @@
                 {#if clicked == false}
                     Start
                 {:else}
-                    <div class="w-[18.5px] h-[18.5px] rounded-full border-2 bg-none animate-spin border-t-black border-l-black border-r-transparent border-b-transparent"></div>
+                    <div class="w-[18.5px] h-[18.5px] rounded-full border-2 bg-none animate-spin border-t-black border-l-black dark:border-t-white dark:border-l-white border-r-transparent border-b-transparent"></div>
                 {/if}
             </button>
         </div>

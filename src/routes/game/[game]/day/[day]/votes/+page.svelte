@@ -2,12 +2,12 @@
     import { run } from 'svelte/legacy';
 
     import Line from '$lib/Builders/Line.svelte';
-    import dnt from 'date-and-time';
     import meridiem from 'date-and-time/plugin/meridiem'
     import Icon from '$lib/Builders/Icon.svelte'
     import Copy from './Copy.svelte';
     import { createCombobox, createDropdownMenu, melt } from '@melt-ui/svelte'
     import Tag from './Tag.svelte';
+    import dnt from 'date-and-time';
 
     dnt.plugin(meridiem);
 
