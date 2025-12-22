@@ -43,12 +43,16 @@ export const ssrServer = onRequest({ region: 'us-west2', concurrency: 8, memory:
 		return res.writeHead(404, 'Not Found').end();
 	}
 
-	/** @type {ArrayBuffer} */
-	const body = await rendered.arrayBuffer();
+	res.writeHead(rendered.status, Object.fromEntries(rendered.headers));
 
-	return res
-		.writeHead(rendered.status, Object.fromEntries(rendered.headers))
-		.end(Buffer.from(body));
+	if (rendered.body) {
+		for await (const chunk of rendered.body) {
+			res.write(chunk);
+		}
+	}
+
+	res.end();
+	return;
 });
 
 /**
