@@ -41,10 +41,14 @@
             if (buffer.startsWith('---1---')) {
                 call.sent = true;
                 buffer = buffer.substring(7);
-            } else if (buffer.startsWith('---2---')) {
+            }
+            
+            if (buffer.startsWith('---2---')) {
                 call.received = true;
                 buffer = buffer.substring(7);
-            } else if (buffer.startsWith('---3---')) {
+            }
+            
+            if (buffer.startsWith('---3---')) {
                 try {
                     const result = JSON.parse(buffer.substring(7));
                     call.result = result;
