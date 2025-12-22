@@ -30,24 +30,29 @@
         call = { initiated: true, sent: false, received: false, result: undefined };
 
         const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+        let buffer = '';
 
         while (true) {
             const { value, done } = await reader.read();
             if (done) break;
             
-            switch(value) {
-                case '---1---':
-                    call.sent = true;
-                    break;
-                case '---2---':
-                    call.received = true;
-                    break;
-                default:
-                    if(value.length < 9) break;
+            buffer += value;
 
-                    call.result = JSON.parse(value.substring(7));
-
+            if (buffer.startsWith('---1---')) {
+                call.sent = true;
+                buffer = buffer.substring(7);
+            } else if (buffer.startsWith('---2---')) {
+                call.received = true;
+                buffer = buffer.substring(7);
+            } else if (buffer.startsWith('---3---')) {
+                try {
+                    const result = JSON.parse(buffer.substring(7));
+                    call.result = result;
                     clicked = false;
+                    buffer = ''; // Assume this is the last message
+                } catch (e) {
+                    // JSON is not complete, wait for more chunks
+                }
             }
         }
     }
