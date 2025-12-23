@@ -159,7 +159,7 @@
             {:else if call.sent}
                 <div class="bg-black/10 dark:bg-white/5 rounded-lg p-4 flex items-center gap-3">
                     <Icon width=1.3rem icon=material-symbols:satellite-alt></Icon>
-                    <p class="font-bold">Executing command...</p>
+                    <p class="font-bold">Sending command...</p>
                 </div>
             {/if}
 

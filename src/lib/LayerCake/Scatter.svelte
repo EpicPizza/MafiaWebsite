@@ -18,13 +18,44 @@
   
     /** @type {Number} [strokeWidth=1] - The circle's stroke width. */
     export let strokeWidth = 1;
+
+    /** @type {Number|undefined} */
+    let slope = undefined;
+
+    /** @type {Number|undefined} */
+    let yIntercept = undefined;
+
+    $: {
+      const visibleData = $data.filter((/** @type {{ show: any; }} */ d) => d.show);
+      if (visibleData.length > 1) {
+        const xVals = visibleData.map($xGet);
+        const yVals = visibleData.map($yGet);
+
+        const sumX = xVals.reduce((/** @type {any} */ acc, /** @type {any} */ val) => acc + val, 0);
+        const sumY = yVals.reduce((/** @type {any} */ acc, /** @type {any} */ val) => acc + val, 0);
+        const sumXY = visibleData.reduce((/** @type {number} */ acc, /** @type {any} */ d) => acc + $xGet(d) * $yGet(d), 0);
+        const sumX2 = xVals.reduce((/** @type {number} */ acc, /** @type {number} */ val) => acc + val * val, 0);
+        const n = visibleData.length;
+
+        const m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        const c = (sumY - m * sumX) / n;
+
+        slope = m;
+        yIntercept = c;
+      } else {
+        slope = undefined;
+        yIntercept = undefined;
+      }
+    }
+
+    $: console.log(slope, yIntercept);
   </script>
   
   <div class="scatter-group">
     {#each $data as d}
       {#if d.show}
           <div
-          class="circle border-white dark:border-black bg-accent-500"
+          class="circle border-white dark:border-black bg-accent-500 z-10"
           style="
             left: {$xGet(d) + ($xScale.bandwidth ? $xScale.bandwidth() / 2 : 0)}%;
             top: {$yGet(d) + ($yScale.bandwidth ? $yScale.bandwidth() / 2 : 0)}%;
@@ -41,6 +72,15 @@
         </p>
       {/if}
     {/each}
+    {#if slope !== undefined && yIntercept !== undefined}
+      {@const x1 = 0}
+      {@const y1 = slope * x1 + yIntercept}
+      {@const x2 = 100}
+      {@const y2 = slope * x2 + yIntercept}
+      <svg class="absolute top-0 left-0 w-full h-full pointer-events-none stroke-orange-500" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <path id="trendline" d="M{x1} {y1} L{x2} {y2}" stroke-width="0.5" />
+      </svg>
+    {/if}
   </div>
   
   <style>
