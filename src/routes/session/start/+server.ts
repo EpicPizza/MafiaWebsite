@@ -54,6 +54,7 @@ export async function GET({ url, cookies }) {
         id: user.id,
         step: 1,
     }), {
+        domain: "frcmafia.com",
         secure: true, // set to false in localhost
         path: "/",
         httpOnly: true,

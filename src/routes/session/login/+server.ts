@@ -13,7 +13,7 @@ export const POST = (async ({ request, cookies }) => {
     throw error(401, "UNAUTHORIZED REQUEST");
   }
 
-  const expiresIn = 1000 * 60 * 60 * 24 * 7;
+  const expiresIn = 1000 * 60 * 60 * 24 * 7 * 2;
 
   var recent = await checkRecent(encodedToken);
 
@@ -27,6 +27,7 @@ export const POST = (async ({ request, cookies }) => {
       .createSessionCookie(encodedToken, { expiresIn });
 
     cookies.set("__session", sessionCookie, {
+      domain: "frcmafia.com",
       maxAge: expiresIn,
       httpOnly: true,
       secure: true,
