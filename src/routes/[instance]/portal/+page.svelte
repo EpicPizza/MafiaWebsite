@@ -18,7 +18,7 @@
     let call = $state({ initiated: false, sent: false, received: false, result: undefined as any });
 
     async function startCommand() {
-        const response = await fetch('/' + data.instance.id + '/command', {
+        const response = await fetch('https://api.frcmafia.com/' + data.instance.id + '/command', {
             method: "POST",
             body: JSON.stringify({
                 command: command,
