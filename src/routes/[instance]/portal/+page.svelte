@@ -20,6 +20,7 @@
     async function startCommand() {
         const response = await fetch('https://api.frcmafia.com/' + data.instance.id + '/command', {
             method: "POST",
+            credentials: "include",
             body: JSON.stringify({
                 command: command,
             })
