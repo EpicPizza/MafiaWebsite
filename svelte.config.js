@@ -15,7 +15,7 @@ const config = {
     }),
     csrf: {
       checkOrigin: true,
-      trustedOrigins: ['https://frcmafia.com', 'https://api.frcmafia.com']
+      trustedOrigins: ['https://frcmafia.com', 'https://api.frcmafia.com', 'https://mafia.alexest.net']
     },
     csp: {
        directives: {
