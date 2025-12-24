@@ -90,11 +90,18 @@ export const handle = (async ({ event, resolve }) => {
     response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
     response.headers.set("Cross-Origin-Resource-Policy", "same-origin");
     response.headers.set("Cross-Origin-Embedder-Policy", "same-origin");
-    response.headers.set("Access-Control-Allow-Origin", "https://mafia.alexest.net, https://frcmafia.com, https://api.frcmafia.com");
     response.headers.set("Access-Control-Max-Age", "86400");
     response.headers.set("Cache-Control", "no-cache, private");
     response.headers.set("X-Frame-Options", "SAMEORIGIN");
     response.headers.set("X-Content-Type-Options", "nosniff");
+
+    const allowedOrigins = ['https://mafia.alexest.net', 'https://frcmafia.com', 'https://api.frcmafia.com'];
+    const origin = event.request.headers.get("origin");
+
+    if (origin && allowedOrigins.includes(origin)) {
+        response.headers.set('Access-Control-Allow-Origin', origin);
+    }
+    response.headers.set('Vary', 'Origin');
 
     return response;
 });
