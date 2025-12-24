@@ -102,6 +102,7 @@ export const handle = (async ({ event, resolve }) => {
         response.headers.set('Access-Control-Allow-Origin', origin);
     }
     response.headers.set('Vary', 'Origin');
+    response.headers.set('Access-Control-Allow-Credentials', 'true')
 
     return response;
 });
