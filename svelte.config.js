@@ -15,6 +15,7 @@ const config = {
     }),
     csrf: {
       checkOrigin: true,
+      trustedOrigins: ['https://frcmafia.com', 'https://api.frcmafia.com']
     },
     csp: {
        directives: {
