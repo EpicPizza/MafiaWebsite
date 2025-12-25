@@ -1,6 +1,7 @@
 // See https://kit.svelte.dev/docs/types#app
 
 import type { Instance } from "$lib/Discord/instance.server";
+import type { Game } from "$lib/users.server";
 
 // for information about these interfaces
 declare global {
@@ -14,6 +15,7 @@ declare global {
 				displayName: string | undefined,
 			},
 			getInstance: () => Promise<Instance | undefined>,
+			getGame: () => Promise<Game | undefined>,
 		}
 		// interface PageData {}
 		// interface PageState {}

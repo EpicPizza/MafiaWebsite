@@ -4,9 +4,9 @@
 
     import { LayerCake, Svg, WebGL, Html } from 'layercake';
 
-    import Scatter from '$lib/LayerCake/Scatter.svelte';
-    import AxisX from '$lib/LayerCake/AxisX.svelte';
-    import AxisY from '$lib/LayerCake/AxisY.svelte';
+    import Scatter from '$lib/LayerCake/Scatter/Scatter.svelte';
+    import AxisX from '$lib/LayerCake/Scatter/AxisX.svelte';
+    import AxisY from '$lib/LayerCake/Scatter/AxisY.svelte';
     import dnt from 'date-and-time';
     import meridiem from 'date-and-time/plugin/meridiem'
     import { slide } from "svelte/transition";

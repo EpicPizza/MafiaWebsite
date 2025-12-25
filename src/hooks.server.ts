@@ -2,6 +2,8 @@ import { firebaseAdmin, getUser } from '$lib/Firebase/firebase.server';
 import { error } from 'console';
 import type { APIUser } from 'discord.js';
 import { getInstance, getInstances, type Instance } from '$lib/Discord/instance.server';
+import type { Game } from '$lib/users.server';
+import { getGameByID } from '$lib/Discord/game.server';
 
 export const handle = (async ({ event, resolve }) => {
     const sessionCookie = event.cookies.get("__session");
@@ -84,7 +86,23 @@ export const handle = (async ({ event, resolve }) => {
 
         return instance;
     }
-    
+
+    let game: undefined | Promise<Game | undefined>;
+
+    event.locals.getGame = async () => {
+        const instance = await event.locals.getInstance();
+
+        if(event.params.game == undefined || instance == undefined) return undefined;
+
+        if(game == undefined) {
+            game = (async () => {
+                return await getGameByID(instance, event.params.game ?? "---");
+            })();
+        } 
+
+        return game;
+    }
+
     const response = await resolve(event);
 
     response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
