@@ -55,8 +55,8 @@ export async function load({ params, locals, url }) {
     const db = firebaseAdmin.getFirestore();
     const ref = db.collection('instances').doc(instance.id).collection('games').doc(game.id).collection('days');
 
-    const currentRef = ref.doc(instance.global.day.toString());
-    const nextRef = ref.doc((instance.global.day + 1).toString());
+    const currentRef = ref.doc(parseInt(params.day).toString());
+    const nextRef = ref.doc((parseInt(params.day) + 1).toString());
     
     const currentData = (await currentRef.get()).data() as { start?: number } | undefined;
     const nextData = (await nextRef.get()).data() as { start?: number } | undefined;
