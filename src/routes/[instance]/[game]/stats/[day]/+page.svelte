@@ -87,7 +87,7 @@
 
                 <Html>
                     <GroupLabels formatLabel={formatLabelZ} />
-                    <SharedTooltip formatLabel={formatLabelZ} formatTitle={formatLabelX} dataset={stats} />
+                    <SharedTooltip formatKey={formatLabelZ} formatTitle={formatLabelX} dataset={stats} />
                 </Html>
             </LayerCake>
         </div>

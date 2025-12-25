@@ -92,7 +92,7 @@
         <div class="tick-mark" style:top="0" style:left="{x1}px" style:width="{tickLen}px"></div>
       {/if}
       <div
-        class="text"
+        class="text text-zinc-800 dark:text-zinc-300"
         style:top="0"
         style:text-align={labelPosition === 'even' ? 'right' : 'left'}
         style:width="{widestTickLen}px"
@@ -136,9 +136,5 @@
 
   .baseline.gridline {
     border-top-style: solid;
-  }
-
-  .tick .text {
-    color: #666;
   }
 </style>

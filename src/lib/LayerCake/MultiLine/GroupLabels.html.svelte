@@ -24,7 +24,7 @@
 
 {#each $data as group}
   <div
-    class="label"
+    class="label px-1.5 py-0.5 bg-black dark:bg-white rounded-sm text-white dark:text-black"
     style="
       top:{top(group.values) * 100}%;
       left:{left(group.values) * 100}%;
@@ -37,7 +37,7 @@
 <style>
   .label {
     position: absolute;
-    transform: translate(-100%, -100%) translateY(1px);
+    transform: translate(-100%, -100%) translateY(-3px);
     font-size: 13px;
   }
 </style>

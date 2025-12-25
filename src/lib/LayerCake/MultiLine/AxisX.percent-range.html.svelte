@@ -82,7 +82,7 @@
       style="top:calc(100% + {tickGutter}px);"
     >
       <div
-        class="text"
+        class="text text-zinc-800 dark:text-zinc-300"
         style:top="{tickLen}px"
         style:transform="translate(calc(-50% + {dx}px), {dy}px)"
       >
@@ -120,7 +120,6 @@
   }
 
   .tick .text {
-    color: #666;
     position: relative;
     white-space: nowrap;
     transform: translateX(-50%);

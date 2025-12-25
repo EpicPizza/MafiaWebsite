@@ -27,12 +27,11 @@
     formatTitle = d => d,
     formatKey = d => titleCase(d),
     formatValue = d => (isNaN(+d) ? d : commas(d)),
-    formatLabel,
     offset = -20,
     dataset
   } = $props();
 
-  const w = 150;
+  const w = 250;
   const w2 = w / 2;
 
   /* --------------------------------------------
@@ -60,7 +59,7 @@
     {#if visible === true}
       <div style="left:{(x / 100) * $width}px;" class="line"></div>
       <div
-        class="tooltip"
+        class="tooltip border-border-light dark:border-border-dark border rounded-lg bg-zinc-100 dark:bg-zinc-900"
         style="
           width:{w}px;
           display: {visible ? 'block' : 'none'};
@@ -68,12 +67,14 @@
           left:{Math.min(Math.max(w2, (x / 100) * $width), $width - w2)}px;"
       >
         <div class="title">{formatTitle(found[$config.x])}</div>
-        {#each foundSorted as row}
-          <div class="row">
-            <span class="key">{formatLabel(formatKey(row.key))}:</span>
-            {formatValue(row.value)}
-          </div>
-        {/each}
+        <div class="grid grid-cols-3">
+          {#each foundSorted as row}
+            <div class="row">
+              <span class="text-zinc-600 dark:text-zinc-300">{formatKey(row.key)}:</span>
+              {formatValue(row.value)}
+            </div>
+          {/each}
+        </div>
       </div>
     {/if}
   {/snippet}
@@ -84,8 +85,6 @@
     position: absolute;
     font-size: 13px;
     pointer-events: none;
-    border: 1px solid #ccc;
-    background: rgba(255, 255, 255, 0.85);
     transform: translate(-50%, -100%);
     padding: 5px;
     z-index: 15;
@@ -106,8 +105,5 @@
   }
   .title {
     font-weight: bold;
-  }
-  .key {
-    color: #999;
   }
 </style>
