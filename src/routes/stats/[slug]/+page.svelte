@@ -238,6 +238,7 @@
             {fill}
             {stroke}
             {strokeWidth}
+            formatLabel={(d: any) => d.name}
             />
         </Html>
     
@@ -365,6 +366,7 @@
                             {fill}
                             {stroke}
                             {strokeWidth}
+                            formatLabel={(d: any) => d.name}
                             />
                         </Html>
                     

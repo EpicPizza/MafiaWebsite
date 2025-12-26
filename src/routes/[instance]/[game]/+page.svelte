@@ -331,9 +331,17 @@
                         {@const user = data.users.find(user => user.id == stat.id) ?? getTag(stat.id)}
 
                         <div class="flex items-center text-sm sm:text-base bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == stats.length - 1 ? "rounded-b-lg" : "rounded-b-sm"} font-bold">
-                            <div class="w-2/5 sm:w-1/4">
+                            <button onclick={() => { 
+                                const index = hidePlayers.indexOf(user.id);
+
+                                if(index == -1) {
+                                    hidePlayers.push(user.id);
+                                } else {
+                                    hidePlayers.splice(index, 1);
+                                }
+                            }} class="w-2/5 sm:w-1/4 transition-all {hidePlayers.includes(user.id) ? "opacity-50" : ""}">
                                 <Tag tag={user}></Tag>
-                            </div>
+                            </button>
                              <div class="w-1/5 sm:w-1/4">
                                 {stat.messages}
                             </div>
@@ -345,6 +353,10 @@
                             </div>
                         </div>
                     {/each}
+                    <div class="flex items-center gap-1 mt-1.5 opacity-75 ml-3.5 -mb-1">
+                        <Icon icon=material-symbols:arrow-upward></Icon>
+                        <p class="text-sm">Click to hide on graph.</p>
+                    </div>
 
                     <p class="opacity-75 mt-5 mb-2">Graph</p>
 
@@ -369,7 +381,7 @@
                                     {fill}
                                     {stroke}
                                     {strokeWidth}
-                                    formatLabel={(input: string) => (data.users.find(user => user.id == input)?.nickname ?? input)}
+                                    formatLabel={(input: any) => (data.users.find(user => user.id == input.id)?.nickname ?? input)}
                                 />
                             </Html>
                         

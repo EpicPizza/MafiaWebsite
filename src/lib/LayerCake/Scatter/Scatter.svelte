@@ -19,7 +19,7 @@
     /** @type {Number} [strokeWidth=1] - The circle's stroke width. */
     export let strokeWidth = 1;
 
-    export let formatLabel = (/** @type {String} */ input) => input;
+    export let formatLabel = (/** @type {any} */ input) => input;
 
     /** @type {Number|undefined} */
     let slope = undefined;
@@ -68,7 +68,7 @@
         <p class="text-xs dark:bg-black bg-white px-2 py-1 rounded-md absolute -translate-x-1/2 translate-y-1.5 z-10 opacity-75" style="
         left: {$xGet(d) + ($xScale.bandwidth ? $xScale.bandwidth() / 2 : 0)}%;
         top: {$yGet(d) + ($yScale.bandwidth ? $yScale.bandwidth() / 2 : 0)}%;">
-          {formatLabel(d.id)}
+          {formatLabel(d)}
         </p>
     {/each}
     {#if slope !== undefined && yIntercept !== undefined}
