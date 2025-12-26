@@ -14,6 +14,7 @@
     import { page } from '$app/state';
     import { pushState, replaceState } from '$app/navigation';
     import { browser } from '$app/environment';
+    import { toggle } from '@melt-ui/svelte/internal/helpers';
 
     dnt.plugin(meridiem);
 
@@ -52,9 +53,7 @@
         });
 
         unsubscribeStats = onSnapshot(statsRef, async snapshot => {
-           const incoming = (snapshot.docs.map(doc => ({ ...doc.data(), instance: data.instance, game: data.game.id, day: data.day, type: "add", id: doc.ref.id })) as unknown as StatsAction[]).filter(stat => data.users.find(user => user.id == stat.id));
-
-           stats = incoming;
+            stats = (snapshot.docs.map(doc => ({ ...doc.data(), instance: data.instance, game: data.game.id, day: data.day, type: "add", id: doc.ref.id })) as unknown as StatsAction[]).filter(stat => data.users.find(user => user.id == stat.id));
         });
 
         return () => {
@@ -89,6 +88,47 @@
     function getTag(nickname: string) {
         return data.users.find(user => user.nickname == nickname) ?? { nickname: nickname, pfp: "/favicon.png", id: nickname, color: "#ffffff" } satisfies Omit<(typeof data)["users"][0], "pronouns" | "state" | "lName" | "channel">;
     }
+
+    let sortingMessages = $state("messages");
+    let typeMessages = $state("des");
+
+    function sortMessages(which: string) {
+        if(which == sortingMessages) {
+            typeMessages = typeMessages == "des" ? "asc" : "des";
+        } else {
+            typeMessages = "des";
+            sortingMessages = which;
+        }
+    }
+
+    const sortedstats = $derived.by(() => {
+        const copy = [...stats];
+
+        copy.sort((a, b) => {
+            if(sortingMessages == "messages") {
+                return typeMessages == "des" ? b.messages - a.messages : a.messages - b.messages;
+            } else if(sortingMessages == "name") {
+                const aName = data.users.find(user => user.id == a.id)?.lName ?? ".";
+                const bName = data.users.find(user => user.id == b.id)?.lName ?? ".";
+
+                if(typeMessages == "des") {
+                    return bName < aName ? 1 : aName < bName ? -1 : 0;
+                } else {
+                    return bName < aName ? -1 : aName < bName ? 1 : 0;
+                }
+            } else if(sortingMessages == "words") {
+                return typeMessages == "des" ? b.words - a.words : a.words - b.words;
+            } else if(sortingMessages == "wpm") {
+                return typeMessages == "des" ?  (b.messages == 0 ? 0 : b.words / b.messages) - (a.messages == 0 ? 0 : a.words / a.messages) : (a.messages == 0 ? 0 : a.words / a.messages) - (b.messages == 0 ? 0 : b.words / b.messages);
+            } else if(sortingMessages == "images" && a.images && b.images) {
+                return typeMessages == "des" ? b.images - a.images : a.images - b.images;
+            } else {
+                return 0;
+            }
+        });
+
+        return copy;
+    });
 </script>
 
 <div class="h-[calc(100dvh-2rem)] md:h-[calc(100dvh-2rem)] flex flex-col items-center">
@@ -223,35 +263,45 @@
                         </div>
                     {/each}
                 {:else if id == "Stats"}
-                    <div class="flex opacity-75 mt-5 mb-2 px-2.5">
-                        <div class="w-2/5">
+                    <div class="flex opacity-75 mt-5 mb-2 px-2.5 text-xs sm:text-base">
+                        <div class="w-2/5 sm:w-1/4 flex items-center">
+                            {@render toggle("name")}
+
                             Player
                         </div>
-                        <div class="w-1/5">
-                            Messages
+                        <div class="w-1/5 sm:w-1/4 flex items-center">
+                            {@render toggle("messages")}
+
+                            <span class="inline sm:hidden">Mes</span>
+                            <span class="hidden sm:inline">Messages</span>
                         </div>
-                        <div class="w-1/5">
-                            Words
+                        <div class="w-1/5 sm:ww-1/4 flex items-center">
+                            {@render toggle("words")}
+
+                            <span class="inline sm:hidden">Wrd</span>
+                            <span class="hidden sm:inline">Words</span>
                         </div>
-                        <div class="w-1/5">
+                        <div class="w-1/5 sm:w-1/4 flex items-center">
+                            {@render toggle("wpm")}
+
                             WPM
                         </div>
                     </div>
 
-                    {#each stats as stat, i (stat.id)}
+                    {#each sortedstats as stat, i (stat.id)}
                         {@const user = data.users.find(user => user.id == stat.id) ?? getTag(stat.id)}
 
-                        <div class="flex items-center bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == stats.length - 1 ? "rounded-b-lg" : "rounded-b-sm"} font-bold">
-                            <div class="w-2/5">
+                        <div class="flex items-center text-sm sm:text-base bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == stats.length - 1 ? "rounded-b-lg" : "rounded-b-sm"} font-bold">
+                            <div class="w-2/5 sm:w-1/4">
                                 <Tag tag={user}></Tag>
                             </div>
-                             <div class="w-1/5">
+                             <div class="w-1/5 sm:w-1/4">
                                 {stat.messages}
                             </div>
-                            <div class="w-1/5">
+                            <div class="w-1/5 sm:w-1/4">
                                 {stat.words}
                             </div>
-                            <div class="w-1/5">
+                            <div class="w-1/5 sm:w-1/4">
                                 {(stat.words / stat.messages).toFixed(2)}
                             </div>
                         </div>
@@ -269,3 +319,15 @@
         {/each}
     </div>
 </div>
+
+{#snippet toggle(field: string)}
+    <button onclick={() => { sortMessages(field); }} class="h-5 w-5 min-w-5 border border-border-light dark:border-border-dark rounded-sm flex items-center justify-around sm:mr-1.5 relative">
+        {#if sortingMessages != field}
+            <Icon class="absolute" width=1rem icon=material-symbols:check-indeterminate-small></Icon>
+        {:else if typeMessages == "des"}
+            <Icon class="absolute" width=1rem icon=material-symbols:arrow-downward></Icon>
+        {:else if typeMessages == "asc"}
+            <Icon class="absolute" width=1rem icon=material-symbols:arrow-upward></Icon>
+        {/if}
+    </button>
+{/snippet}
