@@ -294,9 +294,9 @@
                 {:else if id == "Stats"}
                     <p class="opacity-75 mt-5 mb-2">Day</p>
 
-                    <div class="flex">
+                    <div class="flex gap-0.5">
                         {#each Array.from({ length: data.day }, (_, i) => i + 1) as day}
-                            <button onclick={() => { selectedDay = day; }} class="text-base text-center {selectedDay == day ? "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black" : "bg-zinc-200 dark:bg-zinc-900"} px-3 py-2.5 mr-0.5 w-full {day == 1 ? "rounded-l-lg" : "rounded-l-sm"} {day == data.global.day ? "rounded-r-lg" : "rounded-r-sm"} font-bold">
+                            <button onclick={() => { selectedDay = day; }} class="text-base text-center {selectedDay == day ? "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black" : "bg-zinc-200 dark:bg-zinc-900"} px-3 py-2.5 w-full {day == 1 ? "rounded-l-lg" : "rounded-l-sm"} {day == data.global.day ? "rounded-r-lg" : "rounded-r-sm"} font-bold">
                                 {day}
                             </button>
                         {/each}

@@ -28,16 +28,15 @@
     let yIntercept = undefined;
 
     $: {
-      const visibleData = $data.filter((/** @type {{ show: any; }} */ d) => d.show);
-      if (visibleData.length > 1) {
-        const xVals = visibleData.map($xGet);
-        const yVals = visibleData.map($yGet);
+      if ($data.length > 1) {
+        const xVals = $data.map($xGet);
+        const yVals = $data.map($yGet);
 
         const sumX = xVals.reduce((/** @type {any} */ acc, /** @type {any} */ val) => acc + val, 0);
         const sumY = yVals.reduce((/** @type {any} */ acc, /** @type {any} */ val) => acc + val, 0);
-        const sumXY = visibleData.reduce((/** @type {number} */ acc, /** @type {any} */ d) => acc + $xGet(d) * $yGet(d), 0);
+        const sumXY = $data.reduce((/** @type {number} */ acc, /** @type {any} */ d) => acc + $xGet(d) * $yGet(d), 0);
         const sumX2 = xVals.reduce((/** @type {number} */ acc, /** @type {number} */ val) => acc + val * val, 0);
-        const n = visibleData.length;
+        const n = $data.length;
 
         const m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
         const c = (sumY - m * sumX) / n;
