@@ -127,7 +127,7 @@
                             const bAlive = data.global.players.find(player => player.id == b.id);
 
                             return aAlive && !bAlive ? -1 : 1;
-                        }) as user, i (user.id)}
+                        }) as user, i}
                             {@const alive = !!data.global.players.find(player => player.id == user.id)}
                             
                             <div class="flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == data.users.length - 1 ? "rounded-b-lg" : "rounded-b-sm"}">
