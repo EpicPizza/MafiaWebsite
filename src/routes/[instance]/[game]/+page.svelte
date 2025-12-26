@@ -3,12 +3,67 @@
     import Icon from '@iconify/svelte';
     import { Tabs } from "melt/builders";
     import { flip } from 'svelte/animate';
+    import dnt from 'date-and-time';
+    import meridiem from 'date-and-time/plugin/meridiem';
+    import { getContext } from 'svelte';
+    import type { Client } from '$lib/Firebase/firebase.svelte.js';
+    import { collection, limit, onSnapshot, orderBy, query, type Unsubscribe } from 'firebase/firestore';
+    import { type Log, type StatsAction } from './types.js';
+    import Tag from './votes/[day]/Tag.svelte';
+    import Copy from './votes/[day]/Copy.svelte';
+
+    dnt.plugin(meridiem);
 
     const { data } = $props();
 
+    const client = getContext("client") as Client;
+
+    let unsubscribeStats = undefined as Unsubscribe | undefined;
+    let unsubscribeVotes = undefined as Unsubscribe | undefined;
+
+    let votes = $derived(data.votes);
+    let stats = $derived(data.stats);
+
+    $effect(() => {
+        if(!client.user) return;
+
+        if(unsubscribeVotes) unsubscribeVotes();
+        if(unsubscribeStats) unsubscribeStats();
+
+        const db = client.getFirestore();
+        const votesRef = query(collection(db, "instances", data.instance, "day", data.day.toString(), "votes"), orderBy("timestamp", "desc"), limit(5));
+        const statsRef = query(collection(db, "instances", data.instance, "games", data.game.id, "days", data.day.toString(), "stats"));
+
+        unsubscribeVotes = onSnapshot(votesRef, async snapshot => {
+            const incoming = snapshot.docs.map(doc => doc.data()).filter(doc => doc != undefined) as Log[];
+
+            incoming.filter(log => log.type == 'standard').map(log => {
+                log.search = {
+                    for: data.users.find(player => player.id == (log.vote.for == "unvote" ? "---" : log.vote.for))?.nickname,
+                    replace: data.users.find(player => player.id == (log.vote.replace ?? "---"))?.nickname,
+                    name: data.users.find(player => player.id == log.vote.id)?.nickname ?? "<@" + log.vote.id + ">",
+                }
+            });
+
+            votes = incoming;
+        });
+
+        unsubscribeStats = onSnapshot(statsRef, async snapshot => {
+            stats = snapshot.docs.map(doc => ({ ...doc.data(), instance: data.instance, game: data.game.id, day: data.day, type: "add", id: doc.ref.id })) as unknown as StatsAction[];
+        });
+
+        return () => {
+            if(unsubscribeVotes) unsubscribeVotes();
+            if(unsubscribeStats) unsubscribeStats();
+        }
+    });
+    
     const tabs = new Tabs({ value: "Home" as string });
     const tabIds = ["Home", "Players", "Pins", "Stats", "Votes", "Debug"];
 
+    function getTag(nickname: string) {
+        return data.users.find(user => user.nickname == nickname) ?? { nickname: nickname, pfp: "/favicon.png", id: nickname, color: "#ffffff" } satisfies Omit<(typeof data)["users"][0], "pronouns" | "lName" | "channel">;
+    }
 
 </script>
 
@@ -45,7 +100,7 @@
                         </div>
                     </div>
                 {:else if id == "Players"}
-                    <div class="border shadow-md dark:shadow-xl border-border-light dark:border-border-dark mt-6 h-[30rem] w-full rounded-lg p-6 flex flex-col gap-3">
+                    <div class="border shadow-md dark:shadow-xl border-border-light dark:border-border-dark mt-6 min-h-[30rem] w-full rounded-lg p-6 flex flex-col gap-3">
                         {#each data.users as user}
                             {@const alive = !!data.global.players.find(player => player.id == user.id)}
                             <div class="flex justify-between items-center {alive ? "" : "opacity-30"}">
@@ -60,6 +115,90 @@
                             <Line></Line>
                         {/each}
                     </div>
+                {:else if id == "Votes"}
+                    <div class="mt-4 flex gap-2 items-center">
+                        <p class="opacity-75">Full Vote History - </p>
+                        {#each Array.from({ length: data.day }, (_, i) => i + 1) as day}
+                            <a href="/{data.instance}/{data.game.id}/votes/{day}" class="block w-7 h-7 text-sm rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-around">{day}</a>
+                        {/each}
+                    </div>
+                    
+                    <div class="bg-zinc-200 dark:bg-zinc-900 p-4 pl-5 rounded-lg mt-4 mb-4 relative overflow-hidden">
+                        <p class="text-lg font-bold mb-2">Votes - Today (Day {data.day})</p>
+                        <p class="whitespace-pre mb-2.5">
+                            {votes.length == 0 || votes[0].board == "" ? "No votes recorded." : votes[0].board}
+                        </p>
+                        <p class="text-sm opacity-50">
+                            {#if data.global.hammer}
+                                Hammer is at {data.half + 1} votes.
+                            {:else}
+                                Auto-hammer disabled.
+                            {/if}
+                        </p>
+                        <div class="w-1 h-full bg-yellow-500 left-0 top-0 absolute"></div>
+                    </div>
+
+                    <p class="opacity-75 my-4">Recent Votes</p>
+
+                    {#each votes as log, i (log.timestamp)}
+                        <div class="flex justify-between items-center bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == votes.length - 1 ? "rounded-b-lg" : "rounded-b-sm"}">
+                            {#if log.type == 'standard'}
+                                {@const vote = log.vote}
+
+                                {#if vote.for != 'unvote'}
+                                    <div class="flex items-center text-green-500 font-bold gap-0.5">
+                                        <Tag tag={getTag(log.search.name)}></Tag>
+                                        <Icon scale=1.2rem icon=material-symbols:keyboard-double-arrow-right></Icon>
+                                        {#if log.search.replace}
+                                            <Tag tag={getTag(log.search.replace)}></Tag>
+                                            <Icon scale=1.2rem class="rotate-90 mx-1 text-yellow-500 font-bold" icon=material-symbols:switch-access-shortcut></Icon>
+                                        {/if}
+                                        <Tag tag={getTag(log.search.for ?? "---")}></Tag>
+                                    </div>
+                                {:else}
+                                    <div class="flex items-center text-red-500 font-bold gap-0.5">
+                                        <Tag tag={getTag(log.search.name)}></Tag>
+                                        <Icon scale=1.2rem class="rotate-[225deg] mx-0.5 translate-y-0.5" icon=material-symbols:call-missed></Icon>
+                                        {#if log.search.replace}
+                                            <Tag tag={getTag(log.search.replace)}></Tag>
+                                        {/if}
+                                    </div>
+                                {/if}
+                            {:else if log.type == 'reset'}
+                                <div class="flex items-center font-bold gap-2">
+                                    <div class="py-1 px-2 bg-red-200 border dark:border-none border-red-900 dark:bg-red-900 text-black/70 dark:text-white/90 text-xs rounded-md">RESET</div>
+                                    {log.message}
+                                </div>
+                            {:else}
+                                <div class="flex items-center font-bold gap-[5px]">
+                                    {#if log.prefix}
+                                        <Tag tag={getTag(log.search.name)}></Tag>
+                                    {/if}
+                                    <p>{log.message}</p>
+                                </div>
+                            {/if}
+
+                            {#if log.messageId != null}
+                                <div class="flex gap-1 items-center">
+                                    <p class="text-sm mr-2">{dnt.format(new Date(log.timestamp), "h:mm a")}</p>
+
+                                    <a target="_blank" href="https://discord.com/channels/569988266657316884/695129859147694174/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 border border-border-light dark:border-border-dark p-2 py-1 rounded-md font-bold text-xs">
+                                        Jump
+                                    </a>
+
+                                    <Copy link="https://discord.com/channels/569988266657316884/695129859147694174/{log.messageId}"></Copy>
+                                </div>
+                            {/if}
+                        </div>
+                    {/each}
+                {:else if id == "Stats"}
+                    <p class="whitespace-pre">
+                        {JSON.stringify(stats, null, "\t")}
+                    </p>
+                {:else if id == "Debug"}
+                    <p class="whitespace-pre">
+                        {JSON.stringify(data, null, "\t")}
+                    </p>
                 {/if}
             </div>
         {/each}

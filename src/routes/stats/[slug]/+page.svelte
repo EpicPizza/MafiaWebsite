@@ -13,7 +13,8 @@
 
     dnt.plugin(meridiem);
 
-  let { data } = $props();
+    let { data } = $props();
+
     let statsMessages = $state(structuredClone(data.stats).filter(stat => stat.alive || !('alive' in stat)));
     let statsReactions = $state(structuredClone(data.stats));
 

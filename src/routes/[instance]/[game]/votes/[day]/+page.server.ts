@@ -1,27 +1,31 @@
 import { env } from '$env/dynamic/private';
+import { getUsers } from '$lib/Discord/users.server.js';
 import { firebaseAdmin } from '$lib/Firebase/firebase.server.js';
-import { getGameByID, getUsers } from '$lib/users.server.js';
+import { getGameByID } from '$lib/users.server.js';
 import { error } from '@sveltejs/kit';
 
-export async function load({ params }) {
+export async function load({ params, locals }) {
     if(params.day == '0') error(400, "Day 0 Doesn't Exist");
+
+    const instance = await locals.getInstance();
+    const game = await locals.getGame();
+    if(instance == undefined || game == undefined) error(404);
 
     const db = firebaseAdmin.getFirestore();
 
-    const ref = db.collection('instances').doc(env.INSTANCE ?? "---").collection('day').doc(params.day).collection('votes');
+    const ref = db.collection('instances').doc(instance.id).collection('day').doc(params.day).collection('votes');
 
     const docs = (await ref.get()).docs;
    
-    const game = await getGameByID(params.game);
-    const users = await getUsers(game);
+    const users = await getUsers(instance, game.signups);
  
     const logs = docs.map(doc => doc.data()) as Log[];
 
     logs.filter(log => log.type == 'standard').map(log => {
         log.search = {
-            for: users.get(log.vote.for == "unvote" ? "---" : log.vote.for)?.nickname,
-            replace: users.get(log.vote.replace ?? "---")?.nickname,
-            name: users.get(log.vote.id)?.nickname ?? "<@" + log.vote.id + ">",
+            for: users.find(user => user.id == (log.vote.for == "unvote" ? "---" : log.vote.for))?.nickname,
+            replace: users.find(user => user.id == (log.vote.replace ?? "---"))?.nickname,
+            name: users.find(user => user.id == log.vote.id)?.nickname ?? "<@" + log.vote.id + ">",
         }
     });
 
