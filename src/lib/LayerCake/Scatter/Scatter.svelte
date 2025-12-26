@@ -19,6 +19,8 @@
     /** @type {Number} [strokeWidth=1] - The circle's stroke width. */
     export let strokeWidth = 1;
 
+    export let formatLabel = (/** @type {String} */ input) => input;
+
     /** @type {Number|undefined} */
     let slope = undefined;
 
@@ -53,7 +55,6 @@
   
   <div class="scatter-group">
     {#each $data as d}
-      {#if d.show}
           <div
           class="circle border-white dark:border-black bg-accent-500 z-10"
           style="
@@ -65,12 +66,11 @@
           "
         >
         </div>
-        <p class="text-xs dark:bg-black bg-zinc-200 px-2 py-1 rounded-md absolute -translate-x-1/2 translate-y-1.5 z-10 opacity-75" style="
+        <p class="text-xs dark:bg-black bg-white px-2 py-1 rounded-md absolute -translate-x-1/2 translate-y-1.5 z-10 opacity-75" style="
         left: {$xGet(d) + ($xScale.bandwidth ? $xScale.bandwidth() / 2 : 0)}%;
         top: {$yGet(d) + ($yScale.bandwidth ? $yScale.bandwidth() / 2 : 0)}%;">
-          {d.name}
+          {formatLabel(d.id)}
         </p>
-      {/if}
     {/each}
     {#if slope !== undefined && yIntercept !== undefined}
       {@const x1 = 0}

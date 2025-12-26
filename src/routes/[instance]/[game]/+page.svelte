@@ -15,6 +15,10 @@
     import { pushState, replaceState } from '$app/navigation';
     import { browser } from '$app/environment';
     import { toggle } from '@melt-ui/svelte/internal/helpers';
+    import { Html, LayerCake } from 'layercake';
+    import AxisX from '$lib/LayerCake/Scatter/AxisX.svelte';
+    import AxisY from '$lib/LayerCake/Scatter/AxisY.svelte';
+    import Scatter from '$lib/LayerCake/Scatter/Scatter.svelte';
 
     dnt.plugin(meridiem);
 
@@ -32,11 +36,9 @@
         if(!client.user) return;
 
         if(unsubscribeVotes) unsubscribeVotes();
-        if(unsubscribeStats) unsubscribeStats();
 
         const db = client.getFirestore();
         const votesRef = query(collection(db, "instances", data.instance, "day", data.day.toString(), "votes"), orderBy("timestamp", "desc"), limit(5));
-        const statsRef = query(collection(db, "instances", data.instance, "games", data.game.id, "days", data.day.toString(), "stats"));
 
         unsubscribeVotes = onSnapshot(votesRef, async snapshot => {
             const incoming = snapshot.docs.map(doc => doc.data()).filter(doc => doc != undefined) as Log[];
@@ -52,13 +54,8 @@
             votes = incoming;
         });
 
-        unsubscribeStats = onSnapshot(statsRef, async snapshot => {
-            stats = (snapshot.docs.map(doc => ({ ...doc.data(), instance: data.instance, game: data.game.id, day: data.day, type: "add", id: doc.ref.id })) as unknown as StatsAction[]).filter(stat => data.users.find(user => user.id == stat.id));
-        });
-
         return () => {
             if(unsubscribeVotes) unsubscribeVotes();
-            if(unsubscribeStats) unsubscribeStats();
         }
     });
     
@@ -89,8 +86,31 @@
         return data.users.find(user => user.nickname == nickname) ?? { nickname: nickname, pfp: "/favicon.png", id: nickname, color: "#ffffff" } satisfies Omit<(typeof data)["users"][0], "pronouns" | "state" | "lName" | "channel">;
     }
 
+    let selectedDay = $state(data.global.day);
+
+    $effect(() => {
+        if(!client.user) return;
+
+        if(unsubscribeStats) unsubscribeStats();
+
+        const db = client.getFirestore();
+        
+        const statsRef = query(collection(db, "instances", data.instance, "games", data.game.id, "days", selectedDay.toString(), "stats"));
+
+        unsubscribeStats = onSnapshot(statsRef, async snapshot => {
+            stats = (snapshot.docs.map(doc => ({ ...doc.data(), instance: data.instance, game: data.game.id, day: selectedDay.toString(), type: "add", id: doc.ref.id })) as unknown as StatsAction[]).filter(stat => data.users.find(user => user.id == stat.id));
+        });
+
+        return () => {
+            if(unsubscribeStats) unsubscribeStats();
+        }
+    });
+
     let sortingMessages = $state("messages");
     let typeMessages = $state("des");
+    let hidePlayers: string[] = $state([]);
+
+    let shownMessages = $derived(stats.filter(point => !hidePlayers.includes(point.id)));
 
     function sortMessages(which: string) {
         if(which == sortingMessages) {
@@ -101,7 +121,7 @@
         }
     }
 
-    const sortedstats = $derived.by(() => {
+    const sortedStats = $derived.by(() => {
         const copy = [...stats];
 
         copy.sort((a, b) => {
@@ -129,6 +149,15 @@
 
         return copy;
     });
+
+    const xKeyMessages = 'messages';
+    const yKeyMessages = 'words';
+
+    const r = 4.5;
+    const padding = 2.5;
+    const fill = '#000';
+    const stroke = '#0cf';
+    const strokeWidth = 1.5;
 </script>
 
 <div class="h-[calc(100dvh-2rem)] md:h-[calc(100dvh-2rem)] flex flex-col items-center">
@@ -263,6 +292,16 @@
                         </div>
                     {/each}
                 {:else if id == "Stats"}
+                    <p class="opacity-75 mt-5 mb-2">Day</p>
+
+                    <div class="flex">
+                        {#each Array.from({ length: data.day }, (_, i) => i + 1) as day}
+                            <button onclick={() => { selectedDay = day; }} class="text-base text-center {selectedDay == day ? "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black" : "bg-zinc-200 dark:bg-zinc-900"} px-3 py-2.5 mr-0.5 w-full {day == 1 ? "rounded-l-lg" : "rounded-l-sm"} {day == data.global.day ? "rounded-r-lg" : "rounded-r-sm"} font-bold">
+                                {day}
+                            </button>
+                        {/each}
+                    </div>
+
                     <div class="flex opacity-75 mt-5 mb-2 px-2.5 text-xs sm:text-base">
                         <div class="w-2/5 sm:w-1/4 flex items-center">
                             {@render toggle("name")}
@@ -275,7 +314,7 @@
                             <span class="inline sm:hidden">Mes</span>
                             <span class="hidden sm:inline">Messages</span>
                         </div>
-                        <div class="w-1/5 sm:ww-1/4 flex items-center">
+                        <div class="w-1/5 sm:w-1/4 flex items-center">
                             {@render toggle("words")}
 
                             <span class="inline sm:hidden">Wrd</span>
@@ -288,7 +327,7 @@
                         </div>
                     </div>
 
-                    {#each sortedstats as stat, i (stat.id)}
+                    {#each sortedStats as stat, i (stat.id)}
                         {@const user = data.users.find(user => user.id == stat.id) ?? getTag(stat.id)}
 
                         <div class="flex items-center text-sm sm:text-base bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == stats.length - 1 ? "rounded-b-lg" : "rounded-b-sm"} font-bold">
@@ -307,9 +346,36 @@
                         </div>
                     {/each}
 
-                    <p class="whitespace-pre mt-8">
-                        {JSON.stringify(stats, null, "\t")}
-                    </p>
+                    <p class="opacity-75 mt-5 mb-2">Graph</p>
+
+                    <div class="bg-zinc-200 dark:bg-zinc-900 rounded-lg p-4 pb-9">
+                        <div class="chart-container ml-7">
+                            <LayerCake
+                                ssr
+                                percentRange
+                                padding={{ top: 10, right: 5, bottom: 20, left: 25 }}
+                                x={xKeyMessages}
+                                y={yKeyMessages}
+                                xPadding={[padding, padding]}
+                                yPadding={[padding, padding]}
+                                data={shownMessages}
+                            >
+                        
+                            <Html>
+                                <AxisX label={xKeyMessages} />
+                                <AxisY label={yKeyMessages} />
+                                <Scatter
+                                    {r}
+                                    {fill}
+                                    {stroke}
+                                    {strokeWidth}
+                                    formatLabel={(input: string) => (data.users.find(user => user.id == input)?.nickname ?? input)}
+                                />
+                            </Html>
+                        
+                            </LayerCake>
+                        </div>
+                    </div>
                 {:else if id == "Debug"}
                     <p class="whitespace-pre">
                         {JSON.stringify(data, null, "\t")}
@@ -331,3 +397,10 @@
         {/if}
     </button>
 {/snippet}
+
+<style>
+    .chart-container {
+        width: calc(100%-1.75rem);
+        height: 225px;
+    }
+</style>
