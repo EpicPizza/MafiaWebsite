@@ -24,6 +24,7 @@
 		"date-and-time": "^3.3.0",
 		"firebase": "^12.6.0",
 		"layercake": "^10.0.2",
+		"melt": "^0.42.0",
 		"postcss": "^8.4.38",
 		"regl": "^2.1.0",
 		"svelte": "^5.45.8",
