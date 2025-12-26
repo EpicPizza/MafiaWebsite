@@ -5,12 +5,15 @@
     import { flip } from 'svelte/animate';
     import dnt from 'date-and-time';
     import meridiem from 'date-and-time/plugin/meridiem';
-    import { getContext } from 'svelte';
+    import { getContext, onMount, tick, untrack } from 'svelte';
     import type { Client } from '$lib/Firebase/firebase.svelte.js';
     import { collection, limit, onSnapshot, orderBy, query, type Unsubscribe } from 'firebase/firestore';
     import { type Log, type StatsAction } from './types.js';
     import Tag from './votes/[day]/Tag.svelte';
     import Copy from './votes/[day]/Copy.svelte';
+    import { page } from '$app/state';
+    import { pushState, replaceState } from '$app/navigation';
+    import { browser } from '$app/environment';
 
     dnt.plugin(meridiem);
 
@@ -58,13 +61,30 @@
         }
     });
     
-    const tabs = new Tabs({ value: "Home" as string });
+    const tabs = new Tabs({ value: data.tab });
     const tabIds = ["Home", "Players", "Pins", "Stats", "Votes", "Debug"];
+
+    $effect(() => {
+        if('tab' in page.state) {
+            tabs.value = page.state.tab as string;
+        } else {
+            pushTab(data.tab);
+        }
+    })
+
+    async function pushTab(tab: string) {
+        const url = untrack(() => new URL(page.url.toString()));
+
+        url.searchParams.set('tab', tab);
+
+        await tick();
+
+        pushState(url.toString(), { tab: tab });
+    }
 
     function getTag(nickname: string) {
         return data.users.find(user => user.nickname == nickname) ?? { nickname: nickname, pfp: "/favicon.png", id: nickname, color: "#ffffff" } satisfies Omit<(typeof data)["users"][0], "pronouns" | "lName" | "channel">;
     }
-
 </script>
 
 <div class="h-[calc(100dvh-4rem)] md:h-[calc(100dvh-2rem)] flex flex-col justify-around items-center">
@@ -80,7 +100,7 @@
 
         <div {...tabs.triggerList} class="bg-zinc-200 dark:bg-zinc-900 px-3 mt-3 py-2 relative rounded-md border-border-light dark:border-border-dark flex gap-2">
             {#each tabIds as id}
-                <button {...tabs.getTrigger(id)} class="font-bold {id == tabs.value ? "" : "opacity-50"} w-20 relative text-base">
+                <button {...{... tabs.getTrigger(id), onclick: () => { pushTab(tabs.getTrigger(id).onclick()) } }} class="font-bold {id == tabs.value ? "" : "opacity-50"} w-20 relative text-base">
                     {id}
                 </button>
             {/each}

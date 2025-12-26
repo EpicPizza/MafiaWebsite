@@ -53,6 +53,7 @@ export async function load({ params, locals, url }) {
         votes,
         players: currentPlayers,
         stats,
-        half
+        half,
+        tab: url.searchParams.get("tab") ?? "Home",
     };
 }
