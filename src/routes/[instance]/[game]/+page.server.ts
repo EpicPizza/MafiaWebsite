@@ -18,6 +18,13 @@ export async function load({ params, locals, url }) {
 
     const users = await getUsers(instance, game.signups);
 
+    users.sort((a, b) => {
+        const aAlive = instance.global.players.find(player => player.id == a.id);
+        const bAlive = instance.global.players.find(player => player.id == b.id);
+
+        return aAlive && !bAlive ? -1 : 1;
+    })
+
     const db = firebaseAdmin.getFirestore();
         
     const currentPlayers = (await db.collection('instances').doc(instance.id).collection('day').doc(instance.global.day.toString()).get()).data()?.players as string[] | undefined ?? [];

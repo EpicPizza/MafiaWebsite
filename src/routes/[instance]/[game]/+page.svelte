@@ -82,6 +82,8 @@
         pushState(url.toString(), { tab: tab });
     }
 
+    $inspect(data.users);
+
     function getTag(nickname: string) {
         return data.users.find(user => user.nickname == nickname) ?? { nickname: nickname, pfp: "/favicon.png", id: nickname, color: "#ffffff" } satisfies Omit<(typeof data)["users"][0], "pronouns" | "lName" | "channel">;
     }
@@ -122,12 +124,7 @@
                 {:else if id == "Players"}
 
                     <div class="mt-4">
-                        {#each data.users.sort((a, b) => {
-                            const aAlive = data.global.players.find(player => player.id == a.id);
-                            const bAlive = data.global.players.find(player => player.id == b.id);
-
-                            return aAlive && !bAlive ? -1 : 1;
-                        }) as user, i}
+                        {#each data.users as user, i}
                             {@const alive = !!data.global.players.find(player => player.id == user.id)}
                             
                             <div class="flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == data.users.length - 1 ? "rounded-b-lg" : "rounded-b-sm"}">
