@@ -13,8 +13,8 @@
     let { tag }: Props = $props();
 </script>
 
-<div class="flex items-center gap-1.5">
+<div style="color: {tag.color};" class="flex items-center gap-1.5">
     <img src="{tag.pfp}" alt="{tag.nickname}'s profile" class="w-5 h-5 rounded-full">
 
-    <p style="color: {tag.color};">{tag.nickname}</p>
+    <p class="text-black dark:text-inherit">{tag.nickname}</p>
 </div>

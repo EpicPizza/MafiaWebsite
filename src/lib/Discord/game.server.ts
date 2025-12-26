@@ -1,7 +1,7 @@
 import { firebaseAdmin } from "$lib/Firebase/firebase.server";
 import type { Instance } from "./instance.server";
 
-export interface Signups { 
+export interface Game { 
     name: string, 
     signups: string[], 
     id: string,
@@ -14,6 +14,7 @@ export interface Signups {
         mafia: string,
     }
     confirmations: string[],
+    mods?: string[],
 }
 
 export async function getGameByID(instance: Instance, id: string) {
@@ -27,5 +28,5 @@ export async function getGameByID(instance: Instance, id: string) {
 
     if(doc.data() == undefined) throw new Error("Game not found in database.");
 
-    return { ... doc.data(), id: doc.id } as Signups;
+    return { ... doc.data(), id: doc.id } as Game;
 }

@@ -62,5 +62,6 @@ export async function load({ params, locals, url }) {
         stats,
         half,
         tab: url.searchParams.get("tab") ?? "Home",
+        mods: 'mods' in game && game.mods ? await getUsers(instance, game.mods) : []
     };
 }

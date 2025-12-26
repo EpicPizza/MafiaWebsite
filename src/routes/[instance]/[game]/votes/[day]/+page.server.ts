@@ -1,7 +1,6 @@
 import { env } from '$env/dynamic/private';
 import { getUsers } from '$lib/Discord/users.server.js';
 import { firebaseAdmin } from '$lib/Firebase/firebase.server.js';
-import { getGameByID } from '$lib/users.server.js';
 import { error } from '@sveltejs/kit';
 
 export async function load({ params, locals }) {

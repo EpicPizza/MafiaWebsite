@@ -1,7 +1,7 @@
 // See https://kit.svelte.dev/docs/types#app
 
 import type { Instance } from "$lib/Discord/instance.server";
-import type { Game } from "$lib/users.server";
+import type { Game } from '$lib/Discord/game.server';
 
 // for information about these interfaces
 declare global {

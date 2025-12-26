@@ -27,7 +27,6 @@ export const POST = (async ({ request, cookies }) => {
       .createSessionCookie(encodedToken, { expiresIn });
 
     cookies.set("__session", sessionCookie, {
-      domain: "frcmafia.com",
       maxAge: expiresIn,
       httpOnly: true,
       secure: true,

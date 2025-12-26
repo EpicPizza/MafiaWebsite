@@ -2,8 +2,7 @@ import { firebaseAdmin, getUser } from '$lib/Firebase/firebase.server';
 import { error } from 'console';
 import type { APIUser } from 'discord.js';
 import { getInstance, getInstances, type Instance } from '$lib/Discord/instance.server';
-import type { Game } from '$lib/users.server';
-import { getGameByID } from '$lib/Discord/game.server';
+import { getGameByID, type Game } from '$lib/Discord/game.server';
 
 export const handle = (async ({ event, resolve }) => {
     const sessionCookie = event.cookies.get("__session");

@@ -89,14 +89,14 @@
     }
 </script>
 
-<div class="h-[calc(100dvh-4rem)] md:h-[calc(100dvh-2rem)] flex flex-col justify-around items-center">
-    <div class="max-h-[calc(100dvh-10rem)] md:max-h-full max-w-[calc(100vw-2rem)] overflow-auto w-[40rem] bg-white dark:bg-zinc-800 border border-border-light dark:border-border-dark p-8 rounded-2xl relative">
+<div class="h-[calc(100dvh-2rem)] md:h-[calc(100dvh-2rem)] flex flex-col items-center">
+    <div class="max-h-full max-w-[calc(100vw-2rem)] overflow-auto w-[40rem] bg-white dark:bg-zinc-800 border border-border-light dark:border-border-dark p-8 rounded-2xl relative">
         
         <div class="flex items-center justify-between">
             <h1 class="text-xl font-bold mt-0.5">{data.game.name} Mafia</h1>
-            <div class="flex items-center gap-1.5 text-yellow-800 bg-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/15 rounded-md px-3 py-1">
+            <div class="flex items-center gap-2 text-yellow-800 bg-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/15 rounded-md px-3 py-1">
                 <Icon width=1.2rem icon=material-symbols:flight-takeoff></Icon>
-                <p class="font-bold">Game In Progress</p>
+                <p class="font-bold max-w-min sm:max-w-fit">Game In Progress</p>
             </div>
         </div>
 
@@ -122,30 +122,39 @@
                         </div>
                     </div>
                 {:else if id == "Players"}
+                    {#if data.mods.length > 0}
+                        <p class="opacity-75 mb-2 mt-5">Mods</p>
 
-                    <div class="mt-4">
-                        {#each data.users as user, i}
-                            {@const alive = !!data.global.players.find(player => player.id == user.id)}
-                            
-                            <div class="flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == data.users.length - 1 ? "rounded-b-lg" : "rounded-b-sm"}">
+                        {#each data.mods as user, i}
+                            <div class="flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == data.mods.length - 1 ? "rounded-b-lg" : "rounded-b-sm"} font-bold">
                                 <Tag tag={user}></Tag>
-                                <p class="bg-zinc-100 dark:bg-zinc-900 {alive ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"} border border-border-light dark:border-border-dark p-2 py-1 rounded-md font-bold text-xs h-fit font-bold">
-                                    { alive ? "Alive" : "Dead" }
-                                </p>
                             </div>
                         {/each}
-                    </div>
+                    {/if}
+
+                    <p class="opacity-75 my-5 mb-2">Players</p>
+
+                    {#each data.users as user, i}
+                        {@const alive = !!data.global.players.find(player => player.id == user.id)}
+                        
+                        <div class="flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == data.users.length - 1 ? "rounded-b-lg" : "rounded-b-sm"} font-bold">
+                            <Tag tag={user}></Tag>
+                            <p class="bg-zinc-100 dark:bg-zinc-900 {alive ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"} border border-border-light dark:border-border-dark p-2 py-1 rounded-md text-xs h-fit">
+                                { alive ? "Alive" : "Dead" }
+                            </p>
+                        </div>
+                    {/each}
                 {:else if id == "Votes"}
-                    <div class="mt-4 flex gap-2 items-center">
+                    <div class="mt-5 mb-2 flex gap-2 items-center">
                         <p class="opacity-75">Full Vote History - </p>
                         {#each Array.from({ length: data.day }, (_, i) => i + 1) as day}
                             <a href="/{data.instance}/{data.game.id}/votes/{day}" class="block w-7 h-7 text-sm rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-around">{day}</a>
                         {/each}
                     </div>
                     
-                    <div class="bg-zinc-200 dark:bg-zinc-900 p-4 pl-5 rounded-lg mt-4 mb-4 relative overflow-hidden">
+                    <div class="bg-zinc-200 dark:bg-zinc-900 p-4 pl-5 rounded-lg mb-4 relative overflow-hidden">
                         <p class="text-lg font-bold mb-2">Votes - Today (Day {data.day})</p>
-                        <p class="whitespace-pre mb-2.5">
+                        <p class="whitespace-pre-wrap mb-2.5">
                             {votes.length == 0 || votes[0].board == "" ? "No votes recorded." : votes[0].board}
                         </p>
                         <p class="text-sm opacity-50">
@@ -158,7 +167,7 @@
                         <div class="w-1 h-full bg-yellow-500 left-0 top-0 absolute"></div>
                     </div>
 
-                    <p class="opacity-75 my-4">Recent Votes</p>
+                    <p class="opacity-75 mt-5 mb-2">Recent Votes</p>
 
                     {#each votes as log, i (log.timestamp)}
                         <div class="gap-3 sm:gap-0 flex-col sm:flex-row flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == votes.length - 1 ? "rounded-b-lg" : "rounded-b-sm"}">
@@ -166,19 +175,19 @@
                                 {@const vote = log.vote}
 
                                 {#if vote.for != 'unvote'}
-                                    <div class="flex items-center text-green-500 font-bold gap-0.5">
+                                    <div class="flex items-center text-green-700 dark:text-green-500 font-bold gap-0.5">
                                         <Tag tag={getTag(log.search.name)}></Tag>
-                                        <Icon scale=1.2rem icon=material-symbols:keyboard-double-arrow-right></Icon>
+                                        <Icon width=1.2rem icon=material-symbols:keyboard-double-arrow-right></Icon>
                                         {#if log.search.replace}
                                             <Tag tag={getTag(log.search.replace)}></Tag>
-                                            <Icon scale=1.2rem class="rotate-90 mx-1 text-yellow-500 font-bold" icon=material-symbols:switch-access-shortcut></Icon>
+                                            <Icon width=1.2rem class="rotate-90 mx-1 text-yellow-600 dark:text-yellow-500 font-bold" icon=material-symbols:switch-access-shortcut></Icon>
                                         {/if}
                                         <Tag tag={getTag(log.search.for ?? "---")}></Tag>
                                     </div>
                                 {:else}
-                                    <div class="flex items-center text-red-500 font-bold gap-0.5">
+                                    <div class="flex items-center text-red-600 dark:text-red-500 font-bold gap-0.5">
                                         <Tag tag={getTag(log.search.name)}></Tag>
-                                        <Icon scale=1.2rem class="rotate-[225deg] mx-0.5 translate-y-0.5" icon=material-symbols:call-missed></Icon>
+                                        <Icon width=1.2rem class="rotate-[225deg] mx-0.5 translate-y-0.5" icon=material-symbols:call-missed></Icon>
                                         {#if log.search.replace}
                                             <Tag tag={getTag(log.search.replace)}></Tag>
                                         {/if}
