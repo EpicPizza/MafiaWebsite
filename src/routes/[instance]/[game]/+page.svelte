@@ -52,7 +52,9 @@
         });
 
         unsubscribeStats = onSnapshot(statsRef, async snapshot => {
-            stats = snapshot.docs.map(doc => ({ ...doc.data(), instance: data.instance, game: data.game.id, day: data.day, type: "add", id: doc.ref.id })) as unknown as StatsAction[];
+           const incoming = (snapshot.docs.map(doc => ({ ...doc.data(), instance: data.instance, game: data.game.id, day: data.day, type: "add", id: doc.ref.id })) as unknown as StatsAction[]).filter(stat => data.users.find(user => user.id == stat.id));
+
+           stats = incoming;
         });
 
         return () => {
@@ -85,7 +87,7 @@
     $inspect(data.users);
 
     function getTag(nickname: string) {
-        return data.users.find(user => user.nickname == nickname) ?? { nickname: nickname, pfp: "/favicon.png", id: nickname, color: "#ffffff" } satisfies Omit<(typeof data)["users"][0], "pronouns" | "lName" | "channel">;
+        return data.users.find(user => user.nickname == nickname) ?? { nickname: nickname, pfp: "/favicon.png", id: nickname, color: "#ffffff" } satisfies Omit<(typeof data)["users"][0], "pronouns" | "state" | "lName" | "channel">;
     }
 </script>
 
@@ -221,7 +223,41 @@
                         </div>
                     {/each}
                 {:else if id == "Stats"}
-                    <p class="whitespace-pre">
+                    <div class="flex opacity-75 mt-5 mb-2 px-2.5">
+                        <div class="w-2/5">
+                            Player
+                        </div>
+                        <div class="w-1/5">
+                            Messages
+                        </div>
+                        <div class="w-1/5">
+                            Words
+                        </div>
+                        <div class="w-1/5">
+                            WPM
+                        </div>
+                    </div>
+
+                    {#each stats as stat, i (stat.id)}
+                        {@const user = data.users.find(user => user.id == stat.id) ?? getTag(stat.id)}
+
+                        <div class="flex items-center bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == stats.length - 1 ? "rounded-b-lg" : "rounded-b-sm"} font-bold">
+                            <div class="w-2/5">
+                                <Tag tag={user}></Tag>
+                            </div>
+                             <div class="w-1/5">
+                                {stat.messages}
+                            </div>
+                            <div class="w-1/5">
+                                {stat.words}
+                            </div>
+                            <div class="w-1/5">
+                                {(stat.words / stat.messages).toFixed(2)}
+                            </div>
+                        </div>
+                    {/each}
+
+                    <p class="whitespace-pre mt-8">
                         {JSON.stringify(stats, null, "\t")}
                     </p>
                 {:else if id == "Debug"}

@@ -30,7 +30,7 @@ export async function load({ params, locals, url }) {
     const currentPlayers = (await db.collection('instances').doc(instance.id).collection('day').doc(instance.global.day.toString()).get()).data()?.players as string[] | undefined ?? [];
 
     const ref = db.collection('instances').doc(instance.id).collection('games').doc(game.id).collection('days').doc(instance.global.day.toString()).collection('stats');
-    const stats = (await ref.get()).docs.map(doc => ({ ...doc.data(), instance: instance.id, game: game.id, day: instance.global.day, type: "add", id: doc.ref.id })) as unknown as StatsAction[];
+    const stats = ((await ref.get()).docs.map(doc => ({ ...doc.data(), instance: instance.id, game: game.id, day: instance.global.day, type: "add", id: doc.ref.id })) as unknown as StatsAction[]).filter(stat => users.find(user => user.id == stat.id));
 
     const custom = parseInt(env.HAMMER_THRESHOLD_PLAYERS ?? '-1');
     const playerCount = custom === -1 ? instance.global.players.length : custom;

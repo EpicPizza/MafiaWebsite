@@ -1,7 +1,15 @@
 import { firebaseAdmin } from "$lib/Firebase/firebase.server";
-import type { User } from "$lib/users.server";
 import client from "./client.server";
 import type { Instance } from "./instance.server";
+
+export interface User {
+    id: string,
+    nickname: string,
+    lName: string,
+    pronouns: string | null,
+    channel: string | null,
+    state: number,
+}
 
 export type CompleteUser = Awaited<ReturnType<typeof getUser>>;
 
