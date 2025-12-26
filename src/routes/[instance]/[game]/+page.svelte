@@ -98,9 +98,9 @@
             </div>
         </div>
 
-        <div {...tabs.triggerList} class="bg-zinc-200 dark:bg-zinc-900 px-3 mt-3 py-2 relative rounded-md border-border-light dark:border-border-dark flex gap-2">
+        <div {...tabs.triggerList} class="bg-zinc-200 dark:bg-zinc-900 px-3 mt-3 py-2 relative rounded-md border-border-light dark:border-border-dark flex gap-2 overflow-x-auto">
             {#each tabIds as id}
-                <button {...{... tabs.getTrigger(id), onclick: () => { pushTab(tabs.getTrigger(id).onclick()) } }} class="font-bold {id == tabs.value ? "" : "opacity-50"} w-20 relative text-base">
+                <button {...{... tabs.getTrigger(id), onclick: () => { pushTab(tabs.getTrigger(id).onclick()) } }} class="font-bold {id == tabs.value ? "" : "opacity-50"} min-w-20 relative text-base">
                     {id}
                 </button>
             {/each}
@@ -120,19 +120,22 @@
                         </div>
                     </div>
                 {:else if id == "Players"}
-                    <div class="border shadow-md dark:shadow-xl border-border-light dark:border-border-dark mt-6 min-h-[30rem] w-full rounded-lg p-6 flex flex-col gap-3">
-                        {#each data.users as user}
+
+                    <div class="mt-4">
+                        {#each data.users.sort((a, b) => {
+                            const aAlive = data.global.players.find(player => player.id == a.id);
+                            const bAlive = data.global.players.find(player => player.id == b.id);
+
+                            return aAlive && !bAlive ? -1 : 1;
+                        }) as user, i (user.id)}
                             {@const alive = !!data.global.players.find(player => player.id == user.id)}
-                            <div class="flex justify-between items-center {alive ? "" : "opacity-30"}">
-                                <div class="flex items-center gap-2">
-                                    <img alt="{user.nickname}'s Profile" class="rounded-full h-8 w-8" src="{user.pfp}">
-                                    <p style="color: {user.color};" class="font-bold">{user.nickname}</p>
-                                </div>
-                                <p class="px-2 py-1 bg-black rounded-md font-bold text-sm">
+                            
+                            <div class="flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == data.users.length - 1 ? "rounded-b-lg" : "rounded-b-sm"}">
+                                <Tag tag={user}></Tag>
+                                <p class="bg-zinc-100 dark:bg-zinc-900 {alive ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"} border border-border-light dark:border-border-dark p-2 py-1 rounded-md font-bold text-xs h-fit font-bold">
                                     { alive ? "Alive" : "Dead" }
                                 </p>
                             </div>
-                            <Line></Line>
                         {/each}
                     </div>
                 {:else if id == "Votes"}
@@ -161,7 +164,7 @@
                     <p class="opacity-75 my-4">Recent Votes</p>
 
                     {#each votes as log, i (log.timestamp)}
-                        <div class="flex justify-between items-center bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == votes.length - 1 ? "rounded-b-lg" : "rounded-b-sm"}">
+                        <div class="gap-3 sm:gap-0 flex-col sm:flex-row flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == votes.length - 1 ? "rounded-b-lg" : "rounded-b-sm"}">
                             {#if log.type == 'standard'}
                                 {@const vote = log.vote}
 
@@ -199,7 +202,7 @@
                             {/if}
 
                             {#if log.messageId != null}
-                                <div class="flex gap-1 items-center">
+                                <div class="flex gap-1 items-center ml-auto">
                                     <p class="text-sm mr-2">{dnt.format(new Date(log.timestamp), "h:mm a")}</p>
 
                                     <a target="_blank" href="https://discord.com/channels/569988266657316884/695129859147694174/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 border border-border-light dark:border-border-dark p-2 py-1 rounded-md font-bold text-xs">
