@@ -12,7 +12,7 @@ export async function load({ params, locals }) {
 
     const db = firebaseAdmin.getFirestore();
 
-    const ref = db.collection('instances').doc(instance.id).collection('day').doc(params.day).collection('votes');
+    const ref = db.collection('instances').doc(instance.id).collection('games').doc(game.id).collection('days').doc(params.day).collection('votes');
 
     const docs = (await ref.get()).docs;
    

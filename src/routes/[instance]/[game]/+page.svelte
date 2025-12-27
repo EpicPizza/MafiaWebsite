@@ -38,7 +38,7 @@
         if(unsubscribeVotes) unsubscribeVotes();
 
         const db = client.getFirestore();
-        const votesRef = query(collection(db, "instances", data.instance, "day", data.day.toString(), "votes"), orderBy("timestamp", "desc"), limit(5));
+        const votesRef = query(collection(db, "instances", data.instance, "games", data.game.id, "days", data.day.toString(), "votes"), orderBy("timestamp", "desc"), limit(5));
 
         unsubscribeVotes = onSnapshot(votesRef, async snapshot => {
             const incoming = snapshot.docs.map(doc => doc.data()).filter(doc => doc != undefined) as Log[];
@@ -83,10 +83,10 @@
     $inspect(data.users);
 
     function getTag(nickname: string) {
-        return data.users.find(user => user.nickname == nickname) ?? { nickname: nickname, pfp: "/favicon.png", id: nickname, color: "#ffffff" } satisfies Omit<(typeof data)["users"][0], "pronouns" | "state" | "lName" | "channel">;
+        return data.users.find(user => user.nickname == nickname) ?? { nickname: nickname, pfp: "/favicon.png", id: nickname, color: "#ffffff" } satisfies Omit<(typeof data)["users"][0], "pronouns" | "state" | "lName" | "channel" | "i">;
     }
 
-    let selectedDay = $state(data.global.day);
+    let selectedDay = $state(data.game.state == 'active' ? data.day : 1);
 
     $effect(() => {
         if(!client.user) return;
@@ -165,10 +165,17 @@
         
         <div class="flex items-center justify-between">
             <h1 class="text-xl font-bold mt-0.5">{data.game.name} Mafia</h1>
-            <div class="flex items-center gap-2 text-yellow-800 bg-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/15 rounded-md px-3 py-1">
-                <Icon width=1.2rem icon=material-symbols:flight-takeoff></Icon>
-                <p class="font-bold max-w-min sm:max-w-fit">Game In Progress</p>
-            </div>
+            {#if data.game.state == 'active'}
+                <div class="flex items-center gap-2 text-yellow-800 bg-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/15 rounded-md px-3 py-1">
+                    <Icon width=1.2rem icon=material-symbols:flight-takeoff></Icon>
+                    <p class="font-bold max-w-min sm:max-w-fit">Game In Progress</p>
+                </div>
+            {:else}
+                <div class="flex items-center gap-2 text-red-800 bg-red-200 dark:text-red-400 dark:bg-red-500/15 rounded-md px-3 py-1">
+                    <Icon width=1.2rem icon=material-symbols:flight-land></Icon>
+                    <p class="font-bold max-w-min sm:max-w-fit">Game Completed</p>
+                </div>
+            {/if}
         </div>
 
         <div {...tabs.triggerList} class="bg-zinc-200 dark:bg-zinc-900 px-3 mt-3 py-2 relative rounded-md border-border-light dark:border-border-dark flex gap-2 overflow-x-auto">
@@ -198,7 +205,7 @@
 
                         {#each data.mods as user, i}
                             <div class="flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == data.mods.length - 1 ? "rounded-b-lg" : "rounded-b-sm"} font-bold">
-                                <Tag tag={user}></Tag>
+                                <Tag pronouns tag={user}></Tag>
                             </div>
                         {/each}
                     {/if}
@@ -209,10 +216,32 @@
                         {@const alive = !!data.global.players.find(player => player.id == user.id)}
                         
                         <div class="flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == data.users.length - 1 ? "rounded-b-lg" : "rounded-b-sm"} font-bold">
-                            <Tag tag={user}></Tag>
-                            <p class="bg-zinc-100 dark:bg-zinc-900 {alive ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"} border border-border-light dark:border-border-dark p-2 py-1 rounded-md text-xs h-fit">
-                                { alive ? "Alive" : "Dead" }
-                            </p>
+                            <Tag pronouns tag={user}></Tag>
+                            {#if data.game.state == 'active' && data.global.game == data.game.id}
+                                <p class="bg-zinc-100 dark:bg-zinc-900 {alive ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"} border border-border-light dark:border-border-dark p-2 py-1 rounded-md text-xs h-fit">
+                                    { alive ? "Alive" : "Dead" }
+                                </p>
+                            {:else if data.game.state != 'active'}
+                                {@const alignment = data.game.alignments[user.i]}
+                                
+                                <div class="flex items-center gap-2">
+                                    {#if data.game.winners.includes(user.id)}
+                                        <Icon width=1.25rem class="text-yellow-600 dark:text-yellow-500" icon=material-symbols:crown></Icon>
+                                    {/if}
+
+                                    <p class="bg-zinc-100 dark:bg-zinc-900 border border-border-light dark:border-border-dark p-2 py-1 rounded-md text-xs h-fit">
+                                        {#if alignment == "Town"}
+                                            <span class="text-green-600 dark:text-green-500">Town</span>
+                                        {:else if alignment == "Neutral"}
+                                            <span class="text-yellow-600 dark:text-yellow-500">Neutral</span>
+                                        {:else if alignment == "Mafia"}
+                                            <span class="text-red-600 dark:text-red-500">Mafia</span>
+                                        {:else}
+                                            <span class="text-purple-600 dark:text-purple-500">{alignment}</span>
+                                        {/if}
+                                    </p>
+                                </div>
+                            {/if}
                         </div>
                     {/each}
                 {:else if id == "Votes"}
@@ -296,7 +325,7 @@
 
                     <div class="flex gap-0.5">
                         {#each Array.from({ length: data.day }, (_, i) => i + 1) as day}
-                            <button onclick={() => { selectedDay = day; }} class="text-base text-center {selectedDay == day ? "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black" : "bg-zinc-200 dark:bg-zinc-900"} px-3 py-2.5 w-full {day == 1 ? "rounded-l-lg" : "rounded-l-sm"} {day == data.global.day ? "rounded-r-lg" : "rounded-r-sm"} font-bold">
+                            <button onclick={() => { selectedDay = day; }} class="text-base text-center {selectedDay == day ? "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black" : "bg-zinc-200 dark:bg-zinc-900"} px-3 py-2.5 w-full {day == 1 ? "rounded-l-lg" : "rounded-l-sm"} {day == data.day ? "rounded-r-lg" : "rounded-r-sm"} font-bold">
                                 {day}
                             </button>
                         {/each}
