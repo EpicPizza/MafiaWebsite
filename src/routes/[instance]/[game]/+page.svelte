@@ -236,6 +236,8 @@
                                             <span class="text-yellow-600 dark:text-yellow-500">Neutral</span>
                                         {:else if alignment == "Mafia"}
                                             <span class="text-red-600 dark:text-red-500">Mafia</span>
+                                        {:else if alignment == "Modkilled"}
+                                            <span class="text-zinc-600 dark:text-zinc-500">Modkilled</span>
                                         {:else}
                                             <span class="text-purple-600 dark:text-purple-500">{alignment}</span>
                                         {/if}
