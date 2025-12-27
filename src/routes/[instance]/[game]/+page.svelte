@@ -163,7 +163,7 @@
 <div class="h-[calc(100dvh-2rem)] md:h-[calc(100dvh-2rem)] flex flex-col items-center">
     <div class="max-h-full max-w-[calc(100vw-2rem)] overflow-auto w-[40rem] bg-white dark:bg-zinc-800 border border-border-light dark:border-border-dark p-8 rounded-2xl relative">
         
-        <div class="bg-zinc-800 sticky -top-8 z-10 pt-8 pb-2 -mb-2 -mt-8">
+        <div class="bg-white dark:bg-zinc-800 sticky -top-8 z-10 pt-8 pb-2 -mb-2 -mt-8">
             <div class="flex items-center justify-between">
                 <h1 class="text-xl font-bold mt-0.5">{data.game.name} Mafia</h1>
                 {#if data.game.state == 'active'}
