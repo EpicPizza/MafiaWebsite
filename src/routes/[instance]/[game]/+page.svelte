@@ -163,29 +163,31 @@
 <div class="h-[calc(100dvh-2rem)] md:h-[calc(100dvh-2rem)] flex flex-col items-center">
     <div class="max-h-full max-w-[calc(100vw-2rem)] overflow-auto w-[40rem] bg-white dark:bg-zinc-800 border border-border-light dark:border-border-dark p-8 rounded-2xl relative">
         
-        <div class="flex items-center justify-between">
-            <h1 class="text-xl font-bold mt-0.5">{data.game.name} Mafia</h1>
-            {#if data.game.state == 'active'}
-                <div class="flex items-center gap-2 text-yellow-800 bg-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/15 rounded-md px-3 py-1">
-                    <Icon width=1.2rem icon=material-symbols:flight-takeoff></Icon>
-                    <p class="font-bold max-w-min sm:max-w-fit">Game In Progress</p>
-                </div>
-            {:else}
-                <div class="flex items-center gap-2 text-red-800 bg-red-200 dark:text-red-400 dark:bg-red-500/15 rounded-md px-3 py-1">
-                    <Icon width=1.2rem icon=material-symbols:flight-land></Icon>
-                    <p class="font-bold max-w-min sm:max-w-fit">Game Completed</p>
-                </div>
-            {/if}
-        </div>
+        <div class="bg-zinc-800 sticky -top-8 z-10 pt-8 pb-2 -mb-2 -mt-8">
+            <div class="flex items-center justify-between">
+                <h1 class="text-xl font-bold mt-0.5">{data.game.name} Mafia</h1>
+                {#if data.game.state == 'active'}
+                    <div class="flex items-center gap-2 text-yellow-800 bg-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/15 rounded-md px-3 py-1">
+                        <Icon width=1.2rem icon=material-symbols:flight-takeoff></Icon>
+                        <p class="font-bold max-w-min sm:max-w-fit">Game In Progress</p>
+                    </div>
+                {:else}
+                    <div class="flex items-center gap-2 text-red-800 bg-red-200 dark:text-red-400 dark:bg-red-500/15 rounded-md px-3 py-1">
+                        <Icon width=1.2rem icon=material-symbols:flight-land></Icon>
+                        <p class="font-bold max-w-min sm:max-w-fit">Game Completed</p>
+                    </div>
+                {/if}
+            </div>
 
-        <div {...tabs.triggerList} class="bg-zinc-200 dark:bg-zinc-900 px-3 mt-3 py-2 relative rounded-md border-border-light dark:border-border-dark flex gap-2 overflow-x-auto">
-            {#each tabIds as id}
-                <button {...{... tabs.getTrigger(id), onclick: () => { pushTab(tabs.getTrigger(id).onclick()) } }} class="font-bold {id == tabs.value ? "" : "opacity-50"} min-w-20 relative text-base">
-                    {id}
-                </button>
-            {/each}
+            <div {...tabs.triggerList} class="bg-zinc-200 dark:bg-zinc-900 px-3 mt-3 py-2 relative rounded-md border-border-light dark:border-border-dark flex gap-2 overflow-x-auto">
+                {#each tabIds as id}
+                    <button {...{... tabs.getTrigger(id), onclick: () => { pushTab(tabs.getTrigger(id).onclick()) } }} class="font-bold {id == tabs.value ? "" : "opacity-50"} min-w-20 relative text-base">
+                        {id}
+                    </button>
+                {/each}
 
-            <div style="left: {(tabIds.indexOf(tabs.value) * 5.5) + 1.5}rem" class="bg-black dark:bg-white w-14 h-[3px] bottom-0 absolute rounded-t-full transition-all"></div>
+                <div style="left: {(tabIds.indexOf(tabs.value) * 5.5) + 1.5}rem" class="bg-black dark:bg-white w-14 h-[3px] bottom-0 absolute rounded-t-full transition-all"></div>
+            </div>
         </div>
 
         {#each tabIds as id}
