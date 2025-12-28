@@ -1,7 +1,7 @@
 import { firebaseAdmin } from "$lib/Firebase/firebase.server";
 import type { Instance } from "./instance.server";
 
-export interface Signups { 
+export interface Game { 
     name: string, 
     signups: string[], 
     id: string,
@@ -14,12 +14,36 @@ export interface Signups {
         mafia: string,
     }
     confirmations: string[],
+    mods: [],
+    days: number,
+    alignments: string[],
+    winners: string[],
+    losers: string[],
+    links: Link[],
+    state: 'active' | 'completed' | 'counting' | 'canned',
+    pinned: string | null,
+}
+
+type Link = DiscordLink | MaterialLink;
+
+interface DiscordLink {
+    type: 'Discord'
+    channelName: string,
+    label: string,
+    url: string,
+}
+
+interface MaterialLink {
+    type: 'Material',
+    logo: 'Drive' | 'Slides' | 'Docs' | 'Sheets' | 'Custom',
+    label: string,
+    url: string,
 }
 
 export async function getGameByID(instance: Instance, id: string) {
     const db = firebaseAdmin.getFirestore();
 
-    const ref = db.collection('instances').doc(instance.id).collection('settings').doc('game').collection('games').doc(id);
+    const ref = db.collection('instances').doc(instance.id).collection('games').doc(id);
 
     console.log(id)
 
@@ -27,5 +51,5 @@ export async function getGameByID(instance: Instance, id: string) {
 
     if(doc.data() == undefined) throw new Error("Game not found in database.");
 
-    return { ... doc.data(), id: doc.id } as Signups;
+    return { ... doc.data(), id: doc.id } as Game;
 }

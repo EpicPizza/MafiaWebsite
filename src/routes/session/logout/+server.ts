@@ -3,6 +3,7 @@ import { json, type RequestHandler } from "@sveltejs/kit";
 export const POST = (async ({ request, cookies }) => {
   cookies.delete("__session", { path: "/" });
   cookies.set("__session", "", {
+    domain: "frcmafia.com",
     maxAge: 0,
     httpOnly: true,
     secure: true,

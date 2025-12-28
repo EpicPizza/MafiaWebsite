@@ -38,6 +38,7 @@ export async function load({ request, cookies, url }) {
         id: user.id,
         step: 1,
     }), {
+        domain: "frcmafia.com",
         secure: true, // set to false in localhost
         path: "/",
         httpOnly: true,

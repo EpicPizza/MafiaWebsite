@@ -2,12 +2,12 @@
     import { run } from 'svelte/legacy';
 
     import Line from '$lib/Builders/Line.svelte';
-    import dnt from 'date-and-time';
     import meridiem from 'date-and-time/plugin/meridiem'
     import Icon from '$lib/Builders/Icon.svelte'
     import Copy from './Copy.svelte';
     import { createCombobox, createDropdownMenu, melt } from '@melt-ui/svelte'
     import Tag from './Tag.svelte';
+    import dnt from 'date-and-time';
 
     dnt.plugin(meridiem);
 
@@ -121,7 +121,7 @@
                 {#each filteredNames as name}
                     {@const tag = getTag(name)}
                     <button style="color: {tag.color};" class="px-3 py-2 w-full flex items-center gap-1.5  data-[highlighted]:bg-black  data-[highlighted]:bg-opacity-10  dark:data-[highlighted]:bg-white  dark:data-[highlighted]:bg-opacity-10  transition-all" use:melt={$option({ value: name })}>
-                        <img src="{tag.pfp}" alt="{tag.nickname}'s profile" class="w-5 h-5 rounded-full">{name}
+                        <img src="{tag.pfp}" alt="{tag.nickname}'s profile" class="w-5 h-5 rounded-full"><p class="font-bold text-black dark:text-inherit">{name}</p>
                     </button>
                 {:else}
                     <p class="px-3 py-2">
@@ -143,17 +143,17 @@
         
             <div class="flex justify-between items-center mb-2">
                 {#if vote.for != 'unvote'}
-                    <div class="flex items-center text-green-500 font-bold gap-0.5">
+                    <div class="flex items-center text-green-700 dark:text-green-500 font-bold gap-0.5">
                         <Tag tag={getTag(log.search.name)}></Tag>
                         <Icon scale=1.2rem icon="keyboard_double_arrow_right"></Icon>
                         {#if log.search.replace}
                              <Tag tag={getTag(log.search.replace)}></Tag>
-                            <Icon scale=1.2rem class="rotate-90 mx-1 text-yellow-500 font-bold" icon="switch_access_shortcut"></Icon>
+                            <Icon scale=1.2rem class="rotate-90 mx-1 text-yellow-600 dark:text-yellow-500 font-bold" icon="switch_access_shortcut"></Icon>
                         {/if}
                         <Tag tag={getTag(log.search.for ?? "---")}></Tag>
                     </div>
                 {:else}
-                    <div class="flex items-center text-red-500 font-bold gap-0.5">
+                    <div class="flex items-center text-red-600 dark:text-red-500 font-bold gap-0.5">
                         <Tag tag={getTag(log.search.name)}></Tag>
                         <Icon scale=1.2rem class="rotate-[225deg] mx-0.5 translate-y-0.5" icon="call_missed"></Icon>
                         {#if log.search.replace}
@@ -196,7 +196,7 @@
                     <div class="flex items-center gap-1">
                         <p class="text-sm opacity-50 mr-3">{dnt.format(new Date(log.timestamp), "MMMM D, h:mm:ss A")}</p>
 
-                        <a target="_blank" href="https://discord.com/channels/1357450274247151820/1397889550906429481/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 p-2 py-1 rounded-md font-bold text-xs">
+                        <a target="_blank" href="https://discord.com/channels/569988266657316884/695129859147694174/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 p-2 py-1 rounded-md font-bold text-xs">
                             Jump
                         </a>
 
@@ -215,7 +215,7 @@
 
                 {#if log.messageId != null}
                     <div class="flex gap-1">
-                        <a target="_blank" href="https://discord.com/channels/1357450274247151820/1397889550906429481/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 p-2 py-1 rounded-md font-bold text-xs">
+                        <a target="_blank" href="https://discord.com/channels/569988266657316884/695129859147694174/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 p-2 py-1 rounded-md font-bold text-xs">
                             Jump
                         </a>
 

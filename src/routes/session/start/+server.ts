@@ -13,9 +13,9 @@ export async function GET({ url, cookies }) {
     const state = url.searchParams.get("state");
 
     const session = cookies.get("__session");
-    if(session == undefined) error(401);
+    if(session == undefined) error(401, "session not found");
     const cookie = JSON.parse(session);
-    if(!('codeVerifier' in cookie) || !('state' in cookie) || !('redirectTo' in cookie)) error(401);
+    if(!('codeVerifier' in cookie) || !('state' in cookie) || !('redirectTo' in cookie)) error(401, "invalid session");
 
     console.log(cookie);
 

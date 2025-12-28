@@ -2,6 +2,7 @@ import { firebaseAdmin, getUser } from '$lib/Firebase/firebase.server';
 import { error } from 'console';
 import type { APIUser } from 'discord.js';
 import { getInstance, getInstances, type Instance } from '$lib/Discord/instance.server';
+import { getGameByID, type Game } from '$lib/Discord/game.server';
 
 export const handle = (async ({ event, resolve }) => {
     const sessionCookie = event.cookies.get("__session");
@@ -84,7 +85,23 @@ export const handle = (async ({ event, resolve }) => {
 
         return instance;
     }
-    
+
+    let game: undefined | Promise<Game | undefined>;
+
+    event.locals.getGame = async () => {
+        const instance = await event.locals.getInstance();
+
+        if(event.params.game == undefined || instance == undefined) return undefined;
+
+        if(game == undefined) {
+            game = (async () => {
+                return await getGameByID(instance, event.params.game ?? "---");
+            })();
+        } 
+
+        return game;
+    }
+
     const response = await resolve(event);
 
     response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
@@ -94,6 +111,15 @@ export const handle = (async ({ event, resolve }) => {
     response.headers.set("Cache-Control", "no-cache, private");
     response.headers.set("X-Frame-Options", "SAMEORIGIN");
     response.headers.set("X-Content-Type-Options", "nosniff");
+
+    const allowedOrigins = ['https://mafia.alexest.net', 'https://frcmafia.com', 'https://api.frcmafia.com'];
+    const origin = event.request.headers.get("origin");
+
+    if (origin && allowedOrigins.includes(origin)) {
+        response.headers.set('Access-Control-Allow-Origin', origin);
+    }
+    response.headers.set('Vary', 'Origin');
+    response.headers.set('Access-Control-Allow-Credentials', 'true')
 
     return response;
 });
