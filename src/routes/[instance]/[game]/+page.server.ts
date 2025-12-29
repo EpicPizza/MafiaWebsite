@@ -16,7 +16,7 @@ export async function load({ params, locals, url }) {
 
     if(!instance.global.started && game.state == 'active') error(400, "Game not started!");
 
-    const users = (await getUsers(instance, game.signups)).map((user, i) => ({ ...user, i: i }));
+    const users = (await getUsers(instance, game.signups, true)).map((user, i) => ({ ...user, i: i }));
     
     users.sort((a, b) => {
         if(game.state == 'active' && instance.global.game == game.id) {
@@ -53,7 +53,7 @@ export async function load({ params, locals, url }) {
             const playerCount = custom === -1 ? instance.global.players.length : custom;
             const half = Math.floor(playerCount / 2);
 
-            const votes = (await db.collection('instances').doc(instance.id).collection('games').doc(game.id).collection('days').doc(i.toString()).collection('votes').orderBy('timestamp', 'desc').limit(5).get()).docs.map(vote => vote.data()).filter(vote => vote != undefined) as Log[];
+            const votes = (await db.collection('instances').doc(instance.id).collection('games').doc(game.id).collection('days').doc(i.toString()).collection('votes').orderBy('timestamp', 'desc').get()).docs.map(vote => vote.data()).filter(vote => vote != undefined) as Log[];
 
             votes.filter(log => log.type == 'standard').map(log => {
                 log.search = {
@@ -63,16 +63,18 @@ export async function load({ params, locals, url }) {
                 }
             });
 
+            console.log({ players: currentPlayers, votes: votes, stats: stats, half: half });
+
             return { players: currentPlayers, votes: votes, stats: stats, half: half };
-        })())
+        })());
     }
 
     const days = await Promise.all(promises);
 
     console.log(days);
 
-    const index = locals.profile ? 0 : day - 1;
-
+    const index = locals.profile ? 0 : (instance.global.started && instance.global.game == game.id ? day - 1 : 0);
+    
     return { 
         users, 
         mod, 

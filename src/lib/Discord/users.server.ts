@@ -13,7 +13,7 @@ export interface User {
 
 export type CompleteUser = Awaited<ReturnType<typeof getUser>>;
 
-export async function getUser(instance: Instance, id: string) {
+export async function getUser(instance: Instance, id: string, failProof: boolean = false) {
     const discordUser = await instance.setup.primary.guild.members.fetch({ user: id, cache: true }).catch(() => undefined);
     
     const db = firebaseAdmin.getFirestore();
@@ -21,20 +21,28 @@ export async function getUser(instance: Instance, id: string) {
     const data = (await ref.get()).data();
     const databaseUser = data && data.nickname ? data as User : undefined;
 
-    if(databaseUser == undefined || discordUser == undefined) throw new Error("User not found!")
-
-    return {
-        ...databaseUser,
-        color: discordUser.displayHexColor,
-        pfp: discordUser.avatarURL() ?? discordUser.displayAvatarURL() ?? client.user?.displayAvatarURL() ?? "https://cdn.discordapp.com/avatars/1248187665548054588/cc206768cd2ecf8dfe96c1b047caa60f.webp?size=160"
+    if(databaseUser != undefined && discordUser != undefined) {
+        return {
+            ...databaseUser,
+            color: discordUser.displayHexColor,
+            pfp: discordUser.avatarURL() ?? discordUser.displayAvatarURL() ?? client.user?.displayAvatarURL() ?? "https://cdn.discordapp.com/avatars/1248187665548054588/cc206768cd2ecf8dfe96c1b047caa60f.webp?size=160"
+        }
+    } else if(databaseUser != undefined && discordUser == undefined && failProof) {
+        return {
+            ...databaseUser,
+            color: "#ffffff",
+            pfp: client.user?.displayAvatarURL() ?? "",
+        }
+    } else {
+        throw new Error("User not found!");
     }
 }
 
-export async function getUsers(instance: Instance, ids: string[]) {
+export async function getUsers(instance: Instance, ids: string[], failProof: boolean = false) {
     const promises = [] as Promise<CompleteUser>[];
 
     for(let i = 0; i < ids.length; i++) {
-        promises.push(getUser(instance, ids[i]));
+        promises.push(getUser(instance, ids[i], failProof));
     }
 
     const users = await Promise.all(promises);
