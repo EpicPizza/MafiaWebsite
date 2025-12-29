@@ -1,3 +1,4 @@
+
 <script lang=ts>
     import Icon from "@iconify/svelte";
     import type { Log } from "./types";
@@ -89,7 +90,7 @@
     </div>
 
     {#if open}
-        <p class="whitespace-pre-wrap text-sm p-2 bg-zinc-800 rounded-sm mt-2.5" transition:slide={{ duration: 250 }}>
+        <p class="whitespace-pre-wrap text-sm p-2 bg-white dark:bg-zinc-800 rounded-sm mt-2.5" transition:slide={{ duration: 250 }}>
             {log.board == "" ? "No votes recorded." : log.board}
         </p>
     {/if}
