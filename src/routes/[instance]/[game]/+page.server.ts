@@ -77,7 +77,7 @@ export async function load({ params, locals, url }) {
         users, 
         mod, 
         game, 
-        global: (instance.global.started && instance.global.game == game.id) ? { 
+        global: instance.global.started ? { 
             ...instance.global,
             extensions: [],
             players: instance.global.players.map(player => ({ ...player, alignment: null })),
