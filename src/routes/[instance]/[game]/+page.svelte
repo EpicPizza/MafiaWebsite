@@ -89,7 +89,11 @@
     let selectedDay = $state(data.game.state == 'active' ? data.day : 1);
 
     $effect(() => {
-        if(!client.user) return;
+        if(!client.user && data.profile == undefined) {
+            stats = data.days[selectedDay - 1].stats;
+
+            return;
+        }
 
         if(unsubscribeStats) unsubscribeStats();
 
@@ -165,21 +169,39 @@
         
         <div class="bg-white dark:bg-zinc-800 sticky -top-8 z-10 pt-8 pb-2 -mb-2 -mt-8">
             <div class="flex items-center justify-between">
-                <h1 class="text-xl font-bold mt-0.5">{data.game.name} Mafia</h1>
-                {#if data.game.state == 'active'}
-                    <div class="flex items-center gap-2 text-yellow-800 bg-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/15 rounded-md px-3 py-1">
-                        <Icon width=1.2rem icon=material-symbols:flight-takeoff></Icon>
-                        <p class="font-bold max-w-min sm:max-w-fit">Game In Progress</p>
+                <div class="flex items-center gap-2">
+                    {#if data.game.state == 'active'}
+                        <div class="gap-2 text-yellow-800 bg-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/15 rounded-md w-8 h-8 flex justify-around items-center">
+                            <Icon width=1.2rem icon=material-symbols:flight-takeoff></Icon>
+                        </div>
+                    {:else}
+                        <div class="gap-2 text-red-800 bg-red-200 dark:text-red-400 dark:bg-red-500/15 rounded-md w-8 h-8 flex justify-around items-center">
+                            <Icon width=1.2rem icon=material-symbols:flight-land></Icon>
+                        </div>
+                    {/if}
+                    
+                    <h1 class="text-xl font-bold mt-0.5">{data.game.name} Mafia</h1>
+                </div>
+
+                {#if client.user}
+                    <div class="bg-white dark:bg-zinc-800 p-3 py-0 gap-2.5 rounded-md flex items-center w-fit">
+                        <img alt="{client.user.displayName}'s Profile" src="{client.user.photoURL}" class="rounded-full w-8 h-8">
+                        <div class="max-w-[calc(100%-1rem)] overflow-hidden">
+                            <p class='text-xs opacity-75'>Logged in as</p>
+                            <p class="text-sm font-bold overflow-ellipsis overflow-hidden">{client.user.displayName}</p>
+                        </div>
+                        <button onclick={() => { client.signOut("/" + data.instance + "/" + data.game.id + "?tab=" + tabs.value); }} class="ml-1 w-7 h-7 min-w-7 rounded-full dark:bg-white/10 dark:hover:bg-white/20 bg-black/10 hover:bg-black/20 transition-all flex items-center justify-around" aria-label="Log Out">
+                            <Icon width=0.9rem icon=material-symbols:logout></Icon>
+                        </button>
                     </div>
                 {:else}
-                    <div class="flex items-center gap-2 text-red-800 bg-red-200 dark:text-red-400 dark:bg-red-500/15 rounded-md px-3 py-1">
-                        <Icon width=1.2rem icon=material-symbols:flight-land></Icon>
-                        <p class="font-bold max-w-min sm:max-w-fit">Game Completed</p>
+                    <div class="bg-white dark:bg-zinc-800 p-3 py-0 gap-2.5 rounded-md flex items-center w-fit">
+
                     </div>
                 {/if}
             </div>
 
-            <div {...tabs.triggerList} class="bg-zinc-200 dark:bg-zinc-900 px-3 mt-3 py-2 relative rounded-md border-border-light dark:border-border-dark flex gap-2 overflow-x-auto">
+            <div {...tabs.triggerList} class="bg-zinc-200 dark:bg-zinc-900 px-3 mt-3 py-2 relative rounded-lg border-border-light dark:border-border-dark flex gap-2 overflow-x-auto">
                 {#each tabIds as id}
                     <button {...{... tabs.getTrigger(id), onclick: () => { pushTab(tabs.getTrigger(id).onclick()) } }} class="font-bold {id == tabs.value ? "" : "opacity-50"} min-w-20 relative text-base">
                         {id}
@@ -193,14 +215,17 @@
         {#each tabIds as id}
             <div {...tabs.getContent(id)}>
                 {#if id == "Home"}
-                    <div class="border shadow-md dark:shadow-xl border-border-light dark:border-border-dark mt-6 min-h-[30rem] w-full flex items-center justify-around rounded-lg">
-                        <div class="flex flex-col gap-2 items-center">
-                            <div class="bg-zinc-200 dark:bg-zinc-700 h-20 w-20 rounded-full flex items-center justify-around">
-                                <Icon width=3rem icon=material-symbols:construction></Icon>
-                            </div>
-                            <p class="text-lg font-bold">Under Construction</p>
+                    {#if data.game.state == 'active'}
+                        <div class="flex items-center gap-2 text-yellow-800 bg-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/15 rounded-md px-3 py-2 mt-5">
+                            <Icon width=1.2rem icon=material-symbols:flight-takeoff></Icon>
+                            <p class="font-bold max-w-min sm:max-w-fit">Game In Progress</p>
                         </div>
-                    </div>
+                    {:else}
+                        <div class="flex items-center gap-2 text-red-800 bg-red-200 dark:text-red-400 dark:bg-red-500/15 rounded-md px-3 py-2 mt-5">
+                            <Icon width=1.2rem icon=material-symbols:flight-land></Icon>
+                            <p class="font-bold max-w-min sm:max-w-fit">Game Completed</p>
+                        </div>
+                    {/if}
                 {:else if id == "Players"}
                     {#if data.mods.length > 0}
                         <p class="opacity-75 mb-2 mt-5">Mods</p>
@@ -323,6 +348,10 @@
                                 </div>
                             {/if}
                         </div>
+                    {:else}
+                        <p class="gap-3 font-bold pl-4 sm:gap-0 flex-col sm:flex-row flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 rounded-lg">
+                            No Votes Yet...
+                        </p>
                     {/each}
                 {:else if id == "Stats"}
                     <p class="opacity-75 mt-5 mb-2">Day</p>
@@ -363,7 +392,7 @@
                     {#each sortedStats as stat, i (stat.id)}
                         {@const user = data.users.find(user => user.id == stat.id) ?? getTag(stat.id)}
 
-                        <div class="flex items-center text-sm sm:text-base bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == stats.length - 1 ? "rounded-b-lg" : "rounded-b-sm"} font-bold">
+                        <div class="flex items-center text-sm sm:text-base bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == stats.length - 1 ? "rounded-b-lg" : "rounded-b-sm"}">
                             <button onclick={() => { 
                                 const index = hidePlayers.indexOf(user.id);
 
@@ -372,7 +401,7 @@
                                 } else {
                                     hidePlayers.splice(index, 1);
                                 }
-                            }} class="w-2/5 sm:w-1/4 transition-all {hidePlayers.includes(user.id) ? "opacity-50" : ""}">
+                            }} class="w-2/5 sm:w-1/4 transition-all font-bold {hidePlayers.includes(user.id) ? "opacity-30" : ""}">
                                 <Tag tag={user}></Tag>
                             </button>
                              <div class="w-1/5 sm:w-1/4">
@@ -385,7 +414,12 @@
                                 {(stat.words / stat.messages).toFixed(2)}
                             </div>
                         </div>
+                    {:else}
+                        <p class="gap-3 font-bold pl-4 sm:gap-0 flex-col sm:flex-row flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 rounded-lg">
+                            No Stats Yet...
+                        </p>
                     {/each}
+
                     <div class="flex items-center gap-1 mt-1.5 opacity-75 ml-3.5 -mb-1">
                         <Icon icon=material-symbols:arrow-upward></Icon>
                         <p class="text-sm">Click to hide on graph.</p>
