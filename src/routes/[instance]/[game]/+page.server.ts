@@ -38,13 +38,13 @@ export async function load({ params, locals, url }) {
 
     const db = firebaseAdmin.getFirestore();
 
-    const day = instance.global.started ? instance.global.day : game.days;
+    const day = instance.global.started && instance.global.game == game.id ? instance.global.day : game.days;
         
     const promises = [] as Promise<{ players: string[], stats: StatsAction[], votes: Log[], half: number }>[];
 
     for(let i = (locals.profile ? day : 1); i <= day; i++) {
         promises.push((async () => {
-            const currentPlayers = !instance.global.started ? [] : (await db.collection('instances').doc(instance.id).collection('games').doc(game.id).collection('days').doc(i.toString()).get()).data()?.players as string[] | undefined ?? [];
+            const currentPlayers = (await db.collection('instances').doc(instance.id).collection('games').doc(game.id).collection('days').doc(i.toString()).get()).data()?.players as string[] | undefined ?? [];
 
             const ref = db.collection('instances').doc(instance.id).collection('games').doc(game.id).collection('days').doc(i.toString()).collection('stats');
             const stats = ((await ref.get()).docs.map(doc => ({ ...doc.data(), instance: instance.id, game: game.id, day: i, type: "add", id: doc.ref.id })) as unknown as StatsAction[]).filter(stat => users.find(user => user.id == stat.id));
@@ -77,11 +77,11 @@ export async function load({ params, locals, url }) {
         users, 
         mod, 
         game, 
-        global: !instance.global.started ? instance.global : { 
+        global: (instance.global.started && instance.global.game == game.id) ? { 
             ...instance.global,
             extensions: [],
             players: instance.global.players.map(player => ({ ...player, alignment: null })),
-        },
+        } : instance.global,
         day,
         instance: instance.id,
         votes: days[index].votes,
