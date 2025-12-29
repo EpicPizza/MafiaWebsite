@@ -42,7 +42,7 @@ export async function load({ params, locals, url }) {
         
     const promises = [] as Promise<{ players: string[], stats: StatsAction[], votes: Log[], half: number }>[];
 
-    for(let i = 1; i <= day; i++) {
+    for(let i = (locals.profile ? day : 1); i <= day; i++) {
         promises.push((async () => {
             const currentPlayers = !instance.global.started ? [] : (await db.collection('instances').doc(instance.id).collection('games').doc(game.id).collection('days').doc(i.toString()).get()).data()?.players as string[] | undefined ?? [];
 
@@ -71,6 +71,8 @@ export async function load({ params, locals, url }) {
 
     console.log(days);
 
+    const index = locals.profile ? 0 : day - 1;
+
     return { 
         users, 
         mod, 
@@ -82,10 +84,10 @@ export async function load({ params, locals, url }) {
         },
         day,
         instance: instance.id,
-        votes: days[day - 1].votes,
-        players: days[day - 1].players,
-        stats: days[day - 1].stats,
-        half: days[day - 1].half,
+        votes: days[index].votes,
+        players: days[index].players,
+        stats: days[index].stats,
+        half: days[index].half,
         tab: url.searchParams.get("tab") ?? "Home",
         mods: 'mods' in game && game.mods ? await getUsers(instance, game.mods) : [],
         days,

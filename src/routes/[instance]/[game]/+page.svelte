@@ -89,7 +89,7 @@
     let selectedDay = $state(data.game.state == 'active' ? data.day : 1);
 
     $effect(() => {
-        if(!client.user) {
+        if(!client.user && data.profile == undefined) {
             stats = data.days[selectedDay - 1].stats;
 
             return;
