@@ -34,13 +34,13 @@
     let stats = $derived(data.stats);
 
     $effect(() => {
+        if(unsubscribeVotes) unsubscribeVotes();
+
         if(!client.user && data.profile == undefined) {
             votes = data.days[selectedDay - 1].votes;
 
             return;
         }
-
-        if(unsubscribeVotes) unsubscribeVotes();
 
         const db = client.getFirestore();
         const votesRef = query(collection(db, "instances", data.instance, "games", data.game.id, "days", selectedDay.toString(), "votes"), orderBy("timestamp", "desc"));
@@ -91,16 +91,34 @@
         return data.users.find(user => user.nickname == nickname) ?? { nickname: nickname, pfp: "/favicon.png", id: nickname, color: "#ffffff" } satisfies Omit<(typeof data)["users"][0], "pronouns" | "state" | "lName" | "channel" | "i">;
     }
 
-    let selectedDay = $state(data.game.state == 'active' ? data.day : 1);
+    let selectedDay = $state(data.activeDay ? data.activeDay : (data.game.state == 'active' ? data.day : 1));
+    let showPit = $state(data.pitStats != undefined);
 
     $effect(() => {
+        if(unsubscribeStats) unsubscribeStats();
+
+        if(showPit && data.pitStats) {
+            const convertedStats= data.pitStats.stats.map(stat => ({
+                type: 'add' as 'add',
+                id: stat.id,
+                day: data.pitStats?.day ?? data.day,
+                instance: data.instance,
+                game: data.pitStats?.name ?? data.game.name,
+                messages: stat.messages,
+                images: stat.images ?? 0,
+                words: stat.words,
+            }));
+
+            stats = convertedStats.filter(stat => data.game.signups.includes(stat.id));
+            
+            return;
+        }
+
         if(!client.user && data.profile == undefined) {
             stats = data.days[selectedDay - 1].stats;
 
             return;
         }
-
-        if(unsubscribeStats) unsubscribeStats();
 
         const db = client.getFirestore();
         
@@ -236,7 +254,7 @@
                         <p class="opacity-75 mb-2 mt-5">Mods</p>
 
                         {#each data.mods as user, i}
-                            <div class="flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == data.mods.length - 1 ? "rounded-b-lg" : "rounded-b-sm"} font-bold">
+                            <div class="flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == data.mods.length - 1 && data.pitStats == undefined ? "rounded-b-lg" : "rounded-b-sm"} font-bold">
                                 <Tag pronouns tag={user}></Tag>
                             </div>
                         {/each}
@@ -283,7 +301,7 @@
 
                     <div class="flex gap-0.5">
                         {#each Array.from({ length: data.day }, (_, i) => i + 1) as day}
-                            <button onclick={() => { selectedDay = day; }} class="text-base text-center {selectedDay == day ? "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black" : "bg-zinc-200 dark:bg-zinc-900"} px-3 py-2.5 w-full {day == 1 ? "rounded-l-lg" : "rounded-l-sm"} {day == data.day ? "rounded-r-lg" : "rounded-r-sm"} font-bold">
+                            <button onclick={() => { selectedDay = day; showPit = false; }} class="text-base text-center {selectedDay == day ? "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black" : "bg-zinc-200 dark:bg-zinc-900"} px-3 py-2.5 w-full {day == 1 ? "rounded-l-lg" : "rounded-l-sm"} {day == data.day ? "rounded-r-lg" : "rounded-r-sm"} font-bold">
                                 {day}
                             </button>
                         {/each}
@@ -326,14 +344,26 @@
                         </p>
                     {/each}
                 {:else if id == "Stats"}
-                    <p class="opacity-75 mt-5 mb-2">Day</p>
+                    <div class="flex items-center justify-between opacity-75 mt-5 mb-2">
+                        <p>Day</p>
+
+                        {#if data.pitStats}
+                            <p>Generated {dnt.format(new Date(data.pitStats.timestamp), "MM/D, h:mm A")}</p>
+                        {/if}
+                    </div>
 
                     <div class="flex gap-0.5">
                         {#each Array.from({ length: data.day }, (_, i) => i + 1) as day}
-                            <button onclick={() => { selectedDay = day; }} class="text-base text-center {selectedDay == day ? "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black" : "bg-zinc-200 dark:bg-zinc-900"} px-3 py-2.5 w-full {day == 1 ? "rounded-l-lg" : "rounded-l-sm"} {day == data.day ? "rounded-r-lg" : "rounded-r-sm"} font-bold">
+                            <button onclick={() => { selectedDay = day; showPit = false; }} class="text-base text-center {selectedDay == day && showPit == false ? "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black" : "bg-zinc-200 dark:bg-zinc-900"} px-3 py-2.5 w-full {day == 1 ? "rounded-l-lg" : "rounded-l-sm"} {day == data.day && data.pitStats == undefined ? "rounded-r-lg" : "rounded-r-sm"} font-bold">
                                 {day}
                             </button>
                         {/each}
+
+                        {#if data.pitStats}
+                            <button onclick={() => { showPit = true; }} class="text-base text-center {showPit == true ? "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black" : "bg-zinc-200 dark:bg-zinc-900"} px-3 py-2.5 w-full rounded-l-sm rounded-r-lg font-bold">
+                                /?
+                            </button>
+                        {/if}
                     </div>
 
                     <div class="flex opacity-75 mt-5 mb-2 px-2.5 text-xs sm:text-base">
@@ -383,7 +413,7 @@
                                 {stat.words}
                             </div>
                             <div class="w-1/5 sm:w-1/4">
-                                {(stat.words / stat.messages).toFixed(2)}
+                                {stat.messages == 0 ? (0).toFixed(2) : (stat.words / stat.messages).toFixed(2)}
                             </div>
                         </div>
                     {:else}
