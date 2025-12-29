@@ -91,7 +91,7 @@
         return data.users.find(user => user.nickname == nickname) ?? { nickname: nickname, pfp: "/favicon.png", id: nickname, color: "#ffffff" } satisfies Omit<(typeof data)["users"][0], "pronouns" | "state" | "lName" | "channel" | "i">;
     }
 
-    let selectedDay = $state(data.game.state == 'active' ? data.day : 1);
+    let selectedDay = $state(data.activeDay ? data.activeDay : (data.game.state == 'active' ? data.day : 1));
 
     $effect(() => {
         if(!client.user && data.profile == undefined) {

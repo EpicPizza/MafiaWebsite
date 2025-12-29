@@ -38,6 +38,8 @@ export async function load({ params, locals, url }) {
 
     const db = firebaseAdmin.getFirestore();
 
+    const dayRequest = parseInt(url.searchParams.get('day') ?? "");
+
     const day = instance.global.started && instance.global.game == game.id ? instance.global.day : game.days;
         
     const promises = [] as Promise<{ players: string[], stats: StatsAction[], votes: Log[], half: number }>[];
@@ -73,8 +75,8 @@ export async function load({ params, locals, url }) {
 
     console.log(days);
 
-    const index = locals.profile ? 0 : (instance.global.started && instance.global.game == game.id ? day - 1 : 0);
-    
+    const index = locals.profile ? 0 : !isNaN(dayRequest) ? (dayRequest - 1) : (instance.global.started && instance.global.game == game.id ? day - 1 : 0);
+
     return { 
         users, 
         mod, 
@@ -85,6 +87,7 @@ export async function load({ params, locals, url }) {
             players: instance.global.players.map(player => ({ ...player, alignment: null })),
         } : instance.global,
         day,
+        activeDay: !isNaN(dayRequest) ? dayRequest : undefined,
         instance: instance.id,
         votes: days[index].votes,
         players: days[index].players,
