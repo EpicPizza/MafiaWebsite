@@ -16,7 +16,7 @@ export async function load({ params, locals }) {
 
     const docs = (await ref.get()).docs;
    
-    const users = await getUsers(instance, game.signups);
+    const users = await getUsers(instance, game.signups, true);
  
     const logs = docs.map(doc => doc.data()) as Log[];
 

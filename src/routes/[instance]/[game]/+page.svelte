@@ -19,6 +19,7 @@
     import AxisX from '$lib/LayerCake/Scatter/AxisX.svelte';
     import AxisY from '$lib/LayerCake/Scatter/AxisY.svelte';
     import Scatter from '$lib/LayerCake/Scatter/Scatter.svelte';
+    import Vote from './Vote.svelte';
 
     dnt.plugin(meridiem);
 
@@ -33,12 +34,16 @@
     let stats = $derived(data.stats);
 
     $effect(() => {
-        if(!client.user) return;
+        if(!client.user && data.profile == undefined) {
+            votes = data.days[selectedDay - 1].votes;
+
+            return;
+        }
 
         if(unsubscribeVotes) unsubscribeVotes();
 
         const db = client.getFirestore();
-        const votesRef = query(collection(db, "instances", data.instance, "games", data.game.id, "days", data.day.toString(), "votes"), orderBy("timestamp", "desc"), limit(5));
+        const votesRef = query(collection(db, "instances", data.instance, "games", data.game.id, "days", selectedDay.toString(), "votes"), orderBy("timestamp", "desc"));
 
         unsubscribeVotes = onSnapshot(votesRef, async snapshot => {
             const incoming = snapshot.docs.map(doc => doc.data()).filter(doc => doc != undefined) as Log[];
@@ -274,80 +279,47 @@
                         </div>
                     {/each}
                 {:else if id == "Votes"}
-                    <div class="mt-5 mb-2 flex gap-2 items-center">
-                        <p class="opacity-75">Full Vote History - </p>
+                    <p class="opacity-75 mt-5 mb-2">Day</p>
+
+                    <div class="flex gap-0.5">
                         {#each Array.from({ length: data.day }, (_, i) => i + 1) as day}
-                            <a href="/{data.instance}/{data.game.id}/votes/{day}" class="block w-7 h-7 text-sm rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-around">{day}</a>
+                            <button onclick={() => { selectedDay = day; }} class="text-base text-center {selectedDay == day ? "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black" : "bg-zinc-200 dark:bg-zinc-900"} px-3 py-2.5 w-full {day == 1 ? "rounded-l-lg" : "rounded-l-sm"} {day == data.day ? "rounded-r-lg" : "rounded-r-sm"} font-bold">
+                                {day}
+                            </button>
                         {/each}
+                    </div>
+
+                    <div class="mt-5 mb-2 flex gap-2 items-center">
+                        <p class="opacity-75">
+                            {#if data.global.started && data.global.game == data.game.id && data.global.day == selectedDay}
+                                Current Votes
+                            {:else}
+                                Final Votes
+                            {/if}
+                        </p>
                     </div>
                     
                     <div class="bg-zinc-200 dark:bg-zinc-900 p-4 pl-5 rounded-lg mb-4 relative overflow-hidden">
-                        <p class="text-lg font-bold mb-2">Votes - Today (Day {data.day})</p>
-                        <p class="whitespace-pre-wrap mb-2.5">
+                        <p class="text-lg font-bold mb-2">Votes - {data.global.started && data.global.game == data.game.id && data.global.day == selectedDay ? "Today (Day " + selectedDay + ")" : "Day " + selectedDay}</p>
+                        <p class="whitespace-pre-wrap">
                             {votes.length == 0 || votes[0].board == "" ? "No votes recorded." : votes[0].board}
                         </p>
-                        <p class="text-sm opacity-50">
-                            {#if data.global.hammer}
-                                Hammer is at {data.half + 1} votes.
-                            {:else}
-                                Auto-hammer disabled.
-                            {/if}
-                        </p>
+                        {#if data.global.started && data.global.game == data.game.id && data.global.day == selectedDay}
+                            <p class="text-sm opacity-50 mt-2.5">
+                                {#if data.global.hammer}
+                                    Hammer is at {data.half + 1} votes.
+                                {:else}
+                                    Auto-hammer disabled.
+                                {/if}
+                            </p>
+                        {/if}
                         <div class="w-1 h-full bg-yellow-500 left-0 top-0 absolute"></div>
                     </div>
 
-                    <p class="opacity-75 mt-5 mb-2">Recent Votes</p>
+                    <p class="opacity-75 mt-5 mb-2">Vote History</p>
 
                     {#each votes as log, i (log.timestamp)}
-                        <div class="gap-3 sm:gap-0 flex-col sm:flex-row flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == votes.length - 1 ? "rounded-b-lg" : "rounded-b-sm"}">
-                            {#if log.type == 'standard'}
-                                {@const vote = log.vote}
-
-                                {#if vote.for != 'unvote'}
-                                    <div class="flex items-center text-green-700 dark:text-green-500 font-bold gap-0.5">
-                                        <Tag tag={getTag(log.search.name)}></Tag>
-                                        <Icon width=1.2rem icon=material-symbols:keyboard-double-arrow-right></Icon>
-                                        {#if log.search.replace}
-                                            <Tag tag={getTag(log.search.replace)}></Tag>
-                                            <Icon width=1.2rem class="rotate-90 mx-1 text-yellow-600 dark:text-yellow-500 font-bold" icon=material-symbols:switch-access-shortcut></Icon>
-                                        {/if}
-                                        <Tag tag={getTag(log.search.for ?? "---")}></Tag>
-                                    </div>
-                                {:else}
-                                    <div class="flex items-center text-red-600 dark:text-red-500 font-bold gap-0.5">
-                                        <Tag tag={getTag(log.search.name)}></Tag>
-                                        <Icon width=1.2rem class="rotate-[225deg] mx-0.5 translate-y-0.5" icon=material-symbols:call-missed></Icon>
-                                        {#if log.search.replace}
-                                            <Tag tag={getTag(log.search.replace)}></Tag>
-                                        {/if}
-                                    </div>
-                                {/if}
-                            {:else if log.type == 'reset'}
-                                <div class="flex items-center font-bold gap-2">
-                                    <div class="py-1 px-2 bg-red-200 border dark:border-none border-red-900 dark:bg-red-900 text-black/70 dark:text-white/90 text-xs rounded-md">RESET</div>
-                                    {log.message}
-                                </div>
-                            {:else}
-                                <div class="flex items-center font-bold gap-[5px]">
-                                    {#if log.prefix}
-                                        <Tag tag={getTag(log.search.name)}></Tag>
-                                    {/if}
-                                    <p>{log.message}</p>
-                                </div>
-                            {/if}
-
-                            {#if log.messageId != null}
-                                <div class="flex gap-1 items-center ml-auto">
-                                    <p class="text-sm mr-2">{dnt.format(new Date(log.timestamp), "h:mm a")}</p>
-
-                                    <a target="_blank" href="https://discord.com/channels/1357450274247151820/1397889550906429481/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 border border-border-light dark:border-border-dark p-2 py-1 rounded-md font-bold text-xs">
-                                        Jump
-                                    </a>
-
-                                    <Copy link="https://discord.com/channels/1357450274247151820/1397889550906429481/{log.messageId}"></Copy>
-                                </div>
-                            {/if}
-                        </div>
+                        <Vote {getTag} {log} top={i == 0} bottom={i == votes.length - 1}></Vote>
                     {:else}
                         <p class="gap-3 font-bold pl-4 sm:gap-0 flex-col sm:flex-row flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 rounded-lg">
                             No Votes Yet...
