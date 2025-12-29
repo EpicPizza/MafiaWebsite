@@ -39,8 +39,31 @@ export async function load({ params, locals, url }) {
     const db = firebaseAdmin.getFirestore();
 
     const dayRequest = parseInt(url.searchParams.get('day') ?? "");
-
     const day = instance.global.started && instance.global.game == game.id ? instance.global.day : game.days;
+
+    const statRequest = url.searchParams.get('pit');
+    let statsGraph = undefined as undefined | { 
+        stats: { 
+            words: number, 
+            messages: number, 
+            name: string,
+            id: string,
+            images?: number,
+        }[],
+        name: string,
+        day: number, 
+        timestamp: number,
+    };
+
+    if(statRequest != null) {
+        const ref = db.collection('graphs').doc(statRequest);
+
+        const data = (await ref.get()).data();
+
+        if(data == undefined) error(404, "Stats graph not found.");
+
+        statsGraph = data as any;
+    }
         
     const promises = [] as Promise<{ players: string[], stats: StatsAction[], votes: Log[], half: number }>[];
 
@@ -73,8 +96,6 @@ export async function load({ params, locals, url }) {
 
     const days = await Promise.all(promises);
 
-    console.log(days);
-
     const index = locals.profile ? 0 : !isNaN(dayRequest) ? (dayRequest - 1) : (instance.global.started && instance.global.game == game.id ? day - 1 : 0);
 
     return { 
@@ -96,5 +117,6 @@ export async function load({ params, locals, url }) {
         tab: url.searchParams.get("tab") ?? "Home",
         mods: 'mods' in game && game.mods ? await getUsers(instance, game.mods) : [],
         days,
+        pitStats: statsGraph,
     };
 }
