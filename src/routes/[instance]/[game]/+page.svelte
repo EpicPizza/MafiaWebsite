@@ -180,6 +180,8 @@
     const strokeWidth = 1.5;
 
     let userOpen = $state(false);
+
+    let messageType = $state('pinned') as 'pinned' | 'stars';
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -293,15 +295,34 @@
                         </div>
                     {/each}
                 {:else if id == "Pins"}
-                    <div class="mt-5">
-                        {#each data.messages as message, i} 
-                            {@const user = data.messageUsers.find(user => user.id == message.authorId)}
+                    {@const messages = data.messages.filter(message => messageType == 'pinned' ? message.pinned : message.stars != undefined && message.stars >= 3)}
+                
+                    <div class="flex items-center justify-between my-5 mb-2 font-bold">
+                        <p class="opacity-75">{messages.length} Message{messages.length == 1 ? "" : "s"}</p>
 
-                            <div class="bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 pt-3.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == data.messages.length - 1 ? "rounded-b-lg" : "rounded-b-sm"} font-bold">
-                                <Message {message} {user}></Message>
-                            </div>
-                        {/each}
+                        <div class="flex items-center gap-0.5">
+                            <button onclick={() => { messageType = 'stars' }} class="px-3 py-1.5 rounded-r-sm rounded-l-md {messageType != 'stars' ? "bg-zinc-200 dark:bg-zinc-900" : "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black"} text-sm flex items-center gap-1">
+                                <Icon icon=material-symbols:star></Icon>
+                                Stars
+                            </button>
+                            <button onclick={() => { messageType = 'pinned' }} class="px-3 py-1.5 rounded-r-md rounded-l-sm {messageType != 'pinned' ? "bg-zinc-200 dark:bg-zinc-900" : "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black"}  text-sm flex items-center gap-1">
+                                <Icon icon=material-symbols:keep></Icon>
+                                Pins
+                            </button>
+                        </div>
                     </div>
+                        
+                    {#each messages as message, i} 
+                        {@const user = data.messageUsers.find(user => user.id == message.authorId)}
+
+                        <div class="bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 pt-3.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == data.messages.length - 1 ? "rounded-b-lg" : "rounded-b-sm"} font-bold">
+                            <Message {message} {user}></Message>
+                        </div>
+                    {:else}
+                        <div class="bg-zinc-200 dark:bg-zinc-900 px-3 pl-4 py-2.5 pt-2.5 mb-0.5 rounded-lg font-bold">
+                            No Messages Found...
+                        </div>
+                    {/each}
                 {:else if id == "Votes"}
                     <p class="opacity-75 mt-5 mb-2">Day</p>
 

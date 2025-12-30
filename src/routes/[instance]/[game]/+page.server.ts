@@ -82,9 +82,12 @@ export async function load({ params, locals, url }) {
     const messageUsers = [] as string[];
     
     if(game.start != null && game.end != null) {
-        const query = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'asc').where('createdTimestamp', '>=', game.start).where('createdTimestamp', '<=', game.end).where('pinned', '==', true);
+        const pinQuery = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'asc').where('createdTimestamp', '>=', game.start).where('createdTimestamp', '<=', game.end).where('pinned', '==', true);
+        const starQuery = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'asc').where('createdTimestamp', '>=', game.start).where('createdTimestamp', '<=', game.end).where('stars', '>=', 3);
 
-        messages.push(... (await Promise.all((await query.get()).docs.map(async doc => {
+        const docs = [... (await pinQuery.get()).docs, ...(await starQuery.get()).docs];
+
+        messages.push(... (await Promise.all(docs.map(async doc => {
             const message = doc.data() as TrackedMessage;
 
             if(!messageUsers.includes(doc.data().authorId)) messageUsers.push(doc.data().authorId);

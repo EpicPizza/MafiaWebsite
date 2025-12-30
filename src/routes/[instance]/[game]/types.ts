@@ -79,6 +79,7 @@ export interface TrackedMessage {
     deleted?: boolean,
     logs?: Log[],
     sniped?: string,
+    stars?: number,
 }
 
 export interface Reaction {
