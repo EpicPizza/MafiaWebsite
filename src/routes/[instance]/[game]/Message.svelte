@@ -6,6 +6,7 @@
     import dnt from 'date-and-time';
     import Icon from "@iconify/svelte";
     import Copy from "./votes/[day]/Copy.svelte";
+    import { startsWith } from "zod";
     
     dnt.plugin(meridiem);
 
@@ -25,7 +26,7 @@
             <div class="flex items-center justify-between">
                 <p style="color:{user.color};" class="font-bold -mt-1"><span class="text-black dark:text-inherit">{user.nickname}</span><span class="text-black dark:text-white opacity-50 text-xs ml-2">{dnt.format(new Date(message.createdTimestamp), "MM/D, h:mm A")}</span></p>
 
-                <div class="flex items-center gap-1 -my-0.5">
+                <div class="flex items-center gap-1 -mt-1">
                     <a target="_blank" href="https://discord.com/channels/{message.guildId}/{message.channelId}/{message.id}" class="bg-zinc-100 dark:bg-zinc-900 border border-border-light dark:border-border-dark p-2 py-1 rounded-md font-bold text-xs">
                         Jump
                     </a>
@@ -114,6 +115,25 @@
                                     <span>{embed.footer.text}</span>
                                 </div>
                             {/if}
+                        </div>
+                    {/each}
+                </div>
+            {/if}
+
+            {#if message.reactions && message.reactions.length > 0}
+                <div class="flex flex-wrap gap-1 mb-2">
+                    {#each message.reactions.filter(reaction => reaction.id.length > 0) as reaction}
+                        <div class="flex items-center gap-1.5 bg-white dark:bg-zinc-800 px-2 py-1 rounded-md text-sm">
+                            {#if reaction.emoji && reaction.emoji.startsWith("<:")}
+                                <img 
+                                    src={`https://cdn.discordapp.com/emojis/${reaction.emoji.substring(reaction.emoji.lastIndexOf(":") + 1, reaction.emoji.length - 1)}.png`} 
+                                    alt={reaction.emoji} 
+                                    class="w-4 h-4 object-contain"
+                                >
+                            {:else}
+                                <span>{reaction.emoji}</span>
+                            {/if}
+                            <span class="font-bold text-xs">{reaction.id.length}</span>
                         </div>
                     {/each}
                 </div>
