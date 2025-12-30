@@ -297,15 +297,15 @@
                 {:else if id == "Pins"}
                     {@const messages = data.messages.filter(message => messageType == 'pinned' ? message.pinned : message.stars != undefined && message.stars >= 3)}
                 
-                    <div class="flex items-center justify-between my-5 mb-2 font-bold">
+                    <div class="flex items-center justify-between my-5 mb-2">
                         <p class="opacity-75">{messages.length} Message{messages.length == 1 ? "" : "s"}</p>
 
-                        <div class="flex items-center gap-0.5">
-                            <button onclick={() => { messageType = 'stars' }} class="px-3 py-1.5 rounded-r-sm rounded-l-md {messageType != 'stars' ? "bg-zinc-200 dark:bg-zinc-900" : "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black"} text-sm flex items-center gap-1">
+                        <div class="flex items-center gap-0.5 font-bold">
+                            <button onclick={() => { messageType = 'stars' }} class="px-2 py-1 rounded-r-sm rounded-l-md {messageType != 'stars' ? "bg-zinc-200 dark:bg-zinc-900" : "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black"} text-xs flex items-center gap-1">
                                 <Icon icon=material-symbols:star></Icon>
                                 Stars
                             </button>
-                            <button onclick={() => { messageType = 'pinned' }} class="px-3 py-1.5 rounded-r-md rounded-l-sm {messageType != 'pinned' ? "bg-zinc-200 dark:bg-zinc-900" : "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black"}  text-sm flex items-center gap-1">
+                            <button onclick={() => { messageType = 'pinned' }} class="px-2 py-1 rounded-r-md rounded-l-sm {messageType != 'pinned' ? "bg-zinc-200 dark:bg-zinc-900" : "bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black"} text-xs flex items-center gap-1">
                                 <Icon icon=material-symbols:keep></Icon>
                                 Pins
                             </button>
