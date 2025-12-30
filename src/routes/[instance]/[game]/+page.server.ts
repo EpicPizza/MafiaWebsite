@@ -43,16 +43,11 @@ export async function load({ params, locals, url }) {
 
     const statRequest = url.searchParams.get('pit');
     let statsGraph = undefined as undefined | { 
-        stats: { 
-            words: number, 
-            messages: number, 
-            name: string,
-            id: string,
-            images?: number,
-        }[],
+        stats: StatsAction[],
         name: string,
         day: number, 
         timestamp: number,
+        id: string,
     };
 
     if(statRequest != null) {
@@ -63,11 +58,28 @@ export async function load({ params, locals, url }) {
         if(data == undefined) error(404, "Stats graph not found.");
 
         statsGraph = data as any;
+
+        if(statsGraph != undefined) {
+            statsGraph.id = ref.id;
+
+            const convertedStats= statsGraph.stats.map(stat => ({
+                type: 'add' as 'add',
+                id: stat.id,
+                day: statsGraph?.day ?? day,
+                instance: instance.id,
+                game: statsGraph?.name ?? game.name,
+                messages: stat.messages,
+                images: stat.images ?? 0,
+                words: stat.words,
+            }));
+
+            statsGraph.stats = convertedStats.filter(stat => game.signups.includes(stat.id));;
+        }
     }
         
     const promises = [] as Promise<{ players: string[], stats: StatsAction[], votes: Log[], half: number }>[];
 
-    for(let i = (locals.profile ? day : 1); i <= day; i++) {
+    for(let i = 1; i <= day; i++) {
         promises.push((async () => {
             const currentPlayers = (await db.collection('instances').doc(instance.id).collection('games').doc(game.id).collection('days').doc(i.toString()).get()).data()?.players as string[] | undefined ?? [];
 
@@ -96,7 +108,7 @@ export async function load({ params, locals, url }) {
 
     const days = await Promise.all(promises);
 
-    const index = locals.profile ? 0 : !isNaN(dayRequest) ? (dayRequest - 1) : (instance.global.started && instance.global.game == game.id ? day - 1 : 0);
+    const index = !isNaN(dayRequest) ? (dayRequest - 1) : (instance.global.started && instance.global.game == game.id ? day - 1 : 0);
 
     return { 
         users, 
@@ -112,7 +124,7 @@ export async function load({ params, locals, url }) {
         instance: instance.id,
         votes: days[index].votes,
         players: days[index].players,
-        stats: days[index].stats,
+        stats: statsGraph ? statsGraph.stats : days[index].stats,
         half: days[index].half,
         tab: url.searchParams.get("tab") ?? "Home",
         mods: 'mods' in game && game.mods ? await getUsers(instance, game.mods) : [],
