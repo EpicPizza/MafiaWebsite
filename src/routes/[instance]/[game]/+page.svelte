@@ -315,7 +315,7 @@
                     {#each messages as message, i} 
                         {@const user = data.messageUsers.find(user => user.id == message.authorId)}
 
-                        <div class="bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 pt-3.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == data.messages.length - 1 ? "rounded-b-lg" : "rounded-b-sm"} font-bold">
+                        <div class="bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 pt-3.5 mb-0.5 {i == 0 ? "rounded-t-lg" : "rounded-t-sm"} {i == messages.length - 1 ? "rounded-b-lg" : "rounded-b-sm"} font-bold">
                             <Message {message} {user}></Message>
                         </div>
                     {:else}
