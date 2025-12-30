@@ -20,6 +20,7 @@
     import AxisY from '$lib/LayerCake/Scatter/AxisY.svelte';
     import Scatter from '$lib/LayerCake/Scatter/Scatter.svelte';
     import Vote from './Vote.svelte';
+    import User from './User.svelte';
 
     dnt.plugin(meridiem);
 
@@ -36,7 +37,7 @@
     $effect(() => {
         if(unsubscribeVotes) unsubscribeVotes();
 
-        if(!client.user && data.profile == undefined) {
+        if((!client.user && data.profile == undefined) || data.global.game != data.game.id || !(data.global.started && data.global.day == selectedDay)) {
             votes = data.days[selectedDay - 1].votes;
 
             return;
@@ -98,27 +99,18 @@
         if(unsubscribeStats) unsubscribeStats();
 
         if(showPit && data.pitStats) {
-            const convertedStats= data.pitStats.stats.map(stat => ({
-                type: 'add' as 'add',
-                id: stat.id,
-                day: data.pitStats?.day ?? data.day,
-                instance: data.instance,
-                game: data.pitStats?.name ?? data.game.name,
-                messages: stat.messages,
-                images: stat.images ?? 0,
-                words: stat.words,
-            }));
-
-            stats = convertedStats.filter(stat => data.game.signups.includes(stat.id));
+            stats = data.pitStats.stats;
             
             return;
         }
 
-        if(!client.user && data.profile == undefined) {
+        if((!client.user && data.profile == undefined) || data.global.game != data.game.id || !(data.global.started && data.global.day == selectedDay)) {
             stats = data.days[selectedDay - 1].stats;
 
             return;
         }
+
+        console.log('initializer started');
 
         const db = client.getFirestore();
         
@@ -185,9 +177,13 @@
     const fill = '#000';
     const stroke = '#0cf';
     const strokeWidth = 1.5;
+
+    let userOpen = $state(false);
 </script>
 
-<div class="h-[calc(100dvh-2rem)] md:h-[calc(100dvh-2rem)] flex flex-col items-center">
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div onclick={() => { userOpen = false; }} class="h-[calc(100dvh-2rem)] md:h-[calc(100dvh-2rem)] flex flex-col items-center">
     <div class="max-h-full max-w-[calc(100vw-2rem)] overflow-auto w-[40rem] bg-white dark:bg-zinc-800 border border-border-light dark:border-border-dark p-8 rounded-2xl relative">
         
         <div class="bg-white dark:bg-zinc-800 sticky -top-8 z-10 pt-8 pb-2 -mb-2 -mt-8">
@@ -206,22 +202,21 @@
                     <h1 class="text-xl font-bold mt-0.5">{data.game.name} Mafia</h1>
                 </div>
 
-                {#if client.user}
-                    <div class="bg-white dark:bg-zinc-800 p-3 py-0 gap-2.5 rounded-md flex items-center w-fit">
-                        <img alt="{client.user.displayName}'s Profile" src="{client.user.photoURL}" class="rounded-full w-8 h-8">
-                        <div class="max-w-[calc(100%-1rem)] overflow-hidden">
-                            <p class='text-xs opacity-75'>Logged in as</p>
-                            <p class="text-sm font-bold overflow-ellipsis overflow-hidden">{client.user.displayName}</p>
-                        </div>
-                        <button onclick={() => { client.signOut("/" + data.instance + "/" + data.game.id + "?tab=" + tabs.value); }} class="ml-1 w-7 h-7 min-w-7 rounded-full dark:bg-white/10 dark:hover:bg-white/20 bg-black/10 hover:bg-black/20 transition-all flex items-center justify-around" aria-label="Log Out">
-                            <Icon width=0.9rem icon=material-symbols:logout></Icon>
-                        </button>
-                    </div>
-                {:else}
-                    <div class="bg-white dark:bg-zinc-800 p-3 py-0 gap-2.5 rounded-md flex items-center w-fit">
+                <div class="hidden sm:block">
+                    <User {client} currentURL={page.url.pathname + page.url.search}></User>
+                </div>
+            
+                <div class="block sm:hidden h-9 pt-0.5">
+                    <button onclick={(e) => { e.stopPropagation(); userOpen = !userOpen; }} class="h-8 w-8 flex items-center justify-around bg-zinc-200 dark:bg-zinc-900 rounded-full">
+                        <Icon width=1.1rem icon=material-symbols:more-vert></Icon>
+                    </button>
 
-                    </div>
-                {/if}
+                    {#if userOpen}
+                        <div class="p-4 px-1 rounded-lg bg-white dark:bg-zinc-800 border border-border-light dark:border-border-dark right-0 top-[4.5rem] absolute z-50">
+                            <User {client} currentURL={page.url.pathname + page.url.search}></User>
+                        </div>
+                    {/if}
+                </div>
             </div>
 
             <div {...tabs.triggerList} class="bg-zinc-200 dark:bg-zinc-900 px-3 mt-3 py-2 relative rounded-lg border-border-light dark:border-border-dark flex gap-2 overflow-x-auto">
@@ -348,7 +343,7 @@
                         <p>Day</p>
 
                         {#if data.pitStats}
-                            <p>Generated {dnt.format(new Date(data.pitStats.timestamp), "MM/D, h:mm A")}</p>
+                            <a href="/legacy/{data.pitStats.id}" class="text-sm">Generated Day {data.pitStats.day}, {dnt.format(new Date(data.pitStats.timestamp), "h:mm A")}</a>
                         {/if}
                     </div>
 
