@@ -81,9 +81,9 @@ export async function load({ params, locals, url }) {
     const messages = [] as TrackedMessage[];
     const messageUsers = [] as string[];
     
-    if(game.start != null && game.end != null) {
-        const pinQuery = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'asc').where('createdTimestamp', '>=', game.start).where('createdTimestamp', '<=', game.end).where('pinned', '==', true);
-        const starQuery = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'asc').where('createdTimestamp', '>=', game.start).where('createdTimestamp', '<=', game.end).where('stars', '>=', 3);
+    if(game.start != null) {
+        const pinQuery = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'asc').where('createdTimestamp', '>=', game.start).where('createdTimestamp', '<=', game.end == null ? new Date().valueOf() : game.end).where('pinned', '==', true);
+        const starQuery = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'asc').where('createdTimestamp', '>=', game.start).where('createdTimestamp', '<=', game.end == null ? new Date().valueOf() : game.end).where('stars', '>=', 3);
 
         const docs = [... (await pinQuery.get()).docs, ...(await starQuery.get()).docs];
 
