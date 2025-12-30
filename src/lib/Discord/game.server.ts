@@ -22,6 +22,8 @@ export interface Game {
     links: Link[],
     state: 'active' | 'completed' | 'counting' | 'canned',
     pinned: string | null,
+    start: number | null,
+    end: number | null,
 }
 
 type Link = DiscordLink | MaterialLink;

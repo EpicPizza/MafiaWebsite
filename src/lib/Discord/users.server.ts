@@ -13,7 +13,7 @@ export interface User {
 
 export type CompleteUser = Awaited<ReturnType<typeof getUser>>;
 
-export async function getUser(instance: Instance, id: string, failProof: boolean = false) {
+export async function getUser(instance: Instance, id: string, failProof: boolean = false, allProof: boolean = false) {
     const discordUser = await instance.setup.primary.guild.members.fetch({ user: id, cache: true }).catch(() => undefined);
     
     const db = firebaseAdmin.getFirestore();
@@ -32,6 +32,28 @@ export async function getUser(instance: Instance, id: string, failProof: boolean
             ...databaseUser,
             color: "#ffffff",
             pfp: client.user?.displayAvatarURL() ?? "",
+        }
+    } else if(databaseUser == undefined && discordUser != undefined && allProof) {
+        return {
+            id: discordUser.id,
+            nickname: discordUser.nickname ?? discordUser.displayName,
+            lName: (discordUser.nickname ?? discordUser.displayName).toLowerCase(),
+            pronouns: null,
+            channel: null,
+            state: 0,
+            color: discordUser.displayHexColor == "#000000" ? "#ffffff" : discordUser.displayHexColor,
+            pfp: discordUser.avatarURL() ?? discordUser.displayAvatarURL() ?? client.user?.displayAvatarURL() ?? "https://cdn.discordapp.com/avatars/1248187665548054588/cc206768cd2ecf8dfe96c1b047caa60f.webp?size=160"
+        }
+    } else if(allProof) {
+        return {
+            id: id,
+            nickname: id,
+            lName: id.toLowerCase(),
+            pronouns: null,
+            channel: null,
+            state: 0,
+            color: "#ffffff",
+            pfp: client.user?.displayAvatarURL() ?? "https://cdn.discordapp.com/avatars/1248187665548054588/cc206768cd2ecf8dfe96c1b047caa60f.webp?size=160"
         }
     } else {
         throw new Error("User not found!");
