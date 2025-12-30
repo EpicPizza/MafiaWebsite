@@ -1,3 +1,5 @@
+import type { APIMessage, Attachment, MessageType } from "discord.js";
+
 export interface StatsAction {
     type: 'add',
     id: string,
@@ -54,4 +56,33 @@ export interface Vote {
     for: string | 'unvote',
     replace?: string,
     timestamp: number,
+}
+
+export interface TrackedMessage { 
+    channelId: string,
+    guildId: string,
+    id: string,
+    createdTimestamp: number,
+    editedTimestamp: number | null,
+    type: MessageType,
+    content: string,
+    cleanContent: string,
+    authorId: string,
+    pinned: boolean,
+    pinning: string | null,
+    embeds: APIMessage["embeds"],
+    attachments: Attachment[],
+    mentions: string[],
+    reference: string | null,
+    poll: boolean,
+    reactions: Reaction[],
+    deleted?: boolean,
+    logs?: Log[],
+    sniped?: string,
+    stars?: number,
+}
+
+export interface Reaction {
+    id: string[];
+    emoji: string | null;
 }

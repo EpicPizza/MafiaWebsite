@@ -1,9 +1,10 @@
 import { env } from "$env/dynamic/private";
 import { isMod } from "$lib/Discord/mod.server";
-import { getUsers } from "$lib/Discord/users.server";
+import { getUser, getUsers, type User } from "$lib/Discord/users.server";
 import { firebaseAdmin } from "$lib/Firebase/firebase.server";
 import { error, redirect } from "@sveltejs/kit";
-import type { Log, StatsAction } from "./types";
+import type { Log, StatsAction, TrackedMessage } from "./types";
+import type { Attachment } from "discord.js";
 
 export async function load({ params, locals, url }) {
     const instance = await locals.getInstance();
@@ -76,6 +77,35 @@ export async function load({ params, locals, url }) {
             statsGraph.stats = convertedStats.filter(stat => game.signups.includes(stat.id));;
         }
     }
+
+    const messages = [] as TrackedMessage[];
+    const messageUsers = [] as string[];
+    
+    if(game.start != null && game.end != null) {
+        const pinQuery = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'asc').where('createdTimestamp', '>=', game.start).where('createdTimestamp', '<=', game.end).where('pinned', '==', true);
+        const starQuery = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'asc').where('createdTimestamp', '>=', game.start).where('createdTimestamp', '<=', game.end).where('stars', '>=', 3);
+
+        const docs = [... (await pinQuery.get()).docs, ...(await starQuery.get()).docs];
+
+        messages.push(... (await Promise.all(docs.map(async doc => {
+            const message = doc.data() as TrackedMessage;
+
+            if(!messageUsers.includes(doc.data().authorId)) messageUsers.push(doc.data().authorId);
+
+            if(message.attachments.length > 0) {
+                const discordMessage = await instance.setup.primary.chat.messages.fetch(message.id).catch(() => undefined);
+
+                if(discordMessage == undefined) {
+                    message.attachments = [];
+                    return;
+                }
+
+                message.attachments = message.attachments.map(attachment => discordMessage.attachments.get(attachment as unknown as string)).filter(attachment => attachment != undefined).map(attachment => attachment.toJSON() as Attachment);
+            }
+
+            return message;
+        }))).filter(data => data != undefined && 'createdTimestamp' in data) );
+    }
         
     const promises = [] as Promise<{ players: string[], stats: StatsAction[], votes: Log[], half: number }>[];
 
@@ -130,5 +160,13 @@ export async function load({ params, locals, url }) {
         mods: 'mods' in game && game.mods ? await getUsers(instance, game.mods) : [],
         days,
         pitStats: statsGraph,
+        messages,
+        messageUsers: await Promise.all(messageUsers.map((id) => {
+            const existing = users.find(user => user.id == id);
+
+            if(existing) return existing;
+
+            return getUser(instance, id, true, true);
+        })) 
     };
 }
