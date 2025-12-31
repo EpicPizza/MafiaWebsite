@@ -26,5 +26,5 @@ export async function GET({ locals }) {
 
     const days = await Promise.all(promises);
 
-    return json(days);
+    return json({ days: days, current: instance.global.started && instance.global.game == game.id ? instance.global.players.map(player => users.find(user => user.id == player.id)).filter(player => player != undefined)  : [] });
 }
