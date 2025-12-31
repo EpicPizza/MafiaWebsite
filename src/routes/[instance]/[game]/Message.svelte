@@ -19,14 +19,14 @@
 </script>
 
 {#if user != undefined}
-    <div class="flex gap-3">
+    <div class="flex gap-3 group">
         <img alt="{user.nickname}'s Profile" src="{user.pfp}" class="h-10 w-10 rounded-full">
 
         <div class="w-full mb-0">
-            <div class="flex items-center justify-between">
+            <div class="items-center justify-between flex">
                 <p style="color:{user.color};" class="font-bold -mt-1"><span class="text-black dark:text-inherit">{user.nickname}</span><span class="text-black dark:text-white opacity-50 text-xs ml-2">{dnt.format(new Date(message.createdTimestamp), "MM/D, h:mm A")}</span></p>
 
-                <div class="flex items-center gap-1 -mt-1">
+                <div class="hidden group-hover:flex items-center gap-1 -mt-2 -my-1">
                     <a target="_blank" href="https://discord.com/channels/{message.guildId}/{message.channelId}/{message.id}" class="bg-zinc-100 dark:bg-zinc-900 border border-border-light dark:border-border-dark p-2 py-1 rounded-md font-bold text-xs">
                         Jump
                     </a>
