@@ -186,9 +186,8 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div onclick={() => { userOpen = false; }} class="h-[calc(100dvh-2rem)] md:h-[calc(100dvh-2rem)] flex flex-col items-center">
-    <div class="max-h-full max-w-[calc(100vw-2rem)] overflow-auto w-[40rem] bg-white dark:bg-zinc-800 border border-border-light dark:border-border-dark p-8 rounded-2xl relative">
-        
+<div onclick={() => { userOpen = false; }} class="h-[calc(100dvh)] -m-4 sm:m-0 md:h-[calc(100dvh-2rem)] flex flex-col items-center">
+    <div class="max-h-full max-w-[calc(100vw)] sm:max-w-[calc(100vw-2rem)] overflow-auto w-[40rem] bg-white dark:bg-zinc-800 border-b sm:border border-border-light dark:border-border-dark p-6 sm:p-8 sm:rounded-2xl relative">
         <div class="bg-white dark:bg-zinc-800 sticky -top-8 z-10 pt-8 pb-2 -mb-2 -mt-8">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
