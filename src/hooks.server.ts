@@ -9,6 +9,7 @@ export const handle = (async ({ event, resolve }) => {
     const origin = event.request.headers.get("origin");
     event.locals.origin = origin ?? undefined;
 
+    console.log(event.url.origin);
     console.log(Array.from(event.request.headers.entries()).toString());
     
     if(origin && origin != "https://frcmafia.com" && env.DEV != "TRUE") {
