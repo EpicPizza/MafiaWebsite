@@ -6,6 +6,6 @@
   let { children }: Props = $props();
 </script>
 
-<p class="mb-4 whitespace-pre-line tracking-[-0.015rem]">
+<p class="mb-4 whitespace-pre-line leading-7 tracking-[-0.015rem]">
   {@render children?.()}
 </p>
