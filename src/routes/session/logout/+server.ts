@@ -1,9 +1,13 @@
+import { env } from "$env/dynamic/private";
 import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const POST = (async ({ request, cookies }) => {
-  cookies.delete("__session", { path: "/" });
+  cookies.delete("__session", { 
+    domain: env.DEV === "TRUE" ? undefined : "frcmafia.com",
+    path: "/" 
+  });
   cookies.set("__session", "", {
-    domain: "frcmafia.com",
+    domain: env.DEV === "TRUE" ? undefined : "frcmafia.com",
     maxAge: 0,
     httpOnly: true,
     secure: true,

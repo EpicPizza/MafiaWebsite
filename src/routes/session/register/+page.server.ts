@@ -19,6 +19,7 @@ export async function load({ request, cookies, url }) {
         redirectTo: redirectTo,
         step: 0,
     }), {
+        domain: env.DEV === "TRUE" ? undefined : "frcmafia.com",
         secure: true, // set to false in localhost
         path: "/",
         httpOnly: true,

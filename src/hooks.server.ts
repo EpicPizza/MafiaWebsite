@@ -102,6 +102,9 @@ export const handle = (async ({ event, resolve }) => {
         return game;
     }
 
+    const origin = event.request.headers.get("origin");
+    event.locals.origin = origin ?? undefined;
+
     const response = await resolve(event);
 
     response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
@@ -111,15 +114,13 @@ export const handle = (async ({ event, resolve }) => {
     response.headers.set("Cache-Control", "no-cache, private");
     response.headers.set("X-Frame-Options", "SAMEORIGIN");
     response.headers.set("X-Content-Type-Options", "nosniff");
+    response.headers.set('Access-Control-Allow-Credentials', 'true');
 
     const allowedOrigins = ['https://mafia.alexest.net', 'https://frcmafia.com', 'https://api.frcmafia.com'];
-    const origin = event.request.headers.get("origin");
-
     if (origin && allowedOrigins.includes(origin)) {
         response.headers.set('Access-Control-Allow-Origin', origin);
     }
     response.headers.set('Vary', 'Origin');
-    response.headers.set('Access-Control-Allow-Credentials', 'true')
 
     return response;
 });

@@ -3,6 +3,7 @@ import type { RequestHandler } from "./$types";
 import { getAuth as adminAuth } from "firebase-admin/auth";
 import { firebaseAdmin, getUser } from "$lib/Firebase/firebase.server";
 import type { Auth, DecodedIdToken, UserRecord } from "firebase-admin/auth";
+import { env } from "$env/dynamic/private";
 
 export const POST = (async ({ request, cookies }) => {
   console.log("setting cookie");
@@ -27,6 +28,7 @@ export const POST = (async ({ request, cookies }) => {
       .createSessionCookie(encodedToken, { expiresIn });
 
     cookies.set("__session", sessionCookie, {
+      domain: env.DEV === "TRUE" ? undefined : "frcmafia.com",
       maxAge: expiresIn,
       httpOnly: true,
       secure: true,

@@ -14,6 +14,7 @@ declare global {
 				uid: string,
 				displayName: string | undefined,
 			},
+			origin: string | undefined,
 			getInstance: () => Promise<Instance | undefined>,
 			getGame: () => Promise<Game | undefined>,
 		}

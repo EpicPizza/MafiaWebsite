@@ -1,3 +1,4 @@
+import { env } from "$env/dynamic/private";
 import {
   firebaseAdmin,
   getUser,
@@ -13,7 +14,10 @@ export const POST = (async ({ request, cookies }) => {
 
     await firebaseAdmin.getAuth().revokeRefreshTokens(token.sub); //tldr signs out all devices
 
-    cookies.delete("session", { path: "/" });
+    cookies.delete("session", { 
+      domain: env.DEV === "TRUE" ? undefined : "frcmafia.com",
+      path: "/" 
+    });
 
     return json({ deletion: "success" });
   } else {
