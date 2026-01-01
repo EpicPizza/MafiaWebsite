@@ -7,6 +7,7 @@
     import Icon from "@iconify/svelte";
     import Copy from "./votes/[day]/Copy.svelte";
     import { startsWith } from "zod";
+    import { setContext } from "svelte";
     
     dnt.plugin(meridiem);
 
@@ -16,6 +17,8 @@
     }
 
     const { user, message }: Props = $props();
+
+    setContext('inMessage', true);
 </script>
 
 {#if user != undefined}
@@ -36,7 +39,7 @@
             </div>
 
             {#if message.cleanContent.length > 0}
-                <div class="-mt-5 -mb-3">
+                <div class="-mt-4 -mb-3">
                     <Markdown content={message.cleanContent}></Markdown>
                 </div>
             {/if}
