@@ -8,6 +8,8 @@ import { env } from '$env/dynamic/private';
 export const handle = (async ({ event, resolve }) => {
     const origin = event.request.headers.get("origin");
     event.locals.origin = origin ?? undefined;
+
+    console.log(origin);
     
     if(origin != "https://frcmafia.com" && env.DEV != "TRUE") {
         return new Response(null, {
