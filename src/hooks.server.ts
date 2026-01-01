@@ -11,7 +11,7 @@ export const handle = (async ({ event, resolve }) => {
 
     console.log(origin);
     
-    if(origin != "https://frcmafia.com" && env.DEV != "TRUE") {
+    if(origin && origin != "https://frcmafia.com" && env.DEV != "TRUE") {
         return new Response(null, {
             status: 307,
             headers: { location: "https://frcmafia.com" + event.url.pathname + event.url.search }
