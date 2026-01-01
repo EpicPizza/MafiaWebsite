@@ -5,7 +5,7 @@
     import type { TrackedMessage } from "./types";
     import dnt from 'date-and-time';
     import Icon from "@iconify/svelte";
-    import Copy from "./votes/[day]/Copy.svelte";
+    import Copy from "./Copy.svelte";
     import { startsWith } from "zod";
     import { setContext } from "svelte";
     

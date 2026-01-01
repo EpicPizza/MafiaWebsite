@@ -152,6 +152,7 @@ export async function load({ params, locals, url }) {
         day,
         activeDay: !isNaN(dayRequest) ? dayRequest : undefined,
         instance: instance.id,
+        link: instance.setup.primary.guild.id + "/" + instance.setup.primary.chat.id,
         votes: days[index].votes,
         players: days[index].players,
         stats: statsGraph ? statsGraph.stats : days[index].stats,

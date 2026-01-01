@@ -1,9 +1,9 @@
 <script lang=ts>
     import Icon from "@iconify/svelte";
     import type { Log } from "./types";
-    import Tag from "./votes/[day]/Tag.svelte";
+    import Tag from "./Tag.svelte";
     import User from "../../User.svelte";
-    import Copy from "./votes/[day]/Copy.svelte";
+    import Copy from "./Copy.svelte";
     import dnt from 'date-and-time';
     import meridiem from 'date-and-time/plugin/meridiem';
     import { slide } from "svelte/transition";
@@ -20,9 +20,10 @@
         },
         top: boolean,
         bottom: boolean,
+        link: string,
     }
 
-    const { log, getTag, top, bottom }: Props = $props();
+    const { log, getTag, top, bottom, link }: Props = $props();
 
     let open = $state(false);
 </script>
@@ -70,11 +71,11 @@
                 <div class="flex gap-1 items-center ml-auto">
                     <p class="text-sm mr-2">{dnt.format(new Date(log.timestamp), "h:mm a")}</p>
 
-                    <a target="_blank" href="https://discord.com/channels/569988266657316884/695129859147694174/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 border border-border-light dark:border-border-dark p-2 py-1 rounded-md font-bold text-xs">
+                    <a target="_blank" href="https://discord.com/channels/{link}/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 border border-border-light dark:border-border-dark p-2 py-1 rounded-md font-bold text-xs">
                         Jump
                     </a>
 
-                    <Copy link="https://discord.com/channels/569988266657316884/695129859147694174/{log.messageId}"></Copy>
+                    <Copy link="https://discord.com/channels/{link}/{log.messageId}"></Copy>
                 </div>
             {/if}
         </div>

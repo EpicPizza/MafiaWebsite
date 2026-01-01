@@ -9,8 +9,8 @@
     import type { Client } from '$lib/Firebase/firebase.svelte.js';
     import { collection, limit, onSnapshot, orderBy, query, type Unsubscribe } from 'firebase/firestore';
     import { type Log, type StatsAction } from './types.js';
-    import Tag from './votes/[day]/Tag.svelte';
-    import Copy from './votes/[day]/Copy.svelte';
+    import Tag from './Tag.svelte';
+    import Copy from './Copy.svelte';
     import { page } from '$app/state';
     import { pushState, replaceState } from '$app/navigation';
     import { browser } from '$app/environment';
@@ -363,7 +363,7 @@
                     <p class="opacity-75 mt-5 mb-2">Vote History</p>
 
                     {#each votes as log, i (log.timestamp)}
-                        <Vote {getTag} {log} top={i == 0} bottom={i == votes.length - 1}></Vote>
+                        <Vote {getTag} {log} top={i == 0} bottom={i == votes.length - 1} link={data.link}></Vote>
                     {:else}
                         <p class="gap-3 font-bold pl-4 sm:gap-0 flex-col sm:flex-row flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 rounded-lg">
                             No Votes Yet...
