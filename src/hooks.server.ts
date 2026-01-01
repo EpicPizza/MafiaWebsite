@@ -3,8 +3,19 @@ import { error } from 'console';
 import type { APIUser } from 'discord.js';
 import { getInstance, getInstances, type Instance } from '$lib/Discord/instance.server';
 import { getGameByID, type Game } from '$lib/Discord/game.server';
+import { env } from '$env/dynamic/private';
 
 export const handle = (async ({ event, resolve }) => {
+    const origin = event.request.headers.get("origin");
+    event.locals.origin = origin ?? undefined;
+    
+    if(origin != "https://frcmafia.com" && env.DEV != "TRUE") {
+        return new Response(null, {
+            status: 307,
+            headers: { location: "https://frcmafia.com" + event.url.pathname + event.url.search }
+        });
+    }
+
     const sessionCookie = event.cookies.get("__session");
     const session = sessionCookie ? safeParse(sessionCookie) : null;
     const step = session ? session.step as number : -1;
@@ -101,9 +112,6 @@ export const handle = (async ({ event, resolve }) => {
 
         return game;
     }
-
-    const origin = event.request.headers.get("origin");
-    event.locals.origin = origin ?? undefined;
 
     const response = await resolve(event);
 
