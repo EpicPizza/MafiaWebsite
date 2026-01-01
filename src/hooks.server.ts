@@ -6,12 +6,9 @@ import { getGameByID, type Game } from '$lib/Discord/game.server';
 import { env } from '$env/dynamic/private';
 
 export const handle = (async ({ event, resolve }) => {
-    const origin = event.request.headers.get("origin");
+    const origin = event.url.origin;
     event.locals.origin = origin ?? undefined;
 
-    console.log(event.url.origin);
-    console.log(Array.from(event.request.headers.entries()).toString());
-    
     if(origin && origin != "https://frcmafia.com" && env.DEV != "TRUE") {
         return new Response(null, {
             status: 307,
