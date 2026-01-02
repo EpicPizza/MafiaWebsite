@@ -246,6 +246,63 @@
                             <p class="font-bold max-w-min sm:max-w-fit">Game Completed</p>
                         </div>
                     {/if}
+
+                    <div class="p-4 mt-10 bg-zinc-800 flex flex-wrap gap-4">
+                        <div class="bg-black rounded-2xl">
+                            <div class="w-40 h-40 text-red-400 bg-red-500/15 flex items-center justify-around rounded-2xl">
+                                <Icon width=10rem icon=material-symbols:check></Icon>
+                            </div>
+                        </div>
+                        <div class="bg-black rounded-2xl">
+                            <div class="w-40 h-40 text-green-400 bg-green-500/15 flex items-center justify-around rounded-2xl">
+                                <Icon width=10rem icon=material-symbols:check></Icon>
+                            </div>
+                        </div>
+                        <div class="bg-black rounded-2xl">
+                            <div class="w-40 h-40 text-purple-400 bg-purple-500/15 flex items-center justify-around rounded-2xl">
+                                <Icon width=10rem icon=material-symbols:check></Icon>
+                            </div>
+                        </div>  
+                    </div>
+                    <div class="p-4 bg-white flex flex-wrap gap-4">
+                        <div class="bg-black rounded-2xl">
+                            <div class="w-40 h-40 text-red-400 bg-red-500/15 flex items-center justify-around rounded-2xl">
+                                <Icon width=10rem icon=material-symbols:check></Icon>
+                            </div>
+                        </div>
+                        <div class="bg-black rounded-2xl">
+                            <div class="w-40 h-40 text-green-400 bg-green-500/15 flex items-center justify-around rounded-2xl">
+                                <Icon width=10rem icon=material-symbols:check></Icon>
+                            </div>
+                        </div>
+                        <div class="bg-black rounded-2xl">
+                            <div class="w-40 h-40 text-purple-400 bg-purple-500/15 flex items-center justify-around rounded-2xl">
+                                <Icon width=10rem icon=material-symbols:check></Icon>
+                            </div>
+                        </div>  
+                    </div>
+                     <div class="p-4 flex bg-zinc-800 flex-wrap gap-4">
+                        <div class="w-40 h-40 text-red-800 bg-red-200 flex items-center justify-around rounded-2xl">
+                            <Icon width=10rem icon=material-symbols:check></Icon>
+                        </div>
+                        <div class="w-40 h-40 text-green-800 bg-green-200 flex items-center justify-around rounded-2xl">
+                            <Icon width=10rem icon=material-symbols:check></Icon>
+                        </div>
+                        <div class="w-40 h-40 text-purple-800 bg-purple-200 flex items-center justify-around rounded-2xl">
+                            <Icon width=10rem icon=material-symbols:check></Icon>
+                        </div>
+                    </div>
+                    <div class="p-4 flex bg-white flex-wrap gap-4">
+                        <div class="w-40 h-40 text-red-800 bg-red-200 flex items-center justify-around rounded-2xl">
+                            <Icon width=10rem icon=material-symbols:check></Icon>
+                        </div>
+                        <div class="w-40 h-40 text-green-800 bg-green-200 flex items-center justify-around rounded-2xl">
+                            <Icon width=10rem icon=material-symbols:check></Icon>
+                        </div>
+                        <div class="w-40 h-40 text-purple-800 bg-purple-200 flex items-center justify-around rounded-2xl">
+                            <Icon width=10rem icon=material-symbols:check></Icon>
+                        </div>
+                    </div>
                 {:else if id == "Players"}
                     {#if data.mods.length > 0}
                         <p class="opacity-75 mb-2 mt-5">Mods</p>

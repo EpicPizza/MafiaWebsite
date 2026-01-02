@@ -67,11 +67,15 @@
           left:{Math.min(Math.max(w2, (x / 100) * $width), $width - w2)}px;"
       >
         <div class="title">{formatTitle(found[$config.x])}</div>
-        <div class="grid grid-cols-3">
-          {#each foundSorted as row}
+        <div class="grid grid-cols-2 gap-x-2">
+          {#each foundSorted.filter(row => row.value != 0) as row}
             <div class="row">
               <span class="text-zinc-600 dark:text-zinc-300">{formatKey(row.key)}:</span>
               {formatValue(row.value)}
+            </div>
+          {:else}
+            <div class="row">
+               <span class="text-zinc-600 dark:text-zinc-300">None Above 0</span>
             </div>
           {/each}
         </div>

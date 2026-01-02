@@ -11,7 +11,6 @@
     import { format } from "d3-format";
     import dnt from 'date-and-time';
     import meridiem from "date-and-time/plugin/meridiem";
-    import { form } from "$app/server";
 
     dnt.plugin(meridiem);
 
@@ -45,8 +44,6 @@
     const formatLabelY = d => format(`~s`)(d);
 
     const formatLabelZ = (id: string) => data.users.find(user => user.id == id)?.nickname ?? id;
-
-    console.log(flatten(dataLong, 'values'));
 </script>
 
 <div class="h-[calc(100dvh-4rem)] md:h-[calc(100dvh-2rem)] flex flex-col justify-around items-center">
@@ -55,7 +52,7 @@
 
         <Line class="mb-6 mt-2"></Line>
 
-        <div class="min-w-[400px] min-h-[10rem] h-[10rem] mt-20 mb-20">
+        <div class="min-w-[400px] min-h-[10rem] h-[10rem] mt-4 mb-12">
             <LayerCake
                 ssr
                 percentRange
@@ -86,16 +83,19 @@
                 </ScaledSvg>
 
                 <Html>
-                    <GroupLabels formatLabel={formatLabelZ} />
                     <SharedTooltip formatKey={formatLabelZ} formatTitle={formatLabelX} dataset={stats} />
                 </Html>
             </LayerCake>
         </div>
 
-
-        <p class="whitespace-pre">  
-            {JSON.stringify(data, null, "\t")}
-        </p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
+            {#each data.users.filter(user => seriesNames.includes(user.id)) as user}
+                <div class="w-full flex items-center gap-1.5">
+                    <div style="background-color: {user.color};" class="w-4 h-4 rounded-full"></div>
+                    <p class="font-bold text-sm">{user.nickname}</p>
+                </div>  
+            {/each}
+        </div>
     </div>
 </div>
 
