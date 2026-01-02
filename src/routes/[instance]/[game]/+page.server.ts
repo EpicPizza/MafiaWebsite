@@ -5,6 +5,8 @@ import { firebaseAdmin } from "$lib/Firebase/firebase.server";
 import { error, redirect } from "@sveltejs/kit";
 import type { Log, StatsAction, TrackedMessage } from "./types";
 import type { Attachment } from "discord.js";
+import type { Instance } from "$lib/Discord/instance.server";
+import type { Game } from "$lib/Discord/game.server";
 
 export async function load({ params, locals, url }) {
     const instance = await locals.getInstance();
@@ -107,7 +109,7 @@ export async function load({ params, locals, url }) {
         }))).filter(data => data != undefined && 'createdTimestamp' in data) );
     }
         
-    const promises = [] as Promise<{ players: string[], stats: StatsAction[], votes: Log[], half: number }>[];
+    const promises = [] as Promise<{ players: string[], stats: StatsAction[], votes: Log[], half: number, timeStats: { [key: string]: number; }[] | undefined, }>[];
 
     for(let i = 1; i <= day; i++) {
         promises.push((async () => {
@@ -130,9 +132,14 @@ export async function load({ params, locals, url }) {
                 }
             });
 
-            console.log({ players: currentPlayers, votes: votes, stats: stats, half: half });
+            let timeStats = undefined as undefined | { [key: string]: number; }[];
+            try {
+                timeStats = cutoffStats(await getTimeStats(instance, game, users, i));
+            } catch(e) {
+                console.log(e);
+            }
 
-            return { players: currentPlayers, votes: votes, stats: stats, half: half };
+            return { players: currentPlayers, votes: votes, stats: stats, half: half, timeStats: timeStats };
         })());
     }
 
@@ -171,3 +178,153 @@ export async function load({ params, locals, url }) {
         })) 
     };
 }
+
+
+function shallowObjectCompare(a: {[key: string]: number }, b: {[key: string]: number }) {
+    const keysA = Object.keys(a);
+    const keysB = Object.keys(b);
+
+    if (keysA.length !== keysB.length) return false;
+
+    for (const key of keysA) {
+        if (a[key] !== b[key]) return false;
+    }
+
+    return true;
+}
+
+function cutoffStats(stats: { [key: string]: number; }[]) {
+    let startCutoff = 0;
+    const startStat = { ...stats[0], interval: 0};
+
+    for(let i = 0; i < stats.length; i++) {
+        if(shallowObjectCompare({ ...stats[i], interval: 0}, startStat)) {
+            break;
+        } else {
+            startCutoff = i;
+        }
+    }
+
+    let endCutoff = stats.length - 1;
+    const endStat = { ...stats[stats.length - 1], interval: 0 };
+
+    for(let i = endCutoff - 1; i >= 0; i--) {
+        if(!shallowObjectCompare({ ...stats[i], interval: 0 }, endStat)) {
+            break;
+        } else {
+            endCutoff = i;
+        }
+    }
+
+    return stats.slice(startCutoff, endCutoff);
+}
+
+async function getTimeStats(instance: Instance, game: Game, users: User[], day: number) {
+    const db = firebaseAdmin.getFirestore();
+    const ref = db.collection('instances').doc(instance.id).collection('games').doc(game.id).collection('days');
+
+    const currentRef = ref.doc(day.toString());
+    const nextRef = ref.doc((day + 1).toString());
+    
+    const currentData = (await currentRef.get()).data() as { start?: number } | undefined;
+    const nextData = (await nextRef.get()).data() as { start?: number } | undefined;
+
+    if(currentData == undefined || !('start' in currentData) || currentData.start == undefined) error(500, "Database setup issue.");
+
+    const fiveMinutes = 5 * 60 * 1000;
+
+    let countingFrom = Math.round(currentData.start / fiveMinutes) * fiveMinutes;
+    let countingTo = Math.round((nextData && nextData.start ? nextData.start : new Date().valueOf()) / fiveMinutes) * fiveMinutes;
+
+    const cacheRef = ref.doc(day.toString()).collection('etc').doc('increments');
+    const cache = (await cacheRef.get()).data() as { countingFrom: number, countingTo: number, stats: {[key: string]: number }[] } | undefined;
+
+    const stats = [] as {[key: string]: number }[];
+
+    if(cache != undefined) {
+        if(countingTo == cache.countingTo) {
+            return cache.stats;
+        } else {
+            countingFrom = cache.countingTo;
+            stats.push(...cache.stats);
+        }
+    }
+
+    let query = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'desc');
+
+    if(nextData && nextData.start) {
+        query = query.startAt(nextData.start);
+    }
+
+    if(cache) {
+        query = query.endAt(countingFrom);
+    } else {
+        query = query.endAt(currentData.start);
+    }
+
+
+    const messages = (await query.get()).docs.map(doc => doc.data()) as TrackedMessage[];
+
+    const intervals = new Map<number, TrackedMessage[]>();
+
+    messages.forEach((message) => {
+        const roundedTimestamp = Math.round(message.createdTimestamp / fiveMinutes) * fiveMinutes;
+
+        const interval = intervals.get(roundedTimestamp);
+
+        if(interval == undefined) {
+            intervals.set(roundedTimestamp, [ message ]);
+        } else {
+            interval.push(message);
+        }
+    });
+
+    let at = countingFrom;
+
+    const last = cache ? cache.stats[cache.stats.length - 1] : {
+        interval: at
+    } as typeof stats[0];
+
+    if(!cache) users.forEach(signup => { last[signup.id] = 0; });
+
+    while(at <= countingTo) {
+        const interval = intervals.get(at);
+
+        if(interval == undefined) {
+            stats.push({
+                ...last,
+                interval: at,
+            });
+        } else {
+            interval.forEach(message => {
+                if(!game.signups.includes(message.authorId)) return;
+
+                last[message.authorId] += message.content.split(" ").length;
+            });
+
+            stats.push({
+                ...last,
+                interval: at,
+            });
+        }
+
+        at += fiveMinutes;
+    }
+
+    const current = instance.global.started && game.id == instance.global.game && day == instance.global.day;
+    
+    if(cache) {
+        await cacheRef.update({
+            stats: current ? stats.slice(0, -3) : stats,
+            countingTo: current ? countingTo - (fiveMinutes * 2) : countingTo,
+        });
+    } else {
+        await cacheRef.set({
+            stats: current ? stats.slice(0, -2) : stats,
+            countingFrom: countingFrom,
+            countingTo: current ? countingTo - (fiveMinutes * 2) : countingTo,
+        });
+    }
+
+    return stats;
+}   

@@ -77,7 +77,7 @@
   let maxTickValUnits = $derived(Math.max(...tickVals.map($yScale)));
 </script>
 
-<div class="axis y-axis">
+<div class="axis y-axis opacity-50">
   {#each tickVals as tick, i (tick)}
     {@const tickValUnits = $yScale(tick)}
 
@@ -107,6 +107,7 @@
       </div>
     </div>
   {/each}
+  <div class="absolute top-1/2 right-[100%] -translate-x-6 -translate-y-1/2 rotate-90 text-sm">Words</div>
 </div>
 
 <style>

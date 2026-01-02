@@ -57,7 +57,7 @@
   let halfBand = $derived(isBandwidth ? $xScale.bandwidth() / 2 : 0);
 </script>
 
-<div class="axis x-axis" class:snapLabels>
+<div class="axis x-axis opacity-50" class:snapLabels>
   {#each tickVals as tick, i (tick)}
     {@const tickValUnits = $xScale(tick)}
 
@@ -90,6 +90,7 @@
       </div>
     </div>
   {/each}
+  <div class="absolute left-1/2 top-[100%] translate-y-14 -translate-x-1/2 text-sm">Time</div>
 </div>
 
 <style>

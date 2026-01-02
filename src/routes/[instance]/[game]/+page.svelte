@@ -22,6 +22,7 @@
     import Vote from './Vote.svelte';
     import User from './User.svelte';
     import Message from './Message.svelte';
+    import TimeGraph from './TimeGraph.svelte';
 
     dnt.plugin(meridiem);
 
@@ -246,63 +247,6 @@
                             <p class="font-bold max-w-min sm:max-w-fit">Game Completed</p>
                         </div>
                     {/if}
-
-                    <div class="p-4 mt-10 bg-zinc-800 flex flex-wrap gap-4">
-                        <div class="bg-black rounded-2xl">
-                            <div class="w-40 h-40 text-red-400 bg-red-500/15 flex items-center justify-around rounded-2xl">
-                                <Icon width=10rem icon=material-symbols:check></Icon>
-                            </div>
-                        </div>
-                        <div class="bg-black rounded-2xl">
-                            <div class="w-40 h-40 text-green-400 bg-green-500/15 flex items-center justify-around rounded-2xl">
-                                <Icon width=10rem icon=material-symbols:check></Icon>
-                            </div>
-                        </div>
-                        <div class="bg-black rounded-2xl">
-                            <div class="w-40 h-40 text-purple-400 bg-purple-500/15 flex items-center justify-around rounded-2xl">
-                                <Icon width=10rem icon=material-symbols:check></Icon>
-                            </div>
-                        </div>  
-                    </div>
-                    <div class="p-4 bg-white flex flex-wrap gap-4">
-                        <div class="bg-black rounded-2xl">
-                            <div class="w-40 h-40 text-red-400 bg-red-500/15 flex items-center justify-around rounded-2xl">
-                                <Icon width=10rem icon=material-symbols:check></Icon>
-                            </div>
-                        </div>
-                        <div class="bg-black rounded-2xl">
-                            <div class="w-40 h-40 text-green-400 bg-green-500/15 flex items-center justify-around rounded-2xl">
-                                <Icon width=10rem icon=material-symbols:check></Icon>
-                            </div>
-                        </div>
-                        <div class="bg-black rounded-2xl">
-                            <div class="w-40 h-40 text-purple-400 bg-purple-500/15 flex items-center justify-around rounded-2xl">
-                                <Icon width=10rem icon=material-symbols:check></Icon>
-                            </div>
-                        </div>  
-                    </div>
-                     <div class="p-4 flex bg-zinc-800 flex-wrap gap-4">
-                        <div class="w-40 h-40 text-red-800 bg-red-200 flex items-center justify-around rounded-2xl">
-                            <Icon width=10rem icon=material-symbols:check></Icon>
-                        </div>
-                        <div class="w-40 h-40 text-green-800 bg-green-200 flex items-center justify-around rounded-2xl">
-                            <Icon width=10rem icon=material-symbols:check></Icon>
-                        </div>
-                        <div class="w-40 h-40 text-purple-800 bg-purple-200 flex items-center justify-around rounded-2xl">
-                            <Icon width=10rem icon=material-symbols:check></Icon>
-                        </div>
-                    </div>
-                    <div class="p-4 flex bg-white flex-wrap gap-4">
-                        <div class="w-40 h-40 text-red-800 bg-red-200 flex items-center justify-around rounded-2xl">
-                            <Icon width=10rem icon=material-symbols:check></Icon>
-                        </div>
-                        <div class="w-40 h-40 text-green-800 bg-green-200 flex items-center justify-around rounded-2xl">
-                            <Icon width=10rem icon=material-symbols:check></Icon>
-                        </div>
-                        <div class="w-40 h-40 text-purple-800 bg-purple-200 flex items-center justify-around rounded-2xl">
-                            <Icon width=10rem icon=material-symbols:check></Icon>
-                        </div>
-                    </div>
                 {:else if id == "Players"}
                     {#if data.mods.length > 0}
                         <p class="opacity-75 mb-2 mt-5">Mods</p>
@@ -427,6 +371,8 @@
                         </p>
                     {/each}
                 {:else if id == "Stats"}
+                    {@const timeStats = data.days[selectedDay - 1].timeStats}
+
                     <div class="flex items-center justify-between opacity-75 mt-5 mb-2">
                         <p>Day</p>
 
@@ -510,9 +456,9 @@
                         <p class="text-sm">Click to hide on graph.</p>
                     </div>
 
-                    <p class="opacity-75 mt-5 mb-2">Graph</p>
+                    <p class="opacity-75 mt-5 mb-2">Graphs</p>
 
-                    <div class="bg-zinc-200 dark:bg-zinc-900 rounded-lg p-4 pb-9">
+                    <div class="bg-zinc-200 dark:bg-zinc-900 rounded-lg {timeStats != undefined && showPit != true ? "mb-0.5 rounded-b-sm" : ""} p-4 pb-9">
                         <div class="chart-container ml-7">
                             <LayerCake
                                 ssr
@@ -540,6 +486,12 @@
                             </LayerCake>
                         </div>
                     </div>
+
+                    {#if timeStats != undefined}
+                        <div class="bg-zinc-200 dark:bg-zinc-900 rounded-b-lg rounded-t-sm p-4">
+                            <TimeGraph users={data.users} stats={timeStats}></TimeGraph>
+                        </div>  
+                    {/if}
                 {:else if id == "Debug"}
                     <p class="whitespace-pre">
                         {JSON.stringify(data, null, "\t")}
