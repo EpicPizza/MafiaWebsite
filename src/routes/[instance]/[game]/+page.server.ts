@@ -17,7 +17,7 @@ export async function load({ params, locals, url }) {
 
     if(!instance.global.started && game.state == 'active') error(400, "Game not started!");
 
-    const users = (await getUsers(instance, game.signups, true)).map((user, i) => ({ ...user, i: i }));
+    const users = (await getUsers(instance, game.signups, true, true)).map((user, i) => ({ ...user, i: i }));
     
     users.sort((a, b) => {
         if(game.state == 'active' && instance.global.game == game.id) {
@@ -158,7 +158,7 @@ export async function load({ params, locals, url }) {
         stats: statsGraph ? statsGraph.stats : days[index].stats,
         half: days[index].half,
         tab: url.searchParams.get("tab") ?? "Home",
-        mods: 'mods' in game && game.mods ? await getUsers(instance, game.mods) : [],
+        mods: 'mods' in game && game.mods ? await getUsers(instance, game.mods, true, true) : [],
         days,
         pitStats: statsGraph,
         messages,

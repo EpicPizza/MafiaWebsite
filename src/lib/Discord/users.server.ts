@@ -60,11 +60,11 @@ export async function getUser(instance: Instance, id: string, failProof: boolean
     }
 }
 
-export async function getUsers(instance: Instance, ids: string[], failProof: boolean = false) {
+export async function getUsers(instance: Instance, ids: string[], failProof: boolean = false, allProof: boolean = false) {
     const promises = [] as Promise<CompleteUser>[];
 
     for(let i = 0; i < ids.length; i++) {
-        promises.push(getUser(instance, ids[i], failProof));
+        promises.push(getUser(instance, ids[i], failProof, allProof));
     }
 
     const users = await Promise.all(promises);

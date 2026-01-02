@@ -80,12 +80,14 @@
             {/if}
         </div>
 
-        <button onclick={() => { open = !open; }} class="ml-0 p-2 -m-2">
-            {#if open}
-                <Icon icon=material-symbols:collapse-all></Icon>
-            {:else}
-                <Icon icon=material-symbols:expand-all></Icon>
-            {/if}
+        <button onclick={() => { open = !open; }} class="ml-1 -m-1 p-0.5">
+            <div class="w-7 h-7 bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black rounded-md flex items-center justify-around">
+                {#if open}
+                    <Icon icon=material-symbols:collapse-all></Icon>
+                {:else}
+                    <Icon icon=material-symbols:expand-all></Icon>
+                {/if}
+            </div>
         </button>
     </div>
 
