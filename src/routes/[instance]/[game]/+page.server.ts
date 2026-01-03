@@ -247,6 +247,8 @@ async function getTimeStats(instance: Instance, game: Game, users: User[], day: 
         } else {
             countingFrom = cache.countingTo;
             stats.push(...cache.stats);
+
+            countingFrom -= fiveMinutes;
         }
     }
 
