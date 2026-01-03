@@ -189,7 +189,7 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div onclick={() => { userOpen = false; }} class="h-[calc(100dvh)] -m-4 sm:m-0 md:h-[calc(100dvh-2rem)] flex flex-col items-center">
     <div class="max-h-full max-w-[calc(100vw)] sm:max-w-[calc(100vw-2rem)] overflow-auto w-[40rem] bg-white dark:bg-zinc-800 border-b sm:border border-border-light dark:border-border-dark p-6 sm:p-8 sm:rounded-2xl relative">
-        <div class="bg-white dark:bg-zinc-800 sticky -top-8 z-10 pt-8 pb-2 -mb-2 -mt-8">
+        <div class="bg-white dark:bg-zinc-800 sticky -top-8 z-50 px-4 -mx-4 pt-8 pb-2 -mb-2 -mt-8">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     {#if data.game.state == 'active'}
@@ -458,7 +458,7 @@
 
                     <p class="opacity-75 mt-5 mb-2">Graphs</p>
 
-                    <div class="bg-zinc-200 dark:bg-zinc-900 rounded-lg {timeStats != undefined && showPit != true ? "mb-0.5 rounded-b-sm" : ""} p-4 pb-9">
+                    <div class="bg-zinc-200 dark:bg-zinc-900 rounded-lg {timeStats != undefined && showPit != true ? "mb-0.5 rounded-b-sm" : ""} p-4 pl-1 pb-9">
                         <div class="chart-container ml-7">
                             <LayerCake
                                 ssr

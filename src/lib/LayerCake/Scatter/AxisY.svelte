@@ -104,7 +104,7 @@
         >{format(tick)}</div>
       </div>
     {/each}
-    <div class="absolute top-1/2 right-[100%] -translate-x-6 -translate-y-1/2 rotate-90 text-sm opacity-50">{label}</div>
+    <div class="absolute top-1/2 right-[100%] -translate-x-4 -translate-y-1/2 rotate-90 text-sm opacity-50">{label}</div>
   </div>
   
   <style>

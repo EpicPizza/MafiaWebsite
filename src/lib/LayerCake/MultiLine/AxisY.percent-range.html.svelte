@@ -107,7 +107,7 @@
       </div>
     </div>
   {/each}
-  <div class="absolute top-1/2 right-[100%] -translate-x-6 -translate-y-1/2 rotate-90 text-sm">Words</div>
+  <div class="absolute top-1/2 right-[100%] -translate-x-4 -translate-y-1/2 rotate-90 text-sm">Words</div>
 </div>
 
 <style>

@@ -59,7 +59,7 @@
     {#if visible === true}
       <div style="left:{(x / 100) * $width}px;" class="line"></div>
       <div
-        class="tooltip border-border-light dark:border-border-dark border rounded-lg bg-zinc-100 dark:bg-zinc-900"
+        class="tooltip border-border-light dark:border-border-dark border rounded-lg bg-zinc-100 dark:bg-zinc-900" 
         style="
           width:{w}px;
           display: {visible ? 'block' : 'none'};

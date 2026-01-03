@@ -52,40 +52,28 @@
     const formatLabelZ = (id: string) => users.find(user => user.id == id)?.nickname ?? id;
 </script>        
 
-<div class="min-w-[400px] min-h-[10rem] h-[10rem] mt-0 mb-[4.25rem] pl-7">
-    <LayerCake
-        ssr
-        percentRange
-        padding={{ top: 7, right: 10, bottom: 20, left: 25 }}
-        x={xKey}
-        y={yKey}
-        z={zKey}
-        zScale={scaleOrdinal()}
-        zRange={seriesColors}
-        flatData={flatten(dataLong, 'values')}
-        yDomain={[0, null]}
-        data={dataLong}
-    >
-        <Html>
-            <AxisX
-                gridlines={false}
-                ticks={
-                    stats.map(d => d[xKey]).sort((a, b) => a.valueOf() - b.valueOf()).filter((a, i) => i % Math.floor(stats.length / 20) == 0)
-                }
-                format={formatLabelX}
-                tickMarks
-            />
-            <AxisY format={formatLabelY} />
-        </Html>
+<div class="-mx-4 px-4">
+    <div class="min-w-[400px] min-h-[10rem] h-[10rem] mt-0 mb-[4.25rem] pl-4">
+        <LayerCake
+            ssr
+            percentRange
+            padding={{ top: 7, right: 10, bottom: 20, left: 25 }}
+            x={xKey}
+            y={yKey}
+            z={zKey}
+            zScale={scaleOrdinal()}
+            zRange={seriesColors}
+            flatData={flatten(dataLong, 'values')}
+            yDomain={[0, null]}
+            data={dataLong}
+        >
+            <
 
-        <ScaledSvg>
-            <MultiLine />
-        </ScaledSvg>
-
-        <Html>
-            <SharedTooltip formatKey={formatLabelZ} formatTitle={formatLabelX} dataset={stats} />
-        </Html>
-    </LayerCake>
+            <Html>
+                <SharedTooltip formatKey={formatLabelZ} formatTitle={formatLabelX} dataset={stats} />
+            </Html>
+        </LayerCake>
+    </div>
 </div>
 
 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-y-0.5">
