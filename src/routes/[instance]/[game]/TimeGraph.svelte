@@ -67,7 +67,23 @@
             yDomain={[0, null]}
             data={dataLong}
         >
-            <
+            <div class="max-w-screen overflow-auto">
+                <Html>
+                    <AxisX
+                        gridlines={false}
+                        ticks={
+                            stats.map(d => d[xKey]).sort((a, b) => a.valueOf() - b.valueOf()).filter((a, i) => i % Math.floor(stats.length / 20) == 0)
+                        }
+                        format={formatLabelX}
+                        tickMarks
+                    />
+                    <AxisY format={formatLabelY} />
+                </Html>
+
+                <ScaledSvg>
+                    <MultiLine />
+                </ScaledSvg>
+            </div>
 
             <Html>
                 <SharedTooltip formatKey={formatLabelZ} formatTitle={formatLabelX} dataset={stats} />
