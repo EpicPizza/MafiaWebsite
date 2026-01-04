@@ -315,6 +315,8 @@ async function getTimeStats(instance: Instance, game: Game, users: User[], day: 
 
     const current = instance.global.started && game.id == instance.global.game && day == instance.global.day;
     
+    if(stats.length < 5) return stats;
+
     if(cache) {
         await cacheRef.update({
             stats: current ? stats.slice(0, -3) : stats,
