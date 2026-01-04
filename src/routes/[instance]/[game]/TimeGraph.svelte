@@ -28,10 +28,10 @@
     const yKey = 'value';
     const zKey = 'player';    
 
-    const seriesNames = Object.keys(stats[0]).filter(d => d !== xKey);
-    const seriesColors = seriesNames.map(id => users.find(user => user.id == id)?.color ?? "#aaaaaa")
+    const seriesNames = $derived(Object.keys(stats[0]).filter(d => d !== xKey));
+    const seriesColors = $derived(seriesNames.map(id => users.find(user => user.id == id)?.color ?? "#aaaaaa"));
 
-    const dataLong = seriesNames.map(key => {
+    const dataLong = $derived(seriesNames.map(key => {
         return {
             [zKey]: key,
             values: stats.map(d => {
@@ -43,7 +43,7 @@
                 };
             })
         };
-    });
+    }));
 
     const formatLabelX = (date: Date) => { return dnt.format(new Date(date), "h:mm a"); };
     // @ts-ignore
