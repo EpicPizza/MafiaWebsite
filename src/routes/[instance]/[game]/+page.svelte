@@ -487,7 +487,7 @@
                         </div>
                     </div>
 
-                    {#if timeStats != undefined && showPit != true}
+                    {#if timeStats != undefined && timeStats.length != 0 && showPit != true}
                         <div class="bg-zinc-200 dark:bg-zinc-900 rounded-b-lg rounded-t-sm p-4">
                             <TimeGraph users={data.users} stats={timeStats}></TimeGraph>
                         </div>  
