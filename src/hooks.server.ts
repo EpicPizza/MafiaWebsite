@@ -9,6 +9,8 @@ export const handle = (async ({ event, resolve }) => {
     const origin = event.url.origin;
     event.locals.origin = origin ?? undefined;
 
+    console.log(origin);
+
     if(origin && !(origin == "https://frcmafia.com" || origin == "https://api.frcmafia.com") && env.DEV != "TRUE") {
         return new Response(null, {
             status: 307,
