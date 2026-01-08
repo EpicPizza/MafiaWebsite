@@ -125,11 +125,7 @@ export const handle = (async ({ event, resolve }) => {
     response.headers.set("X-Frame-Options", "SAMEORIGIN");
     response.headers.set("X-Content-Type-Options", "nosniff");
     response.headers.set('Access-Control-Allow-Credentials', 'true');
-
-    const allowedOrigins = ['https://mafia.alexest.net', 'https://frcmafia.com', 'https://api.frcmafia.com'];
-    if (origin && allowedOrigins.includes(origin)) {
-        response.headers.set('Access-Control-Allow-Origin', 'https://frcmafia.com');
-    }
+    response.headers.set('Access-Control-Allow-Origin', 'https://frcmafia.com');
     response.headers.set('Vary', 'Origin');
 
     return response;
