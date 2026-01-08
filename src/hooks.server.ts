@@ -9,9 +9,9 @@ export const handle = (async ({ event, resolve }) => {
     const origin = event.url.origin;
     event.locals.origin = origin ?? undefined;
 
-    console.log(origin);
+    console.log(origin, origin == "https://undefined");
 
-    if(origin && !(origin == "https://frcmafia.com" || origin == "https://api.frcmafia.com") && env.DEV != "TRUE") {
+    if(origin && !(origin == "https://frcmafia.com" || origin == "https://undefined") && env.DEV != "TRUE") {
         return new Response(null, {
             status: 307,
             headers: { location: "https://frcmafia.com" + event.url.pathname + event.url.search }
