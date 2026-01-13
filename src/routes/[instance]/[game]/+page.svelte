@@ -23,7 +23,6 @@
     import User from './User.svelte';
     import Message from './Message.svelte';
     import TimeGraph from './TimeGraph.svelte';
-    import { USER } from '$env/static/private';
 
     dnt.plugin(meridiem);
 
