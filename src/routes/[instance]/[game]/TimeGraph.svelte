@@ -18,9 +18,10 @@
     interface Props {
         stats: { [key: string]: number; }[],
         users: CompleteUser[],
+        hidden: string[],
     }
 
-    const { stats: dataStats, users }: Props = $props();
+    const { stats: dataStats, users, hidden }: Props = $props();
 
     const stats = $derived(dataStats.map(stat => ({ interval: new Date(stat.interval), ...stat }))) as unknown as { [key: string]: number; }[];
 
@@ -28,7 +29,7 @@
     const yKey = 'value';
     const zKey = 'player';    
 
-    const seriesNames = $derived(Object.keys(stats[0]).filter(d => d !== xKey));
+    const seriesNames = $derived(Object.keys(stats[0]).filter(d => d !== xKey).filter(d => !hidden.includes(d)));
     const seriesColors = $derived(seriesNames.map(id => users.find(user => user.id == id)?.color ?? "#aaaaaa"));
 
     const dataLong = $derived(seriesNames.map(key => {
