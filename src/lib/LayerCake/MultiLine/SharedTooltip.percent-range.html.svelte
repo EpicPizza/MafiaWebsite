@@ -20,6 +20,7 @@
    * @property {Function} [formatValue = d => (isNaN(+d) ? d : commas(d))] - A function to format the value.
    * @property {number} [offset=-20] - A y-offset from the hover point, in pixels.
    * @property {Array} [dataset] - The dataset to work off ofdefaults to $data if left unset. You can pass something custom in here in case you don't want to use the main data or it's in a strange format.
+   * @property {Array<string>} [hidden]
    */
 
   /** @type {Props} */
@@ -28,7 +29,8 @@
     formatKey = d => titleCase(d),
     formatValue = d => (isNaN(+d) ? d : commas(d)),
     offset = -20,
-    dataset
+    dataset,
+    hidden,
   } = $props();
 
   const w = 250;
@@ -63,7 +65,7 @@
         style="
           width:{w}px;
           display: {visible ? 'block' : 'none'};
-          top:calc({$yScale(foundSorted[0].value)}% + {offset}px);
+          top:calc({$yScale(foundSorted.filter(d => !hidden || !hidden.includes(d.key))[0].value)}% + {offset}px);
           left:{Math.min(Math.max(w2, (x / 100) * $width), $width - w2)}px;"
       >
         <div class="title">{formatTitle(found[$config.x])}</div>
