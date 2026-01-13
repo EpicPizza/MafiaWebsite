@@ -8,6 +8,7 @@ interface Call {
     command: string,
     instance: string,
     timestamp: number,
+    expiration: number,
     received: boolean,
     result?: any,
     sender: string,
@@ -31,6 +32,7 @@ export async function POST({ params, locals, url, request }) {
     const ref = await db.collection('queue').add({
         command: command,
         timestamp: new Date().valueOf(),
+        expiration: new Date().valueOf() + (1000 * 60 * 60 * 24),
         instance: instance.id,
         received: false,
         sender: locals.profile.uid,
