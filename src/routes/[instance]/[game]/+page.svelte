@@ -101,13 +101,17 @@
         if(unsubscribeStats) unsubscribeStats();
 
         if(showPit && data.pitStats) {
-            stats = data.pitStats.stats;
+            const players = data.days[data.pitStats.day - 1].players ?? [];
+
+            stats = data.pitStats.stats.filter(stat => players.length == 0 || players.includes(stat.id));
             
             return;
         }
 
         if((!client.user && data.profile == undefined) || data.global.game != data.game.id || !(data.global.started && data.global.day == selectedDay)) {
-            stats = data.days[selectedDay - 1].stats;
+            const players = data.days[selectedDay - 1].players;
+            
+            stats = data.days[selectedDay - 1].stats.filter(stat => players.length == 0 || players.includes(stat.id));
 
             return;
         }
@@ -119,7 +123,11 @@
         const statsRef = query(collection(db, "instances", data.instance, "games", data.game.id, "days", selectedDay.toString(), "stats"));
 
         unsubscribeStats = onSnapshot(statsRef, async snapshot => {
-            stats = (snapshot.docs.map(doc => ({ ...doc.data(), instance: data.instance, game: data.game.id, day: selectedDay.toString(), type: "add", id: doc.ref.id })) as unknown as StatsAction[]).filter(stat => data.users.find(user => user.id == stat.id));
+            const players = data.days[selectedDay - 1].players;
+
+            const incomingStats = (snapshot.docs.map(doc => ({ ...doc.data(), instance: data.instance, game: data.game.id, day: selectedDay.toString(), type: "add", id: doc.ref.id })) as unknown as StatsAction[]).filter(stat => data.users.find(user => user.id == stat.id));
+
+            stats = incomingStats.filter(stat => players.length == 0 || players.includes(stat.id));
         });
 
         return () => {
