@@ -134,7 +134,7 @@ export async function load({ params, locals, url }) {
 
             let timeStats = undefined as undefined | { [key: string]: number; }[];
             try {
-                timeStats = cutoffStats(await getTimeStats(instance, game, users, i));
+                timeStats = cutoffStats(await getTimeStats(instance, game, currentPlayers.length == 0 ? users : currentPlayers.map(player => users.find(user => user.id == player)).filter(player => player != undefined), i));
             } catch(e) {
                 console.log(e);
             }
@@ -299,7 +299,7 @@ async function getTimeStats(instance: Instance, game: Game, users: User[], day: 
             });
         } else {
             interval.forEach(message => {
-                if(!game.signups.includes(message.authorId)) return;
+                if(!users.find(user => message.authorId == user.id)) return;
 
                 last[message.authorId] += message.content.split(" ").length;
             });

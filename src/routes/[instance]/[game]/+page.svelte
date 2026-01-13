@@ -23,6 +23,7 @@
     import User from './User.svelte';
     import Message from './Message.svelte';
     import TimeGraph from './TimeGraph.svelte';
+    import { USER } from '$env/static/private';
 
     dnt.plugin(meridiem);
 
@@ -496,8 +497,10 @@
                     </div>
 
                     {#if timeStats != undefined && timeStats.length != 0 && showPit != true}
+                        {@const players = data.days[selectedDay - 1].players ?? []}
+
                         <div class="bg-zinc-200 dark:bg-zinc-900 rounded-b-lg rounded-t-sm p-4">
-                            <TimeGraph users={data.users} stats={timeStats}></TimeGraph>
+                            <TimeGraph users={data.users.filter(user => players.length == 0 || players.includes(user.id))} stats={timeStats}></TimeGraph>
                         </div>  
                     {/if}
                 {:else if id == "Debug"}
