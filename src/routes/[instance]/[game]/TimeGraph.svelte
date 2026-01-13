@@ -87,7 +87,7 @@
             </div>
 
             <Html>
-                <SharedTooltip formatKey={formatLabelZ} formatTitle={formatLabelX} dataset={stats} />
+                <SharedTooltip hidden={hidden} formatKey={formatLabelZ} formatTitle={formatLabelX} dataset={stats} />
             </Html>
         </LayerCake>
     </div>
