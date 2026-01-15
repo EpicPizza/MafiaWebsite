@@ -46,7 +46,7 @@ export function firebaseClient(preload: Omit<User, "preload"> | undefined = unde
 
     const getFirestore = (): Firestore => {
         if (firestore == undefined) {
-            firestore = getFirebaseFirestore(getApp());
+            firestore = getFirebaseFirestore(getApp(), "main");
         }
 
         return firestore;
