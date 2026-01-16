@@ -7,7 +7,7 @@
         "source": "**",
         "function": {
 					"functionId": "ssrServer",
-					"region": "us-west2"
+					"region": "us-west1"
 				}
       }
     ]
