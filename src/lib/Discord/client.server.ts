@@ -3,7 +3,12 @@ import { env } from "$env/dynamic/private";
 import { Client, Collection, GatewayIntentBits, Partials } from "discord.js";
 
 const client = new Client({
-    intents: [],
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildWebhooks,
+        GatewayIntentBits.GuildInvites,
+    ],
     partials: [
         Partials.Message,
         Partials.Channel, 
