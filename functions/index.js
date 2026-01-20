@@ -28,7 +28,7 @@ const __dirname = dirname(__filename);
 
 app.use(express.static(join(__dirname, 'build', 'prerendered')));
 
-export const ssrServer = onRequest({ region: 'us-west1', concurrency: 16, memory: "256MiB", minInstances: 1 }, async (req, res) => {
+export const ssrServer = onRequest({ region: 'us-west1', concurrency: 16, memory: "256MiB" }, async (req, res) => {
 	// logger.info("Hello logs!", {structuredData: true});
 	// if (prerendered.has(req.url)) {
 	// 	return app(req, res);
