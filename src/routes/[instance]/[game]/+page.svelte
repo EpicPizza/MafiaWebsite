@@ -8,7 +8,7 @@
     import { getContext, onMount, tick, untrack } from 'svelte';
     import type { Client } from '$lib/Firebase/firebase.svelte.js';
     import { collection, limit, onSnapshot, orderBy, query, type Unsubscribe } from 'firebase/firestore';
-    import { type Log, type StatsAction } from './types.js';
+    import { type Log, type StatsAction, type TrackedMessage } from './types.js';
     import Tag from './Tag.svelte';
     import Copy from './Copy.svelte';
     import { page } from '$app/state';
@@ -23,6 +23,7 @@
     import User from './User.svelte';
     import Message from './Message.svelte';
     import TimeGraph from './TimeGraph.svelte';
+    import { type Game } from '$lib/Discord/game.server.js';
 
     dnt.plugin(meridiem);
 
@@ -237,24 +238,86 @@
                     </button>
                 {/each}
 
-                <div style="left: {(tabIds.indexOf(tabs.value) * 5.5) + 1.5}rem" class="bg-black dark:bg-white w-14 h-[3px] bottom-0 absolute rounded-t-full transition-all"></div>
+                <div style="left: {(tabIds.indexOf(tabs.value) * 5.5) + 2.75}rem" class="bg-black dark:bg-white w-4 h-[3px] bottom-0 absolute rounded-t-full transition-all"></div>
             </div>
         </div>
 
         {#each tabIds as id}
             <div {...tabs.getContent(id)}>
                 {#if id == "Home"}
-                    {#if data.game.state == 'active'}
-                        <div class="flex items-center gap-2 text-yellow-800 bg-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/15 rounded-md px-3 py-2 mt-5">
-                            <Icon width=1.2rem icon=material-symbols:flight-takeoff></Icon>
-                            <p class="font-bold max-w-min sm:max-w-fit">Game In Progress</p>
+                    <p class="opacity-75 my-5 mb-2 flex items-center gap-1">
+                        <Icon icon=material-symbols:content-paste-search></Icon>
+                        Quick Info
+                    </p>
+
+                    <div class="flex-col sm:flex-row flex gap-0.5">
+                        <div class="bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 rounded-lg w-full flex items-center gap-2 rounded-br-sm rounded-bl-sm sm:rounded-bl-lg rounded-tr-lg sm:rounded-tr-sm">
+                            {#if data.game.state == 'active'}
+                                <Icon width=1rem icon=material-symbols:flight-takeoff></Icon>
+                                <p>Game In Progress</p>
+                            {:else}
+                                <Icon width=1rem icon=material-symbols:flight-land></Icon>
+                                <p>Game Completed</p>
+                            {/if}
                         </div>
-                    {:else}
-                        <div class="flex items-center gap-2 text-red-800 bg-red-200 dark:text-red-400 dark:bg-red-500/15 rounded-md px-3 py-2 mt-5">
-                            <Icon width=1.2rem icon=material-symbols:flight-land></Icon>
-                            <p class="font-bold max-w-min sm:max-w-fit">Game Completed</p>
+                        <div class="bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 rounded-lg flex items-center gap-2 w-full rounded-tl-sm rounded-tr-sm sm:rounded-tr-lg rounded-bl-lg sm:rounded-bl-sm">
+                            <Icon class="-mt-0.5" icon=material-symbols:date-range></Icon>
+                            {#if data.game.start && data.game.end}
+                                {dnt.format(new Date(data.game.start), "M/D/YYYY")} - {dnt.format(new Date(data.game.end), "M/D/YYYY")}
+                            {:else if data.game.start}
+                                {dnt.format(new Date(data.game.start), "M/D/YYYY")}
+                            {:else}
+                                Soon...
+                            {/if}
+                        </div>
+                    </div>
+
+                    {#if data.game.pinned && data.messages.find(message => message.id == data.game.pinned)}
+                        {@const message = data.messages.find(message => message.id == data.game.pinned) as TrackedMessage}
+                        {@const user = data.messageUsers.find(user => user.id == message.authorId)}
+
+                        <p class="opacity-75 my-5 mb-2 flex items-center gap-1">
+                            <Icon icon=material-symbols:keep></Icon>
+                            Pinned
+                        </p>
+
+                        <div class="bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 pt-3.5 rounded-lg">
+                            <Message message={message} {user}></Message>
                         </div>
                     {/if}
+
+                    <p class="opacity-75 my-5 mb-2 flex items-center gap-1">
+                        <Icon icon=material-symbols:cards-stack></Icon>
+                        Resources
+                    </p>
+
+                    <div class="grid gap-1 grid-cols-1 sm:grid-cols-2">
+                        {#each ([ ...data.game.links, { type: "Discord", label: "Dead Chat", url: data.deadChat }, { type: "Discord", label: "Mafia Chat", url: data.mafiaChat } ] as Game["links"]) as link}
+                            <div class="bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 rounded-lg flex items-center gap-1.5">
+                                {#if link.type == 'Material'}
+                                    {#if link.logo == "Custom"}
+                                        <Icon width=1.5rem icon=material-symbols:globe></Icon>
+                                    {:else if link.logo == "Drive"}
+                                        <Icon width=1.2rem class="text-green-500 mx-[2.5px]" icon=logos:google-drive></Icon>
+                                    {:else if link.logo == "Sheets"}
+                                        <Icon width=1.5rem class="text-green-500" icon=mdi:google-spreadsheet></Icon>
+                                    {:else if link.logo == "Slides"}
+                                        <Icon width=1.5rem class="text-yellow-500" icon=material-symbols:animated-images></Icon>
+                                    {:else if link.logo == "Docs"}
+                                        <Icon width=1.5rem class="text-blue-500" icon=material-symbols:docs></Icon>
+                                    {/if}
+                                {:else}
+                                    <Icon width=1.2rem class="mx-[2.5px]" icon=ic:baseline-discord></Icon>
+                                {/if}
+
+                                {link.label}
+
+                                <a target="_blank" href="{link.url}" class="cursor-pointer ml-auto">
+                                    <Icon width=1.2rem icon=material-symbols:arrow-outward></Icon>
+                                </a>
+                            </div>
+                        {/each}
+                    </div>
                 {:else if id == "Players"}
                     {#if data.mods.length > 0}
                         <p class="opacity-75 mb-2 mt-5">Mods</p>

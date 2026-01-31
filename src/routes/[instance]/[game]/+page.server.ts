@@ -87,12 +87,12 @@ export async function load({ params, locals, url }) {
         const pinQuery = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'asc').where('createdTimestamp', '>=', game.start).where('createdTimestamp', '<=', game.end == null ? new Date().valueOf() : game.end).where('pinned', '==', true);
         const starQuery = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'asc').where('createdTimestamp', '>=', game.start).where('createdTimestamp', '<=', game.end == null ? new Date().valueOf() : game.end).where('stars', '>=', 3);
 
-        const docs = [... (await pinQuery.get()).docs, ...(await starQuery.get()).docs];
+        const docs = [... (await pinQuery.get()).docs.map(doc => doc.data()).map(data => { (data as TrackedMessage).stars = 0; return data; }), ...(await starQuery.get()).docs.map(doc => doc.data()).map(data => { (data as TrackedMessage).pinned = false; return data; })];
 
         messages.push(... (await Promise.all(docs.map(async doc => {
-            const message = doc.data() as TrackedMessage;
+            const message = doc as TrackedMessage;
 
-            if(!messageUsers.includes(doc.data().authorId)) messageUsers.push(doc.data().authorId);
+            if(!messageUsers.includes(message.authorId)) messageUsers.push(message.authorId);
 
             if(message.attachments.length > 0) {
                 const discordMessage = await instance.setup.primary.chat.messages.fetch(message.id).catch(() => undefined);
@@ -160,6 +160,8 @@ export async function load({ params, locals, url }) {
         activeDay: !isNaN(dayRequest) ? dayRequest : undefined,
         instance: instance.id,
         link: instance.setup.primary.guild.id + "/" + instance.setup.primary.chat.id,
+        deadChat: "https://discord.com/channels/" + instance.setup.secondary.guild.id + "/" + game.channels.spec,
+        mafiaChat: "https://discord.com/channels/" + instance.setup.tertiary.guild.id + "/" + game.channels.mafia,
         votes: days[index].votes,
         players: days[index].players,
         stats: statsGraph ? statsGraph.stats : days[index].stats,
