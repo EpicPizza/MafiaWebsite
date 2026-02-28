@@ -9,10 +9,10 @@ import { custom } from "zod";
 import { page } from "$app/state";
 
 export interface User {
-  photoURL: string | undefined;
-  displayName: string | undefined;
-  uid: string;
-  preload: boolean
+    photoURL: string | undefined;
+    displayName: string | undefined;
+    uid: string;
+    preload: boolean
 }
 
 export type Client = ReturnType<typeof firebaseClient>;
@@ -21,11 +21,11 @@ export function firebaseClient(preload: Omit<User, "preload"> | undefined = unde
     let app: FirebaseApp | undefined = undefined;
     let auth: Auth | undefined = undefined;
     let firestore: Firestore | undefined = undefined;
-    
+
     let user = $state(preload ? { ...preload, preload: false } : undefined) as User | undefined;
 
     const getApp = (): FirebaseApp => {
-        if (!browser) return undefined as any;                    
+        if (!browser) return undefined as any;
 
         if (app == undefined) {
             const firebaseConfig = JSON.parse(env.PUBLIC_FIREBASE_CLIENT);
@@ -46,19 +46,19 @@ export function firebaseClient(preload: Omit<User, "preload"> | undefined = unde
 
     const getFirestore = (): Firestore => {
         if (firestore == undefined) {
-            firestore = getFirebaseFirestore(getApp(), "main");
+            firestore = getFirebaseFirestore(getApp(), env.PUBLIC_DEV == "TRUE" ? "(default)" : "main");
         }
 
         return firestore;
     };
 
     const clientInit = async (customToken: string | undefined) => {
-        if(!customToken || !user) {
+        if (!customToken || !user) {
             setupHandler();
 
             return;
         }
-        
+
         const credential = await signInWithCustomToken(getAuth(), customToken);
 
         const idToken = await credential.user.getIdToken();
@@ -71,7 +71,7 @@ export function firebaseClient(preload: Omit<User, "preload"> | undefined = unde
             },
         });
 
-        if(result.status == 401) return signOut("/");
+        if (result.status == 401) return signOut("/");
 
         user.preload = true;
 
@@ -80,7 +80,7 @@ export function firebaseClient(preload: Omit<User, "preload"> | undefined = unde
 
     const setupHandler = () => {
         onAuthStateChanged(getAuth(), async currentUser => {
-            if(currentUser && user) {
+            if (currentUser && user) {
                 user.preload = true;
             }
         });
@@ -110,7 +110,7 @@ export function firebaseClient(preload: Omit<User, "preload"> | undefined = unde
         });
 
         getAuth().signOut();
-    }; 
+    };
 
     return {
         get user() { return user; },

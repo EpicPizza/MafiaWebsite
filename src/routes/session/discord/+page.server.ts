@@ -5,29 +5,30 @@ import { getAllowed } from "../users.server";
 import { safeParse } from "$lib/tools";
 import { error } from "@sveltejs/kit";
 import { firebaseAdmin } from "$lib/Firebase/firebase.server";
-import client from "$lib/Discord/client.server";
 
 export async function load({ request, cookies, url }) {
     const redirectTo = url.searchParams.get("redirect") ?? "/";
     const id = url.searchParams.get("id");
     const token = url.searchParams.get("token");
 
-    if(!id || !token) error(401);
+    if (!id || !token) error(401);
 
     const db = firebaseAdmin.getFirestore();
     const ref = db.collection('sessions').doc(id);
     const data = (await ref.get()).data();
 
-    if(!data || data.token != token || (Date.now().valueOf() - data.timestamp) > (1000 * 60 * 5)) error(403);
+    if (!data || data.token != token || (Date.now().valueOf() - data.timestamp) > (1000 * 60 * 5)) error(403);
 
-    const user = await client.users.fetch(id, { cache: true }).catch(() => undefined);
+    const user = await fetch(`https://discord.com/api/v10/users/${id}`, {
+        headers: { Authorization: `Bot ${env.TOKEN}` }
+    }).then(res => res.ok ? res.json() : undefined).catch(() => undefined);
 
-    if(user == undefined) error(404);
+    if (user == undefined) error(404);
 
     const flow = crypto.randomUUID();
 
     await ref.set({
-        object: user.toJSON(),
+        object: user,
         timestamp: new Date().valueOf(),
         flow: flow,
         token: null,

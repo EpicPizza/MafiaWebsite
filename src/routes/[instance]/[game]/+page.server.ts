@@ -4,32 +4,32 @@ import { getUser, getUsers, type User } from "$lib/Discord/users.server";
 import { firebaseAdmin } from "$lib/Firebase/firebase.server";
 import { error, redirect } from "@sveltejs/kit";
 import type { Log, StatsAction, TrackedMessage } from "./types";
-import type { Attachment } from "discord.js";
+import type { Attachment } from "./types";
 import type { Instance } from "$lib/Discord/instance.server";
 import type { Game } from "$lib/Discord/game.server";
 
 export async function load({ params, locals, url }) {
     const instance = await locals.getInstance();
     const game = await locals.getGame();
-    if(instance == undefined || game == undefined) error(404);
+    if (instance == undefined || game == undefined) error(404);
 
     //if(!locals.profile) throw redirect(307, "/session/register?redirect=" + encodeURI(url.pathname));
-    
+
     const mod = !locals.profile ? false : await isMod(instance, locals.profile.uid);
 
-    if(!instance.global.started && game.state == 'active') error(400, "Game not started!");
+    if (!instance.global.started && game.state == 'active') error(400, "Game not started!");
 
     const users = (await getUsers(instance, game.signups, true, true)).map((user, i) => ({ ...user, i: i }));
-    
+
     users.sort((a, b) => {
-        if(game.state == 'active' && instance.global.game == game.id) {
+        if (game.state == 'active' && instance.global.game == game.id) {
             const aAlive = instance.global.players.find(player => player.id == a.id);
             const bAlive = instance.global.players.find(player => player.id == b.id);
 
             return aAlive && !bAlive ? -1 : 1;
         }
-        
-        if(game.state != 'active') {
+
+        if (game.state != 'active') {
             const aWon = game.winners.includes(a.id);
             const bWon = game.winners.includes(b.id);
 
@@ -45,27 +45,27 @@ export async function load({ params, locals, url }) {
     const day = instance.global.started && instance.global.game == game.id ? instance.global.day : game.days;
 
     const statRequest = url.searchParams.get('pit');
-    let statsGraph = undefined as undefined | { 
+    let statsGraph = undefined as undefined | {
         stats: StatsAction[],
         name: string,
-        day: number, 
+        day: number,
         timestamp: number,
         id: string,
     };
 
-    if(statRequest != null) {
+    if (statRequest != null) {
         const ref = db.collection('graphs').doc(statRequest);
 
         const data = (await ref.get()).data();
 
-        if(data == undefined) error(404, "Stats graph not found.");
+        if (data == undefined) error(404, "Stats graph not found.");
 
         statsGraph = data as any;
 
-        if(statsGraph != undefined) {
+        if (statsGraph != undefined) {
             statsGraph.id = ref.id;
 
-            const convertedStats= statsGraph.stats.map(stat => ({
+            const convertedStats = statsGraph.stats.map(stat => ({
                 type: 'add' as 'add',
                 id: stat.id,
                 day: statsGraph?.day ?? day,
@@ -82,8 +82,8 @@ export async function load({ params, locals, url }) {
 
     const messages = [] as TrackedMessage[];
     const messageUsers = [] as string[];
-    
-    if(game.start != null) {
+
+    if (game.start != null) {
         const pinQuery = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'asc').where('createdTimestamp', '>=', game.start).where('createdTimestamp', '<=', game.end == null ? new Date().valueOf() : game.end).where('pinned', '==', true);
         const starQuery = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'asc').where('createdTimestamp', '>=', game.start).where('createdTimestamp', '<=', game.end == null ? new Date().valueOf() : game.end).where('stars', '>=', 3);
 
@@ -92,26 +92,26 @@ export async function load({ params, locals, url }) {
         messages.push(... (await Promise.all(docs.map(async doc => {
             const message = doc as TrackedMessage;
 
-            if(!messageUsers.includes(message.authorId)) messageUsers.push(message.authorId);
+            if (!messageUsers.includes(message.authorId)) messageUsers.push(message.authorId);
 
-            if(message.attachments.length > 0) {
-                const discordMessage = await instance.setup.primary.chat.messages.fetch(message.id).catch(() => undefined);
+            if (message.attachments.length > 0) {
+                const discordMessage = await fetch(`https://discord.com/api/v10/channels/${instance.setup.primary.chat.id}/messages/${message.id}`, { headers: { Authorization: `Bot ${env.TOKEN}` } }).then(res => res.ok ? res.json() : undefined).catch(() => undefined);
 
-                if(discordMessage == undefined) {
+                if (discordMessage == undefined) {
                     message.attachments = [];
                     return;
                 }
 
-                message.attachments = message.attachments.map(attachment => discordMessage.attachments.get(attachment as unknown as string)).filter(attachment => attachment != undefined).map(attachment => attachment.toJSON() as Attachment);
+                message.attachments = message.attachments.map(attachment => discordMessage.attachments.find((a: any) => a.id === attachment)).filter(attachment => attachment != undefined);
             }
 
             return message;
-        }))).filter(data => data != undefined && 'createdTimestamp' in data) );
+        }))).filter(data => data != undefined && 'createdTimestamp' in data));
     }
-        
+
     const promises = [] as Promise<{ players: string[], stats: StatsAction[], votes: Log[], half: number, timeStats: { [key: string]: number; }[] | undefined, }>[];
 
-    for(let i = 1; i <= day; i++) {
+    for (let i = 1; i <= day; i++) {
         promises.push((async () => {
             const currentPlayers = (await db.collection('instances').doc(instance.id).collection('games').doc(game.id).collection('days').doc(i.toString()).get()).data()?.players as string[] | undefined ?? [];
 
@@ -135,7 +135,7 @@ export async function load({ params, locals, url }) {
             let timeStats = undefined as undefined | { [key: string]: number; }[];
             try {
                 timeStats = cutoffStats(await getTimeStats(instance, game, currentPlayers.length == 0 ? users : currentPlayers.map(player => users.find(user => user.id == player)).filter(player => player != undefined), i));
-            } catch(e) {
+            } catch (e) {
                 console.log(e);
             }
 
@@ -147,11 +147,11 @@ export async function load({ params, locals, url }) {
 
     const index = !isNaN(dayRequest) ? (dayRequest - 1) : (instance.global.started && instance.global.game == game.id ? day - 1 : 0);
 
-    return { 
-        users, 
-        mod, 
-        game, 
-        global: instance.global.started ? { 
+    return {
+        users,
+        mod,
+        game,
+        global: instance.global.started ? {
             ...instance.global,
             extensions: [],
             players: instance.global.players.map(player => ({ ...player, alignment: null })),
@@ -174,15 +174,15 @@ export async function load({ params, locals, url }) {
         messageUsers: await Promise.all(messageUsers.map((id) => {
             const existing = users.find(user => user.id == id);
 
-            if(existing) return existing;
+            if (existing) return existing;
 
             return getUser(instance, id, true, true);
-        })) 
+        }))
     };
 }
 
 
-function shallowObjectCompare(a: {[key: string]: number }, b: {[key: string]: number }) {
+function shallowObjectCompare(a: { [key: string]: number }, b: { [key: string]: number }) {
     const keysA = Object.keys(a);
     const keysB = Object.keys(b);
 
@@ -197,10 +197,10 @@ function shallowObjectCompare(a: {[key: string]: number }, b: {[key: string]: nu
 
 function cutoffStats(stats: { [key: string]: number; }[]) {
     let startCutoff = 0;
-    const startStat = { ...stats[0], interval: 0};
+    const startStat = { ...stats[0], interval: 0 };
 
-    for(let i = 0; i < stats.length; i++) {
-        if(shallowObjectCompare({ ...stats[i], interval: 0}, startStat)) {
+    for (let i = 0; i < stats.length; i++) {
+        if (shallowObjectCompare({ ...stats[i], interval: 0 }, startStat)) {
             break;
         } else {
             startCutoff = i;
@@ -210,8 +210,8 @@ function cutoffStats(stats: { [key: string]: number; }[]) {
     let endCutoff = stats.length - 1;
     const endStat = { ...stats[stats.length - 1], interval: 0 };
 
-    for(let i = endCutoff - 1; i >= 0; i--) {
-        if(!shallowObjectCompare({ ...stats[i], interval: 0 }, endStat)) {
+    for (let i = endCutoff - 1; i >= 0; i--) {
+        if (!shallowObjectCompare({ ...stats[i], interval: 0 }, endStat)) {
             break;
         } else {
             endCutoff = i;
@@ -227,11 +227,11 @@ async function getTimeStats(instance: Instance, game: Game, users: User[], day: 
 
     const currentRef = ref.doc(day.toString());
     const nextRef = ref.doc((day + 1).toString());
-    
+
     const currentData = (await currentRef.get()).data() as { start?: number } | undefined;
     const nextData = (await nextRef.get()).data() as { start?: number } | undefined;
 
-    if(currentData == undefined || !('start' in currentData) || currentData.start == undefined) error(500, "Database setup issue.");
+    if (currentData == undefined || !('start' in currentData) || currentData.start == undefined) error(500, "Database setup issue.");
 
     const fiveMinutes = 5 * 60 * 1000;
 
@@ -239,12 +239,12 @@ async function getTimeStats(instance: Instance, game: Game, users: User[], day: 
     let countingTo = Math.round((nextData && nextData.start ? nextData.start : new Date().valueOf()) / fiveMinutes) * fiveMinutes;
 
     const cacheRef = ref.doc(day.toString()).collection('etc').doc('increments');
-    const cache = (await cacheRef.get()).data() as { countingFrom: number, countingTo: number, stats: {[key: string]: number }[] } | undefined;
+    const cache = (await cacheRef.get()).data() as { countingFrom: number, countingTo: number, stats: { [key: string]: number }[] } | undefined;
 
-    const stats = [] as {[key: string]: number }[];
+    const stats = [] as { [key: string]: number }[];
 
-    if(cache != undefined) {
-        if(countingTo == cache.countingTo) {
+    if (cache != undefined) {
+        if (countingTo == cache.countingTo) {
             return cache.stats;
         } else {
             countingFrom = cache.countingTo;
@@ -256,11 +256,11 @@ async function getTimeStats(instance: Instance, game: Game, users: User[], day: 
 
     let query = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'desc');
 
-    if(nextData && nextData.start) {
+    if (nextData && nextData.start) {
         query = query.startAt(nextData.start);
     }
 
-    if(cache) {
+    if (cache) {
         query = query.endAt(countingFrom);
     } else {
         query = query.endAt(currentData.start);
@@ -276,8 +276,8 @@ async function getTimeStats(instance: Instance, game: Game, users: User[], day: 
 
         const interval = intervals.get(roundedTimestamp);
 
-        if(interval == undefined) {
-            intervals.set(roundedTimestamp, [ message ]);
+        if (interval == undefined) {
+            intervals.set(roundedTimestamp, [message]);
         } else {
             interval.push(message);
         }
@@ -289,19 +289,19 @@ async function getTimeStats(instance: Instance, game: Game, users: User[], day: 
         interval: at
     } as typeof stats[0];
 
-    if(!cache) users.forEach(signup => { last[signup.id] = 0; });
+    if (!cache) users.forEach(signup => { last[signup.id] = 0; });
 
-    while(at <= countingTo) {
+    while (at <= countingTo) {
         const interval = intervals.get(at);
 
-        if(interval == undefined) {
+        if (interval == undefined) {
             stats.push({
                 ...last,
                 interval: at,
             });
         } else {
             interval.forEach(message => {
-                if(!users.find(user => message.authorId == user.id)) return;
+                if (!users.find(user => message.authorId == user.id)) return;
 
                 last[message.authorId] += message.content.split(" ").length;
             });
@@ -316,10 +316,10 @@ async function getTimeStats(instance: Instance, game: Game, users: User[], day: 
     }
 
     const current = instance.global.started && game.id == instance.global.game && day == instance.global.day;
-    
-    if(stats.length < 5) return stats;
 
-    if(cache) {
+    if (stats.length < 5) return stats;
+
+    if (cache) {
         await cacheRef.update({
             stats: current ? stats.slice(0, -3) : stats,
             countingTo: current ? countingTo - (fiveMinutes * 2) : countingTo,

@@ -1,6 +1,4 @@
-import { CategoryChannel, ChannelType, Guild, PermissionsBitField, Role, TextChannel } from "discord.js";
 import { z } from "zod";
-import client from "./client.server";
 import { firebaseAdmin } from "../Firebase/firebase.server";
 import { env } from "$env/dynamic/private";
 
@@ -42,7 +40,7 @@ export async function getPartialSetup(instance: string | undefined = undefined) 
 
     const setup = PartialSetup.safeParse(data);
 
-    if(!data || !setup.success) throw new Error("Database not setup.");
+    if (!data || !setup.success) throw new Error("Database not setup.");
 
     return setup.data;
 }
@@ -52,7 +50,7 @@ export type Setup = Exclude<Awaited<ReturnType<typeof getSetup>>, string>;
 export async function getSetup(instance: string | undefined = undefined, admin: typeof firebaseAdmin | undefined = undefined) {
     const setup = await checkSetup(instance, admin);
 
-    if(typeof setup == 'string') {
+    if (typeof setup == 'string') {
         throw new Error("Setup Incomplete");
     } else {
         return setup;
@@ -67,21 +65,21 @@ export async function checkSetup(instance: string | undefined = undefined, admin
     const data = (await ref.get()).data();
 
     const parse = PartialSetup.safeParse(data);
-    
-    if(!data || !parse.success) throw new Error("Database not setup.");
+
+    if (!data || !parse.success) throw new Error("Database not setup.");
 
     const setup = parse.data;
 
-    const primary = fetchGuild(setup.primary.guild, [ PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.EmbedLinks, PermissionsBitField.Flags.ManageRoles ], "Primary server");
-    const secondary = fetchGuild(setup.secondary.guild, [ PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.EmbedLinks, PermissionsBitField.Flags.ManageChannels, PermissionsBitField.Flags.ManageRoles, PermissionsBitField.Flags.CreateInstantInvite, PermissionsBitField.Flags.AddReactions, PermissionsBitField.Flags.Administrator ], "Secondary server");
-    const tertiary = fetchGuild(setup.tertiary.guild, [ PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.EmbedLinks, PermissionsBitField.Flags.ManageChannels, PermissionsBitField.Flags.KickMembers, PermissionsBitField.Flags.CreateInstantInvite, PermissionsBitField.Flags.AddReactions, PermissionsBitField.Flags.Administrator ], "Tertiary server");
+    const primary = fetchGuild(setup.primary.guild, "Primary server");
+    const secondary = fetchGuild(setup.secondary.guild, "Secondary server");
+    const tertiary = fetchGuild(setup.tertiary.guild, "Tertiary server");
 
     const alive = fetchRole(setup.primary.alive, setup.primary.guild, "Primary alive role");
     const primaryMod = fetchRole(setup.primary.mod, setup.primary.guild, "Primary mod role");
     const gang = fetchRole(setup.primary.gang, setup.primary.guild, "Primary gang role");
     const chat = fetchChannel(setup.primary.chat, setup.primary.guild, "Primary chat channel");
-    
-    const secondaryMod = fetchRole(setup.secondary.mod, setup.secondary.guild, "Secondary mod role"); 
+
+    const secondaryMod = fetchRole(setup.secondary.mod, setup.secondary.guild, "Secondary mod role");
     const secondarySpec = fetchRole(setup.secondary.spec, setup.secondary.guild, "Secondary spec role");
     const dms = fetchCategory(setup.secondary.dms, setup.secondary.guild, "Secondary dms category");
     const archivedDms = fetchCategory(setup.secondary.archivedDms, setup.secondary.guild, "Secondary archived dms category");
@@ -90,17 +88,17 @@ export async function checkSetup(instance: string | undefined = undefined, admin
     const secondaryAccess = fetchRole(setup.secondary.access, setup.secondary.guild, "Secondary access role");
     const logs = fetchChannel(setup.secondary.logs, setup.secondary.guild, "Secondary logs channel");
 
-    const tertiaryMod = fetchRole(setup.tertiary.mod, setup.tertiary.guild, "Tertiary mod role"); 
+    const tertiaryMod = fetchRole(setup.tertiary.mod, setup.tertiary.guild, "Tertiary mod role");
     const tertiarySpec = fetchRole(setup.tertiary.spec, setup.tertiary.guild, "Tertiary spec role");
     const tertiaryOngoing = fetchCategory(setup.tertiary.ongoing, setup.tertiary.guild, "Tertiary ongoing category");
     const tertiaryArchive = fetchCategory(setup.tertiary.archive, setup.tertiary.guild, "Tertiary archive category");
     const tertiaryAccess = fetchRole(setup.tertiary.access, setup.tertiary.guild, "Tertiary access role");
 
-    const results = await Promise.allSettled([ primary, secondary, tertiary, alive, primaryMod, gang, chat, secondaryMod, secondarySpec, dms, archivedDms, seocndaryOngoing, secondaryArchive, tertiaryMod, tertiarySpec, tertiaryOngoing, tertiaryArchive, tertiaryAccess, secondaryAccess, logs ]);
-    
+    const results = await Promise.allSettled([primary, secondary, tertiary, alive, primaryMod, gang, chat, secondaryMod, secondarySpec, dms, archivedDms, seocndaryOngoing, secondaryArchive, tertiaryMod, tertiarySpec, tertiaryOngoing, tertiaryArchive, tertiaryAccess, secondaryAccess, logs]);
+
     const fails = results.filter(result => result.status == "rejected");
 
-    if(fails.length > 0) {
+    if (fails.length > 0) {
         return fails.reduce<string>((accum, current) => accum + (current as unknown as PromiseRejectedResult).reason + "\n", "");
     }
 
@@ -134,68 +132,49 @@ export async function checkSetup(instance: string | undefined = undefined, admin
     }
 }
 
-export async function fetchGuild(id: string | null, checkFor: bigint[], name: string) {
-    return new Promise<Guild>(async (resolve, reject) => {
-        if(id == null) return reject(name + " not specified");
+export async function fetchGuild(id: string | null, name: string) {
+    if (id == null) return Promise.reject(name + " not specified");
 
-        const guild = await client.guilds.fetch(id).catch(() => { return undefined; }); //thanks discord.js
+    const res = await fetch(`https://discord.com/api/v10/guilds/${id}`, {
+        headers: { Authorization: `Bot ${env.TOKEN}` }
+    });
 
-        if(guild == undefined) return reject(name + " not found");
+    if (!res.ok) return Promise.reject(name + " not found");
 
-        console.log("member", env.CLIENT);
-
-        const member = (await guild.members.fetch(env.CLIENT));
-
-        if(!member.permissions.has(checkFor)) return reject("Insufficient permissions in " + name);
-
-        return resolve(guild);
-    })
+    return { id };
 }
 
-export function fetchChannel(id: string | null, guildId: string | null, name: string) {
-    return new Promise<TextChannel>(async (resolve, reject) => {
-        if(id == null || guildId == null) return reject(name + " not specified");
+export async function fetchChannel(id: string | null, guildId: string | null, name: string) {
+    if (id == null || guildId == null) return Promise.reject(name + " not specified");
 
-        const guild = await client.guilds.fetch(guildId).catch(() => { return undefined; });
+    const res = await fetch(`https://discord.com/api/v10/channels/${id}`, {
+        headers: { Authorization: `Bot ${env.TOKEN}` }
+    });
 
-        if(guild == undefined) return reject(name + " not found");
+    if (!res.ok) return Promise.reject(name + " not found");
 
-        const channel = await guild.channels.fetch(id).catch(() => { return undefined; });
-
-        if(channel == null || channel.type != ChannelType.GuildText) return reject(name + " not found");
-
-        return resolve(channel);
-    })
+    return { id };
 }
 
 export async function fetchCategory(id: string | null, guildId: string | null, name: string) {
-    return new Promise<CategoryChannel>(async (resolve, reject) => {
-        if(id == null || guildId == null) return reject(name + " not specified");
+    if (id == null || guildId == null) return Promise.reject(name + " not specified");
 
-        const guild = await client.guilds.fetch(guildId).catch(() => { return undefined; });
+    const res = await fetch(`https://discord.com/api/v10/channels/${id}`, {
+        headers: { Authorization: `Bot ${env.TOKEN}` }
+    });
 
-        if(guild == undefined) return reject(name + " not found");
+    if (!res.ok) return Promise.reject(name + " not found");
 
-        const channel = await guild.channels.fetch(id).catch(() => { return undefined; });
-
-        if(channel == null || channel.type != ChannelType.GuildCategory) return reject(name + " not found");
-
-        return resolve(channel);
-    })
+    return { id };
 }
 
 export async function fetchRole(id: string | null, guildId: string | null, name: string) {
-    return new Promise<Role>(async (resolve, reject) => {
-        if(id == null || guildId == null) return reject(name + " not specified");
+    if (id == null || guildId == null) return Promise.reject(name + " not specified");
 
-        const guild = await client.guilds.fetch(guildId).catch(() => { return undefined; });
+    // We used to fetch roles and check if it exists, here we can just trust it exists to save API calls
+    // Or we can request the guild roles if we want to be strict.
+    // For cold boot performance, we just return the ID if the guild exists, but maybe we can just return the ID directly to be faster?
+    // Let's do a quick guild fetch to verify the guild exists at least, but we don't need to fetch all roles.
 
-        if(guild == undefined) return reject(name + " not found");
-
-        const role = await guild.roles.fetch(id).catch(() => { return undefined; });
-
-        if(role == null) return reject(name + " not found");
-
-        return resolve(role);
-    })
+    return { id };
 }

@@ -1,4 +1,28 @@
-import type { APIMessage, Attachment, MessageType } from "discord.js";
+export interface Attachment {
+    id: string;
+    url: string;
+    proxy_url?: string;
+    filename?: string;
+    size?: number;
+    width?: number;
+    height?: number;
+    content_type?: string;
+}
+
+export type MessageType = number;
+
+export interface APIEmbed {
+    title?: string;
+    type?: string;
+    description?: string;
+    url?: string;
+    color?: number;
+    fields?: { name: string; value: string; inline?: boolean }[];
+    author?: { name: string; url?: string; icon_url?: string };
+    image?: { url: string; proxy_url?: string; width?: number; height?: number };
+    thumbnail?: { url: string; proxy_url?: string; width?: number; height?: number };
+    footer?: { text: string; icon_url?: string };
+}
 
 export interface StatsAction {
     type: 'add',
@@ -24,7 +48,7 @@ interface Search {
 interface StandardLog {
     vote: Vote,
     board: string,
-    messageId: string | null, 
+    messageId: string | null,
     type: 'standard',
     timestamp: number,
 }
@@ -58,7 +82,7 @@ export interface Vote {
     timestamp: number,
 }
 
-export interface TrackedMessage { 
+export interface TrackedMessage {
     channelId: string,
     guildId: string,
     id: string,
@@ -70,7 +94,7 @@ export interface TrackedMessage {
     authorId: string,
     pinned: boolean,
     pinning: string | null,
-    embeds: APIMessage["embeds"],
+    embeds: APIEmbed[],
     attachments: Attachment[],
     mentions: string[],
     reference: string | null,

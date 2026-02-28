@@ -1,6 +1,6 @@
 import { firebaseAdmin, getUser } from '$lib/Firebase/firebase.server';
 import { error } from 'console';
-import type { APIUser } from 'discord.js';
+export interface APIUser { id: string; username: string; avatar: string | null; }
 import { getInstance, getInstances, type Instance } from '$lib/Discord/instance.server';
 import { getGameByID, type Game } from '$lib/Discord/game.server';
 import { env } from '$env/dynamic/private';
@@ -11,7 +11,7 @@ export const handle = (async ({ event, resolve }) => {
 
     console.log(origin, origin == "https://undefined");
 
-    if(origin && !(origin == "https://frcmafia.com" || origin == "https://undefined") && env.DEV != "TRUE") {
+    if (origin && !(origin == "https://frcmafia.com" || origin == "https://undefined") && env.DEV != "TRUE") {
         return new Response(null, {
             status: 307,
             headers: { location: "https://frcmafia.com" + event.url.pathname + event.url.search }
@@ -23,22 +23,22 @@ export const handle = (async ({ event, resolve }) => {
     const step = session ? session.step as number : -1;
 
     await (async () => {
-        if(step == 1) {
+        if (step == 1) {
             const flow = session.flow as string;
             const id = session.id as string;
 
             const db = firebaseAdmin.getFirestore();
             const ref = db.collection('sessions').doc(id);
             const data = (await ref.get()).data();
-            
-            if(!data || data.flow != flow) {
+
+            if (!data || data.flow != flow) {
                 console.log("flow error");
                 return;
             }
 
             const timestamp = data.timestamp;
 
-            if((Date.now().valueOf() - timestamp) > (1000 * 60 * 5))  {
+            if ((Date.now().valueOf() - timestamp) > (1000 * 60 * 5)) {
                 console.log("timestamp error");
                 return;
             }
@@ -46,36 +46,36 @@ export const handle = (async ({ event, resolve }) => {
             await ref.update({ flow: null });
 
             const discordUser = data.object as APIUser;
-            
+
             const auth = firebaseAdmin.getAuth();
 
             let firebaseUser = await auth.getUser(discordUser.id).catch(() => undefined);
 
-            if(firebaseUser == undefined) {
+            if (firebaseUser == undefined) {
                 firebaseUser = await auth.createUser({
                     uid: discordUser.id,
                     displayName: discordUser.username,
-                    photoURL: discordUser.avatar ? ("https://cdn.discordapp.com/avatars/" + discordUser.id + "/" + discordUser.avatar + ".webp?size=160" ) : "https://cdn.discordapp.com/avatars/1248187665548054588/cc206768cd2ecf8dfe96c1b047caa60f.webp?size=160",
+                    photoURL: discordUser.avatar ? ("https://cdn.discordapp.com/avatars/" + discordUser.id + "/" + discordUser.avatar + ".webp?size=160") : "https://cdn.discordapp.com/avatars/1248187665548054588/cc206768cd2ecf8dfe96c1b047caa60f.webp?size=160",
                 });
             } else {
                 firebaseUser = await auth.updateUser(discordUser.id, {
                     displayName: discordUser.username,
-                    photoURL: discordUser.avatar ? ("https://cdn.discordapp.com/avatars/" + discordUser.id + "/" + discordUser.avatar + ".webp?size=160" ) : "https://cdn.discordapp.com/avatars/1248187665548054588/cc206768cd2ecf8dfe96c1b047caa60f.webp?size=160",
+                    photoURL: discordUser.avatar ? ("https://cdn.discordapp.com/avatars/" + discordUser.id + "/" + discordUser.avatar + ".webp?size=160") : "https://cdn.discordapp.com/avatars/1248187665548054588/cc206768cd2ecf8dfe96c1b047caa60f.webp?size=160",
                 });
             }
 
             const token = await auth.createCustomToken(discordUser.id);
-            
+
             event.locals.token = token;
             event.locals.profile = {
                 uid: firebaseUser.uid,
                 photoURL: firebaseUser.photoURL,
                 displayName: firebaseUser.displayName,
             }
-        } else if(sessionCookie) {
+        } else if (sessionCookie) {
             const user = await getUser(sessionCookie);
 
-            if(user) {
+            if (user) {
                 event.locals.profile = {
                     uid: user.uid,
                     photoURL: user.photoURL,
@@ -88,13 +88,13 @@ export const handle = (async ({ event, resolve }) => {
     let instance: undefined | Promise<Instance | undefined>;
 
     event.locals.getInstance = async () => {
-        if(event.params.instance == undefined) return undefined;
+        if (event.params.instance == undefined) return undefined;
 
-        if(instance == undefined) {
+        if (instance == undefined) {
             instance = (async () => {
                 return await getInstance(event.params.instance ?? "---");
             })();
-        } 
+        }
 
         return instance;
     }
@@ -104,13 +104,13 @@ export const handle = (async ({ event, resolve }) => {
     event.locals.getGame = async () => {
         const instance = await event.locals.getInstance();
 
-        if(event.params.game == undefined || instance == undefined) return undefined;
+        if (event.params.game == undefined || instance == undefined) return undefined;
 
-        if(game == undefined) {
+        if (game == undefined) {
             game = (async () => {
                 return await getGameByID(instance, event.params.game ?? "---");
             })();
-        } 
+        }
 
         return game;
     }
@@ -136,7 +136,7 @@ export function safeParse(input: string) {
         const output = JSON.parse(input);
 
         return output;
-    } catch(e) {
+    } catch (e) {
         return undefined;
     }
 }

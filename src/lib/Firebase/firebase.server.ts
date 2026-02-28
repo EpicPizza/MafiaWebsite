@@ -13,34 +13,34 @@ function getFirebaseAdmin() {
     let firestore: Firestore | undefined = undefined;
 
     const getFirebaseApp = (): admin.app.App => {
-        if(app == undefined) { //this get reruns on every change durring preview, but firebase admin still sees the pervious instance made, so this just checks if we can use a previous firebase instance, otherwise it will cause an error because firebase thinks we are reintializing
-            if(admin.apps == null) {
+        if (app == undefined) { //this get reruns on every change durring preview, but firebase admin still sees the pervious instance made, so this just checks if we can use a previous firebase instance, otherwise it will cause an error because firebase thinks we are reintializing
+            if (admin.apps == null) {
                 app = admin.initializeApp({
                     credential: (admin.credential.cert(JSON.parse(env.FIREBASE_ADMIN) as admin.ServiceAccount))
                 }, "Server");
-            } else if(admin.apps.length == 0) {
+            } else if (admin.apps.length == 0) {
                 app = admin.initializeApp({
                     credential: (admin.credential.cert(JSON.parse(env.FIREBASE_ADMIN) as admin.ServiceAccount))
                 }, "Server");
             } else {
                 var found = false;
-                for(var i = 0; i < admin.apps.length; i++) {
-                    if(admin.apps[i] != null && (admin.apps[i] as admin.app.App).name == "Server") {
+                for (var i = 0; i < admin.apps.length; i++) {
+                    if (admin.apps[i] != null && (admin.apps[i] as admin.app.App).name == "Server") {
                         app = admin.apps[i] as admin.app.App;
                         found = true;
                     }
                 }
-                if(found == false) {
+                if (found == false) {
                     throw new Error("Firebase Admin is being goofy again");
                 }
             }
         }
-    
+
         return app as admin.app.App;
     }
 
     const getAuth = (): Auth => {
-        if(auth == undefined) {
+        if (auth == undefined) {
             auth = firebaseAuth(getFirebaseApp());
         }
 
@@ -48,8 +48,8 @@ function getFirebaseAdmin() {
     }
 
     const getFirestore = (): Firestore => {
-        if(firestore == undefined) {
-            firestore = getFirebaseFirestore(getFirebaseApp(), "main");
+        if (firestore == undefined) {
+            firestore = getFirebaseFirestore(getFirebaseApp(), env.DEV == "TRUE" ? "(default)" : "main");
             firestore.settings({ ignoreUndefinedProperties: true });
         }
 
@@ -66,9 +66,9 @@ function getFirebaseAdmin() {
 export async function getUser(session: string): Promise<UserRecord | undefined> {
     const decodedToken = await firebaseAdmin.getAuth().verifySessionCookie(session, true).catch(() => undefined);
 
-    if(decodedToken == undefined) return undefined;
+    if (decodedToken == undefined) return undefined;
 
     const user = await firebaseAdmin.getAuth().getUser(decodedToken.uid);
-    
+
     return user;
 }
