@@ -512,7 +512,7 @@
                                 {:else if link.logo == "Drive"}
                                     <Icon
                                         width="1.2rem"
-                                        class="text-green-500 mx-[2.5px]"
+                                        class="mx-[2.5px] mt-[3px]"
                                         icon="logos:google-drive"
                                     ></Icon>
                                 {:else if link.logo == "Sheets"}
