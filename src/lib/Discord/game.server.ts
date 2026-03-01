@@ -1,9 +1,9 @@
 import { firebaseAdmin } from "$lib/Firebase/firebase.server";
 import type { Instance } from "./instance.server";
 
-export interface Game { 
-    name: string, 
-    signups: string[], 
+export interface Game {
+    name: string,
+    signups: string[],
     id: string,
     closed: boolean,
     message: {
@@ -33,6 +33,7 @@ interface DiscordLink {
     channelName: string,
     label: string,
     url: string,
+    description?: string,
 }
 
 interface MaterialLink {
@@ -40,6 +41,7 @@ interface MaterialLink {
     logo: 'Drive' | 'Slides' | 'Docs' | 'Sheets' | 'Custom',
     label: string,
     url: string,
+    description?: string,
 }
 
 export async function getGameByID(instance: Instance, id: string) {
@@ -51,7 +53,7 @@ export async function getGameByID(instance: Instance, id: string) {
 
     const doc = (await ref.get());
 
-    if(doc.data() == undefined) throw new Error("Game not found in database.");
+    if (doc.data() == undefined) throw new Error("Game not found in database.");
 
-    return { ... doc.data(), id: doc.id } as Game;
+    return { ...doc.data(), id: doc.id } as Game;
 }

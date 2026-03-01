@@ -41,6 +41,48 @@ export async function load({ params, locals, url }) {
 
     const db = firebaseAdmin.getFirestore();
 
+    let linksUpdated = false;
+    await Promise.all(game.links.map(async (link) => {
+        if (!link.description && !('description' in link)) {
+            try {
+                const res = await fetch(link.url, {
+                    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+                    signal: AbortSignal.timeout(3000)
+                });
+                if (res.ok) {
+                    const text = await res.text();
+                    const metaTags = text.match(/<meta[^>]*>/gi) || [];
+                    for (const tag of metaTags) {
+                        if (/property=["']og:description["']/i.test(tag) || /name=["']description["']/i.test(tag)) {
+                            const contentMatch = tag.match(/content=["']([^"']*)["']/i);
+                            if (contentMatch) {
+                                link.description = contentMatch[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+                                linksUpdated = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!('description' in link)) {
+                        link.description = "";
+                        linksUpdated = true;
+                    }
+                } else {
+                    link.description = "";
+                    linksUpdated = true;
+                }
+            } catch (e) {
+                link.description = "";
+                linksUpdated = true;
+            }
+        }
+    }));
+
+    if (linksUpdated) {
+        await db.collection('instances').doc(instance.id).collection('games').doc(game.id).update({
+            links: game.links
+        });
+    }
+
     const dayRequest = parseInt(url.searchParams.get('day') ?? "");
     const day = instance.global.started && instance.global.game == game.id ? instance.global.day : game.days;
 
