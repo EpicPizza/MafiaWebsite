@@ -102,7 +102,15 @@ export async function load({ params, locals, url }) {
                     return;
                 }
 
-                message.attachments = message.attachments.map(attachment => discordMessage.attachments.find((a: any) => a.id === attachment)).filter(attachment => attachment != undefined);
+                message.attachments = message.attachments.map(attachment => {
+                    const a = discordMessage.attachments.find((a: any) => a.id === attachment);
+                    if (!a) return undefined;
+                    return {
+                        ...a,
+                        name: a.filename,
+                        contentType: a.content_type
+                    }
+                }).filter(attachment => attachment != undefined);
             }
 
             return message;

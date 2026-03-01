@@ -3,10 +3,12 @@ export interface Attachment {
     url: string;
     proxy_url?: string;
     filename?: string;
-    size?: number;
+    name?: string;
+    size: number;
     width?: number;
     height?: number;
     content_type?: string;
+    contentType?: string;
 }
 
 export type MessageType = number;
