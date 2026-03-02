@@ -39,15 +39,6 @@
                         <p>Sign in with Discord</p>
                     </div>
                 </a>
-                <a
-                    href="/party/username"
-                    class="px-4 py-3 bg-white text-black rounded-md flex justify-around"
-                >
-                    <div class="flex items-center gap-3">
-                        <Icon class="text-2xl" icon="ic:baseline-login"></Icon>
-                        <p>Sign in without Discord</p>
-                    </div>
-                </a>
             </div>
         {:else}
             <p class="text-center font-bold text-lg mb-10">
