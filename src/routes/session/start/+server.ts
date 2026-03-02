@@ -2,10 +2,10 @@ import { env } from "$env/dynamic/private";
 import { firebaseAdmin } from "$lib/Firebase/firebase.server.js";
 import { error, redirect } from "@sveltejs/kit";
 import * as arctic from "arctic";
-import type { APIUser } from "discord-api-types/v10";
+import type { APIUser } from "../../../hooks.server";
 
 export async function GET({ url, cookies }) {
-    if(url.searchParams.get("error")) throw redirect(307, "/");
+    if (url.searchParams.get("error")) throw redirect(307, "/");
 
     const discord = new arctic.Discord(env.CLIENT, env.SECRET, env.DOMAIN + "/session/start");
 
@@ -13,9 +13,9 @@ export async function GET({ url, cookies }) {
     const state = url.searchParams.get("state");
 
     const session = cookies.get("__session");
-    if(session == undefined) error(401, "session not found");
+    if (session == undefined) error(401, "session not found");
     const cookie = JSON.parse(session);
-    if(!('codeVerifier' in cookie) || !('state' in cookie) || !('redirectTo' in cookie)) error(401, "invalid session");
+    if (!('codeVerifier' in cookie) || !('state' in cookie) || !('redirectTo' in cookie)) error(401, "invalid session");
 
     console.log(cookie);
 
@@ -33,7 +33,7 @@ export async function GET({ url, cookies }) {
         }
     });
 
-    if(response.status != 200) error(500);
+    if (response.status != 200) error(500);
 
     const user = await response.json() as APIUser;
 

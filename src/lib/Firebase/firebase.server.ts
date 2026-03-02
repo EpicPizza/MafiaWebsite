@@ -49,7 +49,11 @@ function getFirebaseAdmin() {
 
     const getFirestore = (): Firestore => {
         if (firestore == undefined) {
-            firestore = getFirebaseFirestore(getFirebaseApp(), env.DEV == "TRUE" ? "(default)" : "main");
+            if (env.DEV == "TRUE") {
+                firestore = getFirebaseFirestore(getFirebaseApp());
+            } else {
+                firestore = getFirebaseFirestore(getFirebaseApp(), "main");
+            }
             firestore.settings({ ignoreUndefinedProperties: true });
         }
 

@@ -1,0 +1,64 @@
+import { error } from "console";
+import { createGroup, getGroup } from "../helpers.server";
+import { json, redirect } from "@sveltejs/kit";
+import { firebaseAdmin } from "$lib/Firebase/firebase.server";
+
+export async function POST({ request, params, cookies, locals }) {
+    if (locals.profile == undefined) throw redirect(307, `/session/register?redirect=/party/${params.group}`);
+
+    const group = await getGroup(params.group);
+    if (group == undefined) throw error(404);
+
+    if (group.players.find(player => player.id == locals.profile?.uid) == undefined) throw error(400, "You're not part of this game?");
+
+    const playerRequest = await request.json() as PlayerRequest;
+
+    if (playerRequest.action == "role") {
+        const role = group.encrypted.roles.find(role => role.id == locals.profile?.uid);
+
+        if (role == undefined) throw error(404);
+
+        return json(role);
+    } else if (playerRequest.action == "message") {
+        const message = group.encrypted.messages.find(message => message.id == playerRequest.id);
+
+        if (message == undefined) throw error(404);
+        if (message.for != locals.profile?.uid) throw error(400);
+
+        return json(message);
+    }
+}
+
+export type PlayerRequest = GetRole | GetMessage;
+
+export interface GetRole {
+    action: "role"
+}
+
+export interface GetMessage {
+    action: "message"
+    id: string,
+}
+
+export async function PATCH({ request, params, cookies, locals }) {
+    if (locals.profile == undefined) throw redirect(307, `/session/register?redirect=/party/${params.group}`);
+
+    const group = await getGroup(params.group);
+    if (group == undefined) throw error(404);
+
+    if (group.players.find(player => player.id == locals.profile?.uid)) return json({ joined: true });
+
+    const db = firebaseAdmin.getFirestore();
+    const ref = db.collection('party').doc(params.group);
+
+    group.players.push({
+        id: locals.profile.uid,
+        role: false,
+        message: null,
+        displayName: locals.profile.displayName
+    });
+
+    await ref.update({ players: group.players });
+
+    return json({ joined: true });
+}
