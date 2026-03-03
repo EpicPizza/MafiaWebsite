@@ -55,7 +55,8 @@ export async function PATCH({ request, params, cookies, locals }) {
         id: locals.profile.uid,
         role: false,
         message: null,
-        displayName: locals.profile.displayName
+        displayName: locals.profile.displayName,
+        photoURL: locals.profile.photoURL
     });
 
     await ref.update({ players: group.players });

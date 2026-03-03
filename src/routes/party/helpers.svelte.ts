@@ -4,6 +4,7 @@ export interface Party {
         role: boolean,
         id: string,
         displayName?: string,
+        photoURL?: string,
     }[],
     encrypted: Encrypted | string,
     iv: string,
@@ -19,6 +20,7 @@ export interface Encrypted {
         message: string,
         id: string,
         displayName?: string,
+        photoURL?: string,
     }[],
     messages: {
         id: string,
