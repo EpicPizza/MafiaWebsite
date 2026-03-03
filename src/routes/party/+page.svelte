@@ -22,6 +22,21 @@
     }
 </script>
 
+<svelte:head>
+    <title>Party Mafia</title>
+    <meta
+        name="description"
+        content="Join a party and play Mafia with your friends!"
+    />
+    <meta property="og:title" content="Party Mafia" />
+    <meta
+        property="og:description"
+        content="Join a party and play Mafia with your friends!"
+    />
+    <meta property="og:image" content="/favicon.png" />
+    <meta name="theme-color" content="#f97316" />
+</svelte:head>
+
 <Background>
     <div
         class="p-8 md:p-10 bg-white dark:bg-zinc-800 h-full border border-border-light dark:border-border-dark {data.username ==
