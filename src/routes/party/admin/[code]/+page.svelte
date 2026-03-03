@@ -267,7 +267,7 @@
         >
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    {#if group.state != 425}
+                    {#if group.state != 425 && group.state != 312}
                         <div
                             class="gap-2 text-yellow-800 bg-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/15 rounded-md w-8 h-8 flex justify-around items-center"
                         >
@@ -293,7 +293,7 @@
 
                     <div class="flex items-center gap-1.5 ml-2">
                         {#if party}
-                            {#if party.state != 425}
+                            {#if party.state != 425 && party.state != 312}
                                 <button
                                     disabled={party.state == 312}
                                     onclick={() => {
