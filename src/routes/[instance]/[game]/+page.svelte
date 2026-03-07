@@ -599,7 +599,7 @@
                     {/if}
 
                     <p class="opacity-75 my-5 mb-2">
-                        Players{data.users.length > 1 ? "s" : ""}
+                        Player{data.users.length > 1 ? "s" : ""}
                     </p>
 
                     {#each data.users as user, i}
