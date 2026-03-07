@@ -17,7 +17,7 @@ export async function load({ params, locals, url }) {
 
     const mod = !locals.profile ? false : await isMod(instance, locals.profile.uid);
 
-    if (!instance.global.started && game.state == 'active') error(400, "Game not started!");
+    //if (!instance.global.started && game.state == 'active') error(400, "Game not started!");
 
     const users = (await getUsers(instance, game.signups, true, true)).map((user, i) => ({ ...user, i: i }));
 
@@ -212,10 +212,10 @@ export async function load({ params, locals, url }) {
         link: instance.setup.primary.guild.id + "/" + instance.setup.primary.chat.id,
         deadChat: "https://discord.com/channels/" + instance.setup.secondary.guild.id + "/" + game.channels.spec,
         mafiaChat: "https://discord.com/channels/" + instance.setup.tertiary.guild.id + "/" + game.channels.mafia,
-        votes: days[index].votes,
-        players: days[index].players,
-        stats: statsGraph ? statsGraph.stats : days[index].stats,
-        half: days[index].half,
+        votes: days[index]?.votes ?? [],
+        players: days[index]?.players ?? [],
+        stats: statsGraph ? statsGraph.stats : days[index]?.stats ?? [],
+        half: days[index]?.half ?? 0,
         tab: url.searchParams.get("tab") ?? "Home",
         mods: 'mods' in game && game.mods ? await getUsers(instance, game.mods, true, true) : [],
         days,

@@ -56,7 +56,7 @@
             data.global.game != data.game.id ||
             !(data.global.started && data.global.day == selectedDay)
         ) {
-            votes = data.days[selectedDay - 1].votes;
+            votes = data.days[selectedDay - 1]?.votes ?? [];
 
             return;
         }
@@ -314,7 +314,16 @@
         >
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    {#if data.game.state == "active"}
+                    {#if data.game.days == 0}
+                        <div
+                            class="gap-2 text-green-800 bg-green-200 dark:text-green-400 dark:bg-green-500/15 rounded-md w-8 h-8 flex justify-around items-center"
+                        >
+                            <Icon
+                                width="1.2rem"
+                                icon="material-symbols:connecting-airports"
+                            ></Icon>
+                        </div>
+                    {:else if data.game.state == "active"}
                         <div
                             class="gap-2 text-yellow-800 bg-yellow-200 dark:text-yellow-400 dark:bg-yellow-500/15 rounded-md w-8 h-8 flex justify-around items-center"
                         >
@@ -411,7 +420,13 @@
                         <div
                             class="bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 rounded-lg w-full flex items-center gap-2 rounded-br-sm rounded-bl-sm sm:rounded-bl-lg rounded-tr-lg sm:rounded-tr-sm"
                         >
-                            {#if data.game.state == "active"}
+                            {#if data.game.days == 0}
+                                <Icon
+                                    width="1rem"
+                                    icon="material-symbols:connecting-airports"
+                                ></Icon>
+                                <p>Game Not Started</p>
+                            {:else if data.game.state == "active"}
                                 <Icon
                                     width="1rem"
                                     icon="material-symbols:flight-takeoff"
@@ -737,6 +752,12 @@
                             >
                                 {day}
                             </button>
+                        {:else}
+                            <button
+                                class="text-base text-center bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 w-full rounded-lg font-bold opacity-50"
+                            >
+                                0
+                            </button>
                         {/each}
                     </div>
 
@@ -797,7 +818,7 @@
                         </p>
                     {/each}
                 {:else if id == "Stats"}
-                    {@const timeStats = data.days[selectedDay - 1].timeStats}
+                    {@const timeStats = data.days[selectedDay - 1]?.timeStats}
 
                     <div
                         class="flex items-center justify-between opacity-75 mt-5 mb-2"
@@ -833,6 +854,12 @@
                                     : 'rounded-r-sm'} font-bold"
                             >
                                 {day}
+                            </button>
+                        {:else}
+                            <button
+                                class="text-base text-center bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 w-full rounded-lg font-bold opacity-50"
+                            >
+                                0
                             </button>
                         {/each}
 

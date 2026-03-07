@@ -386,35 +386,38 @@
                                 submitHide();
                             }}
                             disabled={party.state == 345 || party.state == 390}
-                            class="px-3 h-full rounded-l-lg rounded-r-sm {party.state ==
+                            class="px-3 rounded-l-lg rounded-r-sm h-[40px] {party.state ==
                                 345 || party.state == 390
                                 ? 'bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black font-bold'
-                                : 'bg-zinc-200 dark:bg-zinc-900 text-black dark:text-white'} py-2 font-bold text-base transition-all w-full sm:w-20"
+                                : 'bg-zinc-200 dark:bg-zinc-900 text-black dark:text-white'} py-2 font-bold text-base transition-all w-full sm:w-12 flex items-center justify-center"
                         >
-                            Locked
+                            <Icon icon="material-symbols:lock"></Icon>
                         </button>
                         <button
                             onclick={() => {
                                 submitShowRoles();
                             }}
                             disabled={party.state == 384}
-                            class="px-3 h-full rounded-sm {party.state == 384
+                            class="px-3 rounded-sm h-10 {party.state == 384
                                 ? 'bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black font-bold'
-                                : ' bg-zinc-200 dark:bg-zinc-900 text-black dark:text-white'} py-2 font-bold text-base transition-all w-full sm:w-20"
+                                : ' bg-zinc-200 dark:bg-zinc-900 text-black dark:text-white'} py-2 font-bold text-base transition-all w-full sm:w-12 flex items-center justify-center"
                         >
-                            Roles
+                            <Icon
+                                width="1.2rem"
+                                icon="material-symbols:sticky-note-2-outline"
+                            ></Icon>
                         </button>
                         <button
                             onclick={() => {
                                 submitShowMessages();
                             }}
                             disabled={party.state == 385}
-                            class="px-3 h-full rounded-r-lg rounded-l-sm {party.state ==
+                            class="px-3 rounded-r-lg rounded-l-sm h-10 {party.state ==
                             385
                                 ? 'bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black font-bold'
-                                : ' bg-zinc-200 dark:bg-zinc-900 text-black dark:text-white'} py-2 font-bold text-base transition-all w-full sm:w-20"
+                                : ' bg-zinc-200 dark:bg-zinc-900 text-black dark:text-white'} py-2 font-bold text-base transition-all w-full sm:w-12 flex items-center justify-center"
                         >
-                            Msgs
+                            <Icon icon="material-symbols:chat-bubble"></Icon>
                         </button>
                     </div>
                 {/if}
@@ -749,7 +752,7 @@
                                     </div>
                                 {/each}
 
-                                <div class="flex items-center gap-3 mt-4">
+                                <div class="flex items-center gap-0.5 mt-4">
                                     <button
                                         onclick={() => {
                                             group.encrypted.roles.forEach(
@@ -761,7 +764,7 @@
                                             group.encrypted.roles =
                                                 group.encrypted.roles;
                                         }}
-                                        class="bg-zinc-400 w-24 text-black px-3 py-2 rounded-lg font-bold"
+                                        class="bg-zinc-400 w-24 text-black px-3 py-2 rounded-lg rounded-r-sm font-bold"
                                     >
                                         Reset
                                     </button>
@@ -770,7 +773,7 @@
                                         onclick={() => {
                                             submitMessages();
                                         }}
-                                        class="disabled:opacity-30 disabled:cursor-not-allowed bg-green-500 text-white px-3 py-2 rounded-lg font-bold flex-1"
+                                        class="disabled:opacity-30 disabled:cursor-not-allowed bg-green-800 text-white px-3 py-2 rounded-lg rounded-l-sm font-bold flex-1"
                                     >
                                         Save & Send All
                                     </button>
