@@ -580,7 +580,9 @@
                     {/each}
                 {:else if id == "Players"}
                     {#if data.mods.length > 0}
-                        <p class="opacity-75 mb-2 mt-5">Mods</p>
+                        <p class="opacity-75 mb-2 mt-5">
+                            Mod{data.mods.length > 1 ? "s" : ""}
+                        </p>
 
                         {#each data.mods as user, i}
                             <div
@@ -596,7 +598,9 @@
                         {/each}
                     {/if}
 
-                    <p class="opacity-75 my-5 mb-2">Players</p>
+                    <p class="opacity-75 my-5 mb-2">
+                        Players{data.users.length > 1 ? "s" : ""}
+                    </p>
 
                     {#each data.users as user, i}
                         {@const alive = !!data.global.players.find(
@@ -666,6 +670,12 @@
                                 </div>
                             {/if}
                         </div>
+                    {:else}
+                        <p
+                            class="flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 rounded-lg opacity-50"
+                        >
+                            No players yet.
+                        </p>
                     {/each}
                 {:else if id == "Pins"}
                     {@const messages = data.messages.filter((message) =>
