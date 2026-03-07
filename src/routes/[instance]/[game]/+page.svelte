@@ -616,7 +616,26 @@
                                 : 'rounded-b-sm'} font-bold"
                         >
                             <Tag pronouns tag={user}></Tag>
-                            {#if data.game.state == "active" && data.global.game == data.game.id}
+                            {#if data.game.days == 0 && data.mod}
+                                <div class="relative z-0">
+                                    {#if data.game.confirmations.includes(user.id)}
+                                        <Icon
+                                            class="text-green-600 dark:text-green-600"
+                                            width="1.6rem"
+                                            icon="material-symbols:verified"
+                                        ></Icon>
+                                    {:else}
+                                        <Icon
+                                            class="text-red-600 dark:text-red-600"
+                                            width="1.6rem"
+                                            icon="material-symbols:cancel"
+                                        ></Icon>
+                                    {/if}
+                                    <div
+                                        class="w-4 h-4 bg-white rounded-full absolute -z-10 left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2"
+                                    ></div>
+                                </div>
+                            {:else if data.game.state == "active" && data.global.game == data.game.id}
                                 <p
                                     class="bg-zinc-100 dark:bg-zinc-900 {alive
                                         ? 'text-green-600 dark:text-green-500'
