@@ -320,7 +320,7 @@
                         >
                             <Icon
                                 width="1.2rem"
-                                icon="material-symbols:connecting-airports"
+                                icon="material-symbols:airplane-ticket-outline"
                             ></Icon>
                         </div>
                     {:else if data.game.state == "active"}
@@ -423,7 +423,7 @@
                             {#if data.game.days == 0}
                                 <Icon
                                     width="1rem"
-                                    icon="material-symbols:connecting-airports"
+                                    icon="material-symbols:airplane-ticket-outline"
                                 ></Icon>
                                 <p>Game Not Started</p>
                             {:else if data.game.state == "active"}
