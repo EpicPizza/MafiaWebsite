@@ -348,16 +348,28 @@
                     </h1>
                 </div>
 
-                <div class="items-center gap-2 hidden">
+                <div class="flex items-center gap-2">
                     <div class="flex flex-col items-center gap-0 mr-2 sm:mr-0">
-                        <Icon icon="material-symbols:partly-cloudy-day"></Icon>
-                        <p class="text-xs">Day 3</p>
+                        {#if data.game.days == 0}
+                            <Icon icon="material-symbols:airplane-ticket-outline"></Icon>
+                            <p class="text-xs">Starting</p>
+                        {:else if data.game.state == "active"}
+                            {#if data.global.locked}
+                                <Icon icon="material-symbols:moon-stars"></Icon>
+                            {:else}
+                                <Icon icon="material-symbols:partly-cloudy-day"></Icon>
+                            {/if}
+                            <p class="text-xs">Day {data.game.days}</p>
+                        {:else}
+                            <Icon icon="material-symbols:note-stack-outline"></Icon>
+                            <p class="text-xs">{data.game.days} Days</p>
+                        {/if}
                     </div>
                     <div class="bg-border-light dark:bg-border-dark w-0.5 h-9 rounded-full hidden sm:block">
                     </div>
                     <div class="flex-col items-start gap-0 mr-2 hidden sm:flex">
-                        <p class="text-xs text-zinc-600 dark:text-zinc-300">Players - 15</p>
-                        <p class="text-xs text-yellow-700 dark:text-yellow-400 font-bold">48 minutes until EOD</p>
+                        <p class="text-xs text-zinc-600 dark:text-zinc-300">Players - {data.game.signups.length}</p>
+                        <p class="text-xs text-white font-bold">Hosted by {data.mods.map((mod) => mod.nickname).join(", ")}</p>
                     </div>
                 </div>
             </div>
@@ -1046,9 +1058,9 @@
         class="max-h-20 max-w-[calc(100vw)] overflow-hidden sm:mt-2 sm:max-w-[calc(100vw-2rem)] w-[40rem] bg-zinc-100 dark:bg-zinc-900 sm:border border-border-light dark:border-border-dark p-6 sm:p-8 sm:rounded-b-2xl sm:rounded-t-md relative flex justify-between items-center"
     >
         <div class="flex flex-row items-center gap-3">
-            <button onclick={() => {}} class="-ml-0.5 w-8 h-8 min-w-8 rounded-full dark:bg-white/10 dark:hover:bg-white/20 bg-black/10 hover:bg-black/20 transition-all items-center justify-around hidden" aria-label="Log Out">
+            <a href="/{data.instance}" class="-ml-0.5 w-8 h-8 min-w-8 rounded-full dark:bg-white/10 dark:hover:bg-white/20 bg-black/10 hover:bg-black/20 transition-all flex items-center justify-around" aria-label="Log Out">
                 <Icon width=1.2rem icon=material-symbols:arrow-back></Icon>
-            </button>
+            </a>
             <p class="text-xs hidden sm:block text-zinc-600 dark:text-zinc-300"> 
                 / <a href="/">Home</a> / <a href="/{data.instance}">{data.instance.toUpperCase()}</a> / <span class="font-bold">{data.game.name}</span>
             </p>
