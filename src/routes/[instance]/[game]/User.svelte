@@ -11,7 +11,7 @@
 </script>
 
 {#if client.user}
-    <div class="bg-white dark:bg-zinc-800 p-3 py-0 gap-2.5 rounded-md flex items-center w-fit">
+    <div class=" p-3 py-0 gap-2.5 rounded-md flex items-center w-fit">
         <img alt="{client.user.displayName}'s Profile" src="{client.user.photoURL}" class="rounded-full w-8 h-8">
         <div class="max-w-[calc(100%-1rem)] overflow-hidden">
             <p class='text-xs opacity-75'>Logged in as</p>
@@ -22,8 +22,8 @@
         </button>
     </div>
 {:else}
-    <div class="bg-white dark:bg-zinc-800 p-3 py-0 gap-2.5 rounded-md flex items-center w-fit">
-        <div class="bg-zinc-200 dark:bg-zinc-900 w-8 h-8 rounded-full flex items-center justify-around">
+    <div class=" p-3 py-0 gap-2.5 rounded-md flex items-center w-fit">
+        <div class="w-8 h-8 rounded-full flex items-center justify-around">
             <Icon width=1rem icon=material-symbols:satellite-alt></Icon>
         </div>
         <div class="max-w-[calc(100%-1rem)] overflow-hidden">

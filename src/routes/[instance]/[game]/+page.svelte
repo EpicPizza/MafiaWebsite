@@ -304,10 +304,10 @@
     onclick={() => {
         userOpen = false;
     }}
-    class="h-[calc(100dvh)] -m-4 sm:m-0 md:h-[calc(100dvh-2rem)] flex flex-col items-center"
+    class="h-[calc(100dvh)] -m-4 sm:m-0 sm:h-[calc(100dvh-2rem)] flex flex-col items-center"
 >
     <div
-        class="max-h-full max-w-[calc(100vw)] sm:max-w-[calc(100vw-2rem)] overflow-auto w-[40rem] bg-white dark:bg-zinc-800 border-b sm:border border-border-light dark:border-border-dark p-6 sm:p-8 sm:rounded-2xl relative"
+        class="h-full max-w-[calc(100vw)] sm:max-w-[calc(100vw-2rem)] overflow-auto w-[40rem] bg-white dark:bg-zinc-800 border-b sm:border border-border-light dark:border-border-dark p-6 sm:p-8 sm:rounded-t-2xl sm:rounded-b-md relative"
     >
         <div
             class="bg-white dark:bg-zinc-800 sticky -top-8 z-50 px-4 -mx-4 pt-8 pb-2 -mb-2 -mt-8"
@@ -348,35 +348,17 @@
                     </h1>
                 </div>
 
-                <div class="hidden sm:block">
-                    <User
-                        {client}
-                        currentURL={page.url.pathname + page.url.search}
-                    ></User>
-                </div>
-
-                <div class="block sm:hidden h-9 pt-0.5">
-                    <button
-                        onclick={(e) => {
-                            e.stopPropagation();
-                            userOpen = !userOpen;
-                        }}
-                        class="h-8 w-8 flex items-center justify-around bg-zinc-200 dark:bg-zinc-900 rounded-full"
-                    >
-                        <Icon width="1.1rem" icon="material-symbols:more-vert"
-                        ></Icon>
-                    </button>
-
-                    {#if userOpen}
-                        <div
-                            class="p-4 px-1 rounded-lg bg-white dark:bg-zinc-800 border border-border-light dark:border-border-dark right-0 top-[4.5rem] absolute z-50"
-                        >
-                            <User
-                                {client}
-                                currentURL={page.url.pathname + page.url.search}
-                            ></User>
-                        </div>
-                    {/if}
+                <div class="items-center gap-2 hidden">
+                    <div class="flex flex-col items-center gap-0 mr-2 sm:mr-0">
+                        <Icon icon="material-symbols:partly-cloudy-day"></Icon>
+                        <p class="text-xs">Day 3</p>
+                    </div>
+                    <div class="bg-border-light dark:bg-border-dark w-0.5 h-9 rounded-full hidden sm:block">
+                    </div>
+                    <div class="flex-col items-start gap-0 mr-2 hidden sm:flex">
+                        <p class="text-xs text-zinc-600 dark:text-zinc-300">Players - 15</p>
+                        <p class="text-xs text-yellow-700 dark:text-yellow-400 font-bold">48 minutes until EOD</p>
+                    </div>
                 </div>
             </div>
 
@@ -1058,6 +1040,27 @@
                 {/if}
             </div>
         {/each}
+    </div>
+
+    <div
+        class="max-h-20 max-w-[calc(100vw)] overflow-hidden sm:mt-2 sm:max-w-[calc(100vw-2rem)] w-[40rem] bg-zinc-100 dark:bg-zinc-900 sm:border border-border-light dark:border-border-dark p-6 sm:p-8 sm:rounded-b-2xl sm:rounded-t-md relative flex justify-between items-center"
+    >
+        <div class="flex flex-row items-center gap-3">
+            <button onclick={() => {}} class="-ml-0.5 w-8 h-8 min-w-8 rounded-full dark:bg-white/10 dark:hover:bg-white/20 bg-black/10 hover:bg-black/20 transition-all items-center justify-around hidden" aria-label="Log Out">
+                <Icon width=1.2rem icon=material-symbols:arrow-back></Icon>
+            </button>
+            <p class="text-xs hidden sm:block text-zinc-600 dark:text-zinc-300"> 
+                / <a href="/">Home</a> / <a href="/{data.instance}">{data.instance.toUpperCase()}</a> / <span class="font-bold">{data.game.name}</span>
+            </p>
+        </div>
+
+
+        <div class="-mr-2">
+            <User
+                {client}
+                currentURL={page.url.pathname + page.url.search}
+            ></User>
+        </div>
     </div>
 </div>
 
