@@ -103,8 +103,6 @@ export async function getUser(instance: Instance, id: string, failProof: boolean
         }
     }
 
-    console.log(databaseUser, discordUser, id);
-
     if (databaseUser != undefined && discordUser != undefined) {
         return {
             ...databaseUser,

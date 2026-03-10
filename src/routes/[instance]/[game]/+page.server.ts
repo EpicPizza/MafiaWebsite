@@ -5,13 +5,20 @@ import { firebaseAdmin } from "$lib/Firebase/firebase.server";
 import { error, redirect } from "@sveltejs/kit";
 import type { Log, StatsAction, TrackedMessage } from "./types";
 import type { Attachment } from "./types";
+import { getCachedAttachments } from "$lib/Discord/attachments.server";
 import type { Instance } from "$lib/Discord/instance.server";
 import type { Game } from "$lib/Discord/game.server";
 
 export async function load({ params, locals, url }) {
+    const timestamp = new Date().valueOf();
+
+    console.log("START");
+
     const instance = await locals.getInstance();
     const game = await locals.getGame();
     if (instance == undefined || game == undefined) error(404);
+
+    console.log("STEP 1", new Date().valueOf() - timestamp);
 
     //if(!locals.profile) throw redirect(307, "/session/register?redirect=" + encodeURI(url.pathname));
 
@@ -38,6 +45,8 @@ export async function load({ params, locals, url }) {
 
         return 0;
     })
+
+    console.log("STEP 2", new Date().valueOf() - timestamp);
 
     const db = firebaseAdmin.getFirestore();
 
@@ -83,6 +92,8 @@ export async function load({ params, locals, url }) {
         });
     }
 
+    console.log("STEP 3", new Date().valueOf() - timestamp);
+
     const dayRequest = parseInt(url.searchParams.get('day') ?? "");
     const day = instance.global.started && instance.global.game == game.id ? instance.global.day : game.days;
 
@@ -122,6 +133,8 @@ export async function load({ params, locals, url }) {
         }
     }
 
+    console.log("STEP 4", new Date().valueOf() - timestamp);
+
     const messages = [] as TrackedMessage[];
     const messageUsers = [] as string[];
 
@@ -131,32 +144,25 @@ export async function load({ params, locals, url }) {
 
         const docs = [... (await pinQuery.get()).docs.map(doc => doc.data()).map(data => { (data as TrackedMessage).stars = 0; return data; }), ...(await starQuery.get()).docs.map(doc => doc.data()).map(data => { (data as TrackedMessage).pinned = false; return data; })];
 
+        console.log("STEP 5", new Date().valueOf() - timestamp);
+
         messages.push(... (await Promise.all(docs.map(async doc => {
             const message = doc as TrackedMessage;
 
             if (!messageUsers.includes(message.authorId)) messageUsers.push(message.authorId);
 
             if (message.attachments.length > 0) {
-                const discordMessage = await fetch(`https://discord.com/api/v10/channels/${instance.setup.primary.chat.id}/messages/${message.id}`, { headers: { Authorization: `Bot ${env.TOKEN}` } }).then(res => res.ok ? res.json() : undefined).catch(() => undefined);
-
-                if (discordMessage == undefined) {
-                    message.attachments = [];
-                    return;
-                }
-
-                message.attachments = message.attachments.map(attachment => {
-                    const a = discordMessage.attachments.find((a: any) => a.id === attachment);
-                    if (!a) return undefined;
-                    return {
-                        ...a,
-                        name: a.filename,
-                        contentType: a.content_type
-                    }
-                }).filter(attachment => attachment != undefined);
+                message.attachments = await getCachedAttachments(
+                    instance.setup.primary.chat.id,
+                    message.id,
+                    message.attachments as unknown as string[]
+                );
             }
 
             return message;
         }))).filter(data => data != undefined && 'createdTimestamp' in data));
+
+        console.log("STEP 6", new Date().valueOf() - timestamp);
     }
 
     const promises = [] as Promise<{ players: string[], stats: StatsAction[], votes: Log[], half: number, timeStats: { [key: string]: number; }[] | undefined, }>[];
@@ -168,11 +174,15 @@ export async function load({ params, locals, url }) {
             const ref = db.collection('instances').doc(instance.id).collection('games').doc(game.id).collection('days').doc(i.toString()).collection('stats');
             const stats = ((await ref.get()).docs.map(doc => ({ ...doc.data(), instance: instance.id, game: game.id, day: i, type: "add", id: doc.ref.id })) as unknown as StatsAction[]).filter(stat => users.find(user => user.id == stat.id));
 
+            console.log("STEP 7a", new Date().valueOf() - timestamp);
+
             const custom = parseInt(env.HAMMER_THRESHOLD_PLAYERS ?? '-1');
             const playerCount = custom === -1 ? instance.global.players.length : custom;
             const half = Math.floor(playerCount / 2);
 
             const votes = (await db.collection('instances').doc(instance.id).collection('games').doc(game.id).collection('days').doc(i.toString()).collection('votes').orderBy('timestamp', 'desc').get()).docs.map(vote => vote.data()).filter(vote => vote != undefined) as Log[];
+
+            console.log("STEP 7b", new Date().valueOf() - timestamp);
 
             votes.filter(log => log.type == 'standard').map(log => {
                 log.search = {
@@ -189,6 +199,8 @@ export async function load({ params, locals, url }) {
                 console.log(e);
             }
 
+            console.log("STEP 7c", new Date().valueOf() - timestamp);
+
             return { players: currentPlayers, votes: votes, stats: stats, half: half, timeStats: timeStats };
         })());
     }
@@ -197,7 +209,7 @@ export async function load({ params, locals, url }) {
 
     const index = !isNaN(dayRequest) ? (dayRequest - 1) : (instance.global.started && instance.global.game == game.id ? day - 1 : 0);
 
-    return {
+    const data = {
         users,
         mod,
         game,
@@ -228,7 +240,11 @@ export async function load({ params, locals, url }) {
 
             return getUser(instance, id, true, true);
         }))
-    };
+    }; 
+
+    console.log("STEP 8", new Date().valueOf() - timestamp);
+
+    return data;
 }
 
 

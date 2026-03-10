@@ -45,15 +45,70 @@ export async function getPartialSetup(instance: string | undefined = undefined) 
     return setup.data;
 }
 
-export type Setup = Exclude<Awaited<ReturnType<typeof getSetup>>, string>;
+export type Setup = Exclude<Awaited<ReturnType<typeof checkSetup>>, string>;
+
+const cache = new Map<string, { promise: Promise<Setup>, timestamp: number }>();
 
 export async function getSetup(instance: string | undefined = undefined, admin: typeof firebaseAdmin | undefined = undefined) {
-    const setup = await checkSetup(instance, admin);
+    const instanceId = instance ? instance : process.env.INSTANCE ?? "---";
+    const now = Date.now();
+    
+    const cached = cache.get(instanceId);
 
-    if (typeof setup == 'string') {
-        throw new Error("Setup Incomplete");
+    if (cached) {
+        const isStale = (now - cached.timestamp) >= (1000 * 60 * 5);
+        
+        if (isStale) {
+            // Update timestamp immediately to prevent multiple background refreshes
+            cached.timestamp = now;
+
+            (async () => {
+                try {
+                    const result = await checkSetup(instance, admin);
+                    if (typeof result !== 'string') {
+                        cache.set(instanceId, { 
+                            promise: Promise.resolve(result), 
+                            timestamp: Date.now() 
+                        });
+                    }
+                } catch (e) {
+                    // Ignore background refresh errors; stale data will be used/retried later
+                }
+            })();
+        }
+        
+        return cached.promise;
+    }
+
+    // Initial fetch for a new instance (must wait)
+    const promise = (async () => {
+        const setup = await checkSetup(instance, admin);
+
+        if (typeof setup == 'string') {
+            throw new Error("Setup Incomplete");
+        } else {
+            return setup;
+        }
+    })();
+
+    cache.set(instanceId, { promise, timestamp: now });
+
+    // Remove from cache if the initial fetch fails so it can be retried properly
+    promise.catch(() => {
+        const current = cache.get(instanceId);
+        if (current && current.promise === promise) {
+            cache.delete(instanceId);
+        }
+    });
+
+    return promise;
+}
+
+export function clearSetupCache(instance: string | undefined = undefined) {
+    if (instance === undefined) {
+        cache.clear();
     } else {
-        return setup;
+        cache.delete(instance);
     }
 }
 

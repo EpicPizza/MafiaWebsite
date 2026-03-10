@@ -31,18 +31,28 @@ const map: Map<string, { instance: Instance, timestamp: number }> = new Map();
 let fetched = false;
 
 export async function getInstance(id: string) {
+    const timestamp = new Date().valueOf();
+
+    console.log("STEP i1", new Date().valueOf() - timestamp);
+
     const db = firebaseAdmin.getFirestore();
     const ref = db.collection("instances").doc(id);
     const name = (await ref.get()).data()?.name as string | undefined;
+
+    console.log("STEP i2", new Date().valueOf() - timestamp);
 
     if(name == undefined) return undefined;
 
     const setup = await getSetup(id, firebaseAdmin);
 
+    console.log("STEP i3", new Date().valueOf() - timestamp);
+
     const globalRef = ref.collection('settings').doc('game');
     const globalDoc = await globalRef.get();
     const global = globalDoc.data() ? globalDoc.data() as Global : undefined;
     if(global == undefined) throw new Error("Database not setup.");
+
+    console.log("STEP i4", new Date().valueOf() - timestamp);
 
     const instance = { setup, global, name, id };
 

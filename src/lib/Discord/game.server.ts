@@ -49,8 +49,6 @@ export async function getGameByID(instance: Instance, id: string) {
 
     const ref = db.collection('instances').doc(instance.id).collection('games').doc(id);
 
-    console.log(id)
-
     const doc = (await ref.get());
 
     if (doc.data() == undefined) throw new Error("Game not found in database.");
