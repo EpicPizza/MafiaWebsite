@@ -27,7 +27,7 @@ export async function load({ params, locals, url }) {
     const db = firebaseAdmin.getFirestore();
 
     const ref = await db.collection('queue').add({
-        command: "?mod websitestart " + game.name,
+        command: "?mod websitestart \"" + game.name + "\"",
         timestamp: new Date().valueOf(),
         instance: instance.id,
         received: false,
