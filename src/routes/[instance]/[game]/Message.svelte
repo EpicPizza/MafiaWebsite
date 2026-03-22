@@ -22,7 +22,7 @@
 </script>
 
 {#if user != undefined}
-    <div class="flex gap-3 group">
+    <div class="flex gap-3 group {message.deleted ? "bg-red-200 dark:bg-red-500/20 p-2 -m-2 pb-1 -mb-1.5 rounded-md" : ""}">
         <img
             alt="{user.nickname}'s Profile"
             src={user.pfp}

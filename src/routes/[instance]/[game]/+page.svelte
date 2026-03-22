@@ -365,7 +365,7 @@
                             <p class="text-xs">{data.game.days} Days</p>
                         {/if}
                     </div>
-                    <div class="bg-border-light dark:bg-border-dark w-0.5 h-9 rounded-full hidden sm:block">
+                    <div class="bg-zinc-400 dark:bg-border-dark w-0.5 h-9 rounded-full hidden sm:block">
                     </div>
                     <div class="flex-col items-start gap-0 mr-2 hidden sm:flex">
                         <p class="text-xs text-zinc-600 dark:text-zinc-300">Players - {data.game.signups.length}</p>
