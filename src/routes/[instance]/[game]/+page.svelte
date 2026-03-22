@@ -369,14 +369,14 @@
                     </div>
                     <div class="flex-col items-start gap-0 mr-2 hidden sm:flex">
                         <p class="text-xs text-zinc-600 dark:text-zinc-300">Players - {data.game.signups.length}</p>
-                        <p class="text-xs text-white font-bold">Hosted by {data.mods.map((mod) => mod.nickname).join(", ")}</p>
+                        <p class="text-xs font-bold">Hosted by {data.mods.map((mod) => mod.nickname).join(", ")}</p>
                     </div>
                 </div>
             </div>
 
             <div
                 {...tabs.triggerList}
-                class="bg-zinc-200 dark:bg-zinc-900 px-3 mt-3 py-2 relative rounded-lg border-border-light dark:border-border-dark flex gap-2 overflow-x-auto"
+                class="bg-zinc-200/60 dark:bg-zinc-900 px-3 mt-3 py-2 relative rounded-lg border-border-light dark:border-border-dark flex gap-2 overflow-x-auto"
             >
                 {#each tabIds as id}
                     <button
@@ -412,7 +412,7 @@
 
                     <div class="flex-col sm:flex-row flex gap-0.5">
                         <div
-                            class="bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 rounded-lg w-full flex items-center gap-2 rounded-br-sm rounded-bl-sm sm:rounded-bl-lg rounded-tr-lg sm:rounded-tr-sm"
+                            class="bg-zinc-200/60 dark:bg-zinc-900 px-3 py-2.5 rounded-lg w-full flex items-center gap-2 rounded-br-sm rounded-bl-sm sm:rounded-bl-lg rounded-tr-lg sm:rounded-tr-sm"
                         >
                             {#if data.game.days == 0 && data.global.game != data.game.id}
                                 <Icon
@@ -435,7 +435,7 @@
                             {/if}
                         </div>
                         <div
-                            class="bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 rounded-lg flex items-center gap-2 w-full rounded-tl-sm rounded-tr-sm sm:rounded-tr-lg rounded-bl-lg sm:rounded-bl-sm"
+                            class="bg-zinc-200/60 dark:bg-zinc-900 px-3 py-2.5 rounded-lg flex items-center gap-2 w-full rounded-tl-sm rounded-tr-sm sm:rounded-tr-lg rounded-bl-lg sm:rounded-bl-sm"
                         >
                             <Icon
                                 class="-mt-0.5"
@@ -474,7 +474,7 @@
                         </p>
 
                         <div
-                            class="bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 pt-3.5 rounded-lg"
+                            class="bg-zinc-200/60 dark:bg-zinc-900 px-3 py-2.5 pt-3.5 rounded-lg"
                         >
                             <Message {message} {user}></Message>
                         </div>
@@ -505,7 +505,7 @@
                         <a
                             target="_blank"
                             href={link.url}
-                            class="bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 flex items-start gap-1.5 {i ==
+                            class="bg-zinc-200/60 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 flex items-start gap-1.5 {i ==
                             0
                                 ? 'rounded-t-lg'
                                 : 'rounded-t-sm'} {i == links.length - 1
@@ -580,7 +580,7 @@
 
                         {#each data.mods as user, i}
                             <div
-                                class="flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i ==
+                                class="flex justify-between bg-zinc-200/60 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i ==
                                 0
                                     ? 'rounded-t-lg'
                                     : 'rounded-t-sm'} {i == data.mods.length - 1
@@ -602,7 +602,7 @@
                         )}
 
                         <div
-                            class="flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i ==
+                            class="flex justify-between bg-zinc-200/60 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i ==
                             0
                                 ? 'rounded-t-lg'
                                 : 'rounded-t-sm'} {i == data.users.length - 1
@@ -685,7 +685,7 @@
                         </div>
                     {:else}
                         <p
-                            class="flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 rounded-lg opacity-50"
+                            class="flex justify-between bg-zinc-200/60 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 rounded-lg opacity-50"
                         >
                             No players yet.
                         </p>
@@ -711,7 +711,7 @@
                                 }}
                                 class="px-2 py-1 rounded-r-sm rounded-l-md {messageType !=
                                 'stars'
-                                    ? 'bg-zinc-200 dark:bg-zinc-900'
+                                    ? 'bg-zinc-200/60 dark:bg-zinc-900'
                                     : 'bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black'} text-xs flex items-center gap-1"
                             >
                                 <Icon icon="material-symbols:star"></Icon>
@@ -723,7 +723,7 @@
                                 }}
                                 class="px-2 py-1 rounded-r-md rounded-l-sm {messageType !=
                                 'pinned'
-                                    ? 'bg-zinc-200 dark:bg-zinc-900'
+                                    ? 'bg-zinc-200/60 dark:bg-zinc-900'
                                     : 'bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black'} text-xs flex items-center gap-1"
                             >
                                 <Icon icon="material-symbols:keep"></Icon>
@@ -738,7 +738,7 @@
                         )}
 
                         <div
-                            class="bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 pt-3.5 mb-0.5 {i ==
+                            class="bg-zinc-200/60 dark:bg-zinc-900 px-3 py-2.5 pt-3.5 mb-0.5 {i ==
                             0
                                 ? 'rounded-t-lg'
                                 : 'rounded-t-sm'} {i == messages.length - 1
@@ -749,7 +749,7 @@
                         </div>
                     {:else}
                         <div
-                            class="bg-zinc-200 dark:bg-zinc-900 px-3 pl-4 py-2.5 pt-2.5 mb-0.5 rounded-lg font-bold"
+                            class="bg-zinc-200/60 dark:bg-zinc-900 px-3 pl-4 py-2.5 pt-2.5 mb-0.5 rounded-lg font-bold"
                         >
                             No Messages Found...
                         </div>
@@ -766,7 +766,7 @@
                                 }}
                                 class="text-base text-center {selectedDay == day
                                     ? 'bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black'
-                                    : 'bg-zinc-200 dark:bg-zinc-900'} px-3 py-2.5 w-full {day ==
+                                    : 'bg-zinc-200/60 dark:bg-zinc-900'} px-3 py-2.5 w-full {day ==
                                 1
                                     ? 'rounded-l-lg'
                                     : 'rounded-l-sm'} {day == data.day
@@ -777,7 +777,7 @@
                             </button>
                         {:else}
                             <button
-                                class="text-base text-center bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 w-full rounded-lg font-bold opacity-50"
+                                class="text-base text-center bg-zinc-200/60 dark:bg-zinc-900 px-3 py-2.5 w-full rounded-lg font-bold opacity-50"
                             >
                                 0
                             </button>
@@ -795,7 +795,7 @@
                     </div>
 
                     <div
-                        class="bg-zinc-200 dark:bg-zinc-900 p-4 pl-5 rounded-lg mb-4 relative overflow-hidden"
+                        class="bg-zinc-200/60 dark:bg-zinc-900 p-4 pl-5 rounded-lg mb-4 relative overflow-hidden"
                     >
                         <p class="text-lg font-bold mb-2">
                             Votes - {data.global.started &&
@@ -835,7 +835,7 @@
                         ></Vote>
                     {:else}
                         <p
-                            class="gap-3 font-bold pl-4 sm:gap-0 flex-col sm:flex-row flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 rounded-lg"
+                            class="gap-3 font-bold pl-4 sm:gap-0 flex-col sm:flex-row flex justify-between bg-zinc-200/60 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 rounded-lg"
                         >
                             No Votes Yet...
                         </p>
@@ -868,7 +868,7 @@
                                 class="text-base text-center {selectedDay ==
                                     day && showPit == false
                                     ? 'bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black'
-                                    : 'bg-zinc-200 dark:bg-zinc-900'} px-3 py-2.5 w-full {day ==
+                                    : 'bg-zinc-200/60 dark:bg-zinc-900'} px-3 py-2.5 w-full {day ==
                                 1
                                     ? 'rounded-l-lg'
                                     : 'rounded-l-sm'} {day == data.day &&
@@ -880,7 +880,7 @@
                             </button>
                         {:else}
                             <button
-                                class="text-base text-center bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 w-full rounded-lg font-bold opacity-50"
+                                class="text-base text-center bg-zinc-200/60 dark:bg-zinc-900 px-3 py-2.5 w-full rounded-lg font-bold opacity-50"
                             >
                                 0
                             </button>
@@ -893,7 +893,7 @@
                                 }}
                                 class="text-base text-center {showPit == true
                                     ? 'bg-zinc-700 dark:bg-zinc-400 text-white dark:text-black'
-                                    : 'bg-zinc-200 dark:bg-zinc-900'} px-3 py-2.5 w-full rounded-l-sm rounded-r-lg font-bold"
+                                    : 'bg-zinc-200/60 dark:bg-zinc-900'} px-3 py-2.5 w-full rounded-l-sm rounded-r-lg font-bold"
                             >
                                 /?
                             </button>
@@ -933,7 +933,7 @@
                             getTag(stat.id)}
 
                         <div
-                            class="flex items-center text-sm sm:text-base bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i ==
+                            class="flex items-center text-sm sm:text-base bg-zinc-200/60 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {i ==
                             0
                                 ? 'rounded-t-lg'
                                 : 'rounded-t-sm'} {i == stats.length - 1
@@ -972,7 +972,7 @@
                         </div>
                     {:else}
                         <p
-                            class="gap-3 font-bold pl-4 sm:gap-0 flex-col sm:flex-row flex justify-between bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 rounded-lg"
+                            class="gap-3 font-bold pl-4 sm:gap-0 flex-col sm:flex-row flex justify-between bg-zinc-200/60 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 rounded-lg"
                         >
                             No Stats Yet...
                         </p>
@@ -988,7 +988,7 @@
                     <p class="opacity-75 mt-5 mb-2">Graphs</p>
 
                     <div
-                        class="bg-zinc-200 dark:bg-zinc-900 rounded-lg {timeStats !=
+                        class="bg-zinc-200/60 dark:bg-zinc-900 rounded-lg {timeStats !=
                             undefined && showPit != true
                             ? 'mb-0.5 rounded-b-sm'
                             : ''} p-4 pl-1 pb-9"
@@ -1032,7 +1032,7 @@
                             data.days[selectedDay - 1].players ?? []}
 
                         <div
-                            class="bg-zinc-200 dark:bg-zinc-900 rounded-b-lg rounded-t-sm p-4"
+                            class="bg-zinc-200/60 dark:bg-zinc-900 rounded-b-lg rounded-t-sm p-4"
                         >
                             <TimeGraph
                                 hidden={hidePlayers}
@@ -1054,24 +1054,26 @@
         {/each}
     </div>
 
-    <div
-        class="max-h-20 max-w-[calc(100vw)] overflow-hidden sm:mt-2 sm:max-w-[calc(100vw-2rem)] w-[40rem] bg-zinc-100 dark:bg-zinc-900 sm:border border-border-light dark:border-border-dark p-6 sm:p-8 sm:rounded-b-2xl sm:rounded-t-md relative flex justify-between items-center"
-    >
-        <div class="flex flex-row items-center gap-3">
-            <a href="/{data.instance}" class="-ml-0.5 w-8 h-8 min-w-8 rounded-full dark:bg-white/10 dark:hover:bg-white/20 bg-black/10 hover:bg-black/20 transition-all flex items-center justify-around" aria-label="Log Out">
-                <Icon width=1.2rem icon=material-symbols:arrow-back></Icon>
-            </a>
-            <p class="text-xs hidden sm:block text-zinc-600 dark:text-zinc-300"> 
-                / <a href="/">Home</a> / <a href="/{data.instance}">{data.instance.toUpperCase()}</a> / <span class="font-bold">{data.game.name}</span>
-            </p>
-        </div>
+    <div class="max-h-20 max-w-[calc(100vw)] sm:mt-2 sm:max-w-[calc(100vw-2rem)] w-[40rem] bg-white dark:bg-transparent sm:rounded-b-2xl sm:rounded-t-md">
+        <div
+            class="overflow-hidden max-h-full bg-zinc-200/60 dark:bg-zinc-900 sm:border border-border-light dark:border-border-dark p-6 sm:p-8 sm:rounded-b-2xl sm:rounded-t-md relative flex justify-between items-center"
+        >
+            <div class="flex flex-row items-center gap-3">
+                <a href="/{data.instance}" class="-ml-0.5 w-8 h-8 min-w-8 rounded-full dark:bg-white/10 dark:hover:bg-white/20 bg-black/10 hover:bg-black/20 transition-all flex items-center justify-around" aria-label="Log Out">
+                    <Icon width=1.2rem icon=material-symbols:arrow-back></Icon>
+                </a>
+                <p class="text-xs hidden sm:block text-zinc-600 dark:text-zinc-300"> 
+                    / <a href="/">Home</a> / <a href="/{data.instance}">{data.instance.toUpperCase()}</a> / <span class="font-bold">{data.game.name}</span>
+                </p>
+            </div>
 
 
-        <div class="-mr-2">
-            <User
-                {client}
-                currentURL={page.url.pathname + page.url.search}
-            ></User>
+            <div class="-mr-2">
+                <User
+                    {client}
+                    currentURL={page.url.pathname + page.url.search}
+                ></User>
+            </div>
         </div>
     </div>
 </div>
