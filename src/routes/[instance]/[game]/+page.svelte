@@ -314,7 +314,7 @@
         >
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    {#if data.game.days == 0}
+                    {#if data.game.days == 0 && data.global.game != data.game.id}
                         <div
                             class="gap-2 text-green-800 bg-green-200 dark:text-green-400 dark:bg-green-500/15 rounded-md w-8 h-8 flex justify-around items-center"
                         >
@@ -350,16 +350,16 @@
 
                 <div class="flex items-center gap-2">
                     <div class="flex flex-col items-center gap-0 mr-2 sm:mr-0">
-                        {#if data.game.days == 0}
+                        {#if data.game.days == 0 && data.global.game != data.game.id}
                             <Icon icon="material-symbols:airplane-ticket-outline"></Icon>
                             <p class="text-xs">Starting</p>
                         {:else if data.game.state == "active"}
                             {#if data.global.locked}
-                                <Icon icon="material-symbols:moon-stars"></Icon>
+                                <Icon icon="material-symbols:moon-stars-outline"></Icon>
                             {:else}
                                 <Icon icon="material-symbols:partly-cloudy-day"></Icon>
                             {/if}
-                            <p class="text-xs">Day {data.game.days}</p>
+                            <p class="text-xs">Day {data.global.day}</p>
                         {:else}
                             <Icon icon="material-symbols:note-stack-outline"></Icon>
                             <p class="text-xs">{data.game.days} Days</p>
@@ -414,7 +414,7 @@
                         <div
                             class="bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 rounded-lg w-full flex items-center gap-2 rounded-br-sm rounded-bl-sm sm:rounded-bl-lg rounded-tr-lg sm:rounded-tr-sm"
                         >
-                            {#if data.game.days == 0}
+                            {#if data.game.days == 0 && data.global.game != data.game.id}
                                 <Icon
                                     width="1rem"
                                     icon="material-symbols:airplane-ticket-outline"
