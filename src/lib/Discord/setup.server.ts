@@ -85,6 +85,8 @@ export async function getSetup(instance: string | undefined = undefined, admin: 
         const setup = await checkSetup(instance, admin);
 
         if (typeof setup == 'string') {
+            console.log(setup);
+
             throw new Error("Setup Incomplete");
         } else {
             return setup;
