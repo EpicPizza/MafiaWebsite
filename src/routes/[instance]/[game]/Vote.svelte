@@ -30,26 +30,28 @@
 
 <div class="bg-zinc-200 dark:bg-zinc-900 px-3 py-2.5 mb-0.5 {top ? "rounded-t-lg" : "rounded-t-sm"} {bottom ? "rounded-b-lg" : "rounded-b-sm"}">
     <div class="flex items-center">
-        <div class="gap-3 sm:gap-0 flex-col sm:flex-row flex justify-between w-full">
+        <div class="gap-3 sm:gap-0 flex justify-between w-full">
             {#if log.type == 'standard'}
                 {@const vote = log.vote}
 
                 {#if vote.for != 'unvote'}
                     <div class="flex items-center text-green-700 dark:text-green-500 font-bold gap-0.5">
-                        <Tag tag={getTag(log.search.name)}></Tag>
+                        <Tag compact tag={getTag(log.search.name)}></Tag>
                         <Icon width=1.2rem icon=material-symbols:keyboard-double-arrow-right></Icon>
                         {#if log.search.replace}
-                            <Tag tag={getTag(log.search.replace)}></Tag>
-                            <Icon width=1.2rem class="rotate-90 mx-1 text-yellow-600 dark:text-yellow-500 font-bold" icon=material-symbols:switch-access-shortcut></Icon>
+                            <div class="hidden sm:flex items-center">
+                                <Tag compact tag={getTag(log.search.replace)}></Tag>
+                                <Icon width=1.2rem class="rotate-90 mx-1 text-yellow-600 dark:text-yellow-500 font-bold" icon=material-symbols:switch-access-shortcut></Icon>
+                            </div>
                         {/if}
-                        <Tag tag={getTag(log.search.for ?? "---")}></Tag>
+                        <Tag compact tag={getTag(log.search.for ?? "---")}></Tag>
                     </div>
                 {:else}
                     <div class="flex items-center text-red-600 dark:text-red-500 font-bold gap-0.5">
-                        <Tag tag={getTag(log.search.name)}></Tag>
+                        <Tag compact tag={getTag(log.search.name)}></Tag>
                         <Icon width=1.2rem class="rotate-[225deg] mx-0.5 translate-y-0.5" icon=material-symbols:call-missed></Icon>
                         {#if log.search.replace}
-                            <Tag tag={getTag(log.search.replace)}></Tag>
+                            <Tag compact tag={getTag(log.search.replace)}></Tag>
                         {/if}
                     </div>
                 {/if}
@@ -69,13 +71,18 @@
 
             {#if log.messageId != null}
                 <div class="flex gap-1 items-center ml-auto">
-                    <p class="text-sm mr-2">{dnt.format(new Date(log.timestamp), "h:mm a")}</p>
+                    <p class="text-xs sm:text-sm mr-2">{dnt.format(new Date(log.timestamp), "h:mm a")}</p>
 
-                    <a target="_blank" href="https://discord.com/channels/{link}/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 border border-border-light dark:border-border-dark p-2 py-1 rounded-md font-bold text-xs">
-                        Jump
+                    <a target="_blank" href="https://discord.com/channels/{link}/{log.messageId}" class="bg-zinc-100 dark:bg-zinc-900 border border-border-light dark:border-border-dark p-1 sm:p-2 py-1 sm:py-1 rounded-md font-bold text-xs">
+                        <Icon width=1rem icon=material-symbols:arrows-more-up class="block sm:hidden"></Icon>
+                        <div class="hidden sm:block">
+                            Jump
+                        </div>
                     </a>
 
-                    <Copy link="https://discord.com/channels/{link}/{log.messageId}"></Copy>
+                    <div class="hidden sm:block">
+                        <Copy link="https://discord.com/channels/{link}/{log.messageId}"></Copy>
+                    </div>
                 </div>
             {/if}
         </div>
