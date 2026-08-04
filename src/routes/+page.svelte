@@ -82,10 +82,6 @@
                     #sendkabirtowar
                 </p>
                 <div class="opacity-80 flex gap-2">
-                    <a aria-label="Discord" target="_blank" href="https://discord.com/invite/NPyexQ2ucU" class="text-2xl -mb-1.5">
-                        <Icon icon="ic:baseline-discord"></Icon>
-                    </a>
-
                     <a aria-label="My Email" href="mailto:kabir@ramzan.me" class="text-2xl -mb-1.5">
                         <Icon icon="ic:baseline-email"></Icon>
                     </a>
