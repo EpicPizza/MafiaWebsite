@@ -8,6 +8,7 @@ import type { Attachment } from "./types";
 import { getCachedAttachments } from "$lib/Discord/attachments.server";
 import type { Instance } from "$lib/Discord/instance.server";
 import type { Game } from "$lib/Discord/game.server";
+import { getGameState } from "$lib/Discord/instance.server";
 
 export async function load({ params, locals, url }) {
     const timestamp = new Date().valueOf();
@@ -17,6 +18,9 @@ export async function load({ params, locals, url }) {
     const instance = await locals.getInstance();
     const game = await locals.getGame();
     if (instance == undefined || game == undefined) error(404);
+
+    // This game's live state (several games can run at once).
+    const state = await getGameState(instance, game.id);
 
     console.log("STEP 1", new Date().valueOf() - timestamp);
 
@@ -29,9 +33,9 @@ export async function load({ params, locals, url }) {
     const users = (await getUsers(instance, game.signups, true, true)).map((user, i) => ({ ...user, i: i }));
 
     users.sort((a, b) => {
-        if (game.state == 'active' && instance.global.game == game.id) {
-            const aAlive = instance.global.players.find(player => player.id == a.id);
-            const bAlive = instance.global.players.find(player => player.id == b.id);
+        if (game.state == 'active' && state.started) {
+            const aAlive = state.players.find(player => player.id == a.id);
+            const bAlive = state.players.find(player => player.id == b.id);
 
             return aAlive && !bAlive ? -1 : 1;
         }
@@ -95,7 +99,7 @@ export async function load({ params, locals, url }) {
     console.log("STEP 3", new Date().valueOf() - timestamp);
 
     const dayRequest = parseInt(url.searchParams.get('day') ?? "");
-    const day = instance.global.started && instance.global.game == game.id ? instance.global.day : game.days;
+    const day = state.started ? state.day : game.days;
 
     const statRequest = url.searchParams.get('pit');
     let statsGraph = undefined as undefined | {
@@ -177,7 +181,7 @@ export async function load({ params, locals, url }) {
             console.log("STEP 7a", new Date().valueOf() - timestamp);
 
             const custom = parseInt(env.HAMMER_THRESHOLD_PLAYERS ?? '-1');
-            const playerCount = custom === -1 ? instance.global.players.length : custom;
+            const playerCount = custom === -1 ? state.players.length : custom;
             const half = Math.floor(playerCount / 2);
 
             const votes = (await db.collection('instances').doc(instance.id).collection('games').doc(game.id).collection('days').doc(i.toString()).collection('votes').orderBy('timestamp', 'desc').get()).docs.map(vote => vote.data()).filter(vote => vote != undefined) as Log[];
@@ -207,21 +211,23 @@ export async function load({ params, locals, url }) {
 
     const days = await Promise.all(promises);
 
-    const index = !isNaN(dayRequest) ? (dayRequest - 1) : (instance.global.started && instance.global.game == game.id ? day - 1 : 0);
+    const index = !isNaN(dayRequest) ? (dayRequest - 1) : (state.started ? day - 1 : 0);
 
     const data = {
         users,
         mod,
         game,
-        global: instance.global.started ? {
-            ...instance.global,
+        // Same shape the page used before (game = this game's id while it runs), built from this game's state.
+        global: {
+            ...state,
+            game: state.started ? game.id : null,
             extensions: [],
-            players: instance.global.players.map(player => ({ ...player, alignment: null })),
-        } : instance.global,
+            players: state.players.map(player => ({ ...player, alignment: null })),
+        },
         day,
         activeDay: !isNaN(dayRequest) ? dayRequest : undefined,
         instance: instance.id,
-        link: instance.setup.primary.guild.id + "/" + instance.setup.primary.chat.id,
+        link: instance.setup.primary.guild.id + "/" + (game.channels.main ?? instance.setup.primary.chat.id),
         deadChat: "https://discord.com/channels/" + instance.setup.secondary.guild.id + "/" + game.channels.spec,
         mafiaChat: "https://discord.com/channels/" + instance.setup.tertiary.guild.id + "/" + game.channels.mafia,
         votes: days[index]?.votes ?? [],
@@ -381,7 +387,8 @@ async function getTimeStats(instance: Instance, game: Game, users: User[], day: 
         at += fiveMinutes;
     }
 
-    const current = instance.global.started && game.id == instance.global.game && day == instance.global.day;
+    const state = await getGameState(instance, game.id);
+    const current = state.started && day == state.day;
 
     if (stats.length < 5) return stats;
 

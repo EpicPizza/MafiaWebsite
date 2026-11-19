@@ -12,6 +12,8 @@ export interface Game {
     channels: {
         spec: string,
         mafia: string,
+        main?: string, // the game's own main chat; missing on older games (they use the server main chat)
+        dms?: string,
     }
     confirmations: string[],
     mods: [],

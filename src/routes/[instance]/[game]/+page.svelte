@@ -614,7 +614,7 @@
                                 <div class="relative z-0">
                                     {#if data.game.confirmations.includes(user.id)}
                                         <Icon
-                                            class="text-green-600 dark:text-green-600"
+                                            class="text-gree=n-600 dark:text-green-600"
                                             width="1.6rem"
                                             icon="material-symbols:verified"
                                         ></Icon>

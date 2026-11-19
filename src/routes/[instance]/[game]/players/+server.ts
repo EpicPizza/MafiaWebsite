@@ -2,6 +2,7 @@ import type { CompleteUser } from "$lib/Discord/users.server";
 import { getUsers, type User } from "$lib/Discord/users.server";
 import { firebaseAdmin } from "$lib/Firebase/firebase.server";
 import { error, json } from "@sveltejs/kit";
+import { getGameState } from "$lib/Discord/instance.server";
 
 export async function GET({ locals }) {
     const instance = await locals.getInstance();
@@ -10,7 +11,9 @@ export async function GET({ locals }) {
 
     const users = (await getUsers(instance, game.signups, true)).map((user, i) => ({ ...user, i: i }));
 
-    const day = instance.global.started && instance.global.game == game.id ? instance.global.day : game.days;
+    const state = await getGameState(instance, game.id);
+
+    const day = state.started ? state.day : game.days;
 
     const promises = [] as Promise<{ players: CompleteUser[] }>[];
 
@@ -26,5 +29,5 @@ export async function GET({ locals }) {
 
     const days = await Promise.all(promises);
 
-    return json({ days: days, current: instance.global.started && instance.global.game == game.id ? instance.global.players.map(player => users.find(user => user.id == player.id)).filter(player => player != undefined)  : [] });
+    return json({ days: days, current: state.started ? state.players.map(player => users.find(user => user.id == player.id)).filter(player => player != undefined)  : [] });
 }

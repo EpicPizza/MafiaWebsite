@@ -9,22 +9,47 @@ export interface Instance {
     id: string,
 }
 
+// Instance-wide settings from instances/{instance}/settings/game. Several games can run at once, so per-game data
+// lives with each game; see getGameState.
 export interface Global {
-    started: boolean,
-    locked: boolean,
-    players: Player[]
-    day: number,
-    game: string | null,
-    bulletin: string | null, 
-    extensions: string[],
-    grace: boolean,
     admin: string[],
-    hammer: boolean,
 }
 
 interface Player {
     id: string,
     alignment: 'mafia' | 'neutral' | string | null;
+}
+
+// A game's live state, as the bot stores it: instances/{instance}/games/{game}/state/game, plus extensions and hammer on
+// the game doc. A game that hasn't started (or has no state yet) reads as not started.
+export interface GameState {
+    started: boolean,
+    locked: boolean,
+    players: Player[],
+    day: number,
+    grace: boolean,
+    extensions: string[],
+    hammer: boolean,
+}
+
+export async function getGameState(instance: Instance, gameId: string): Promise<GameState> {
+    const db = firebaseAdmin.getFirestore();
+    const gameRef = db.collection('instances').doc(instance.id).collection('games').doc(gameId);
+
+    const [stateDoc, gameDoc] = await Promise.all([gameRef.collection('state').doc('game').get(), gameRef.get()]);
+
+    const state = stateDoc.data() ?? {};
+    const game = gameDoc.data() ?? {};
+
+    return {
+        started: state.started ?? false,
+        locked: state.locked ?? false,
+        players: state.players ?? [],
+        day: state.day ?? 0,
+        grace: state.grace ?? false,
+        extensions: game.extensions ?? [],
+        hammer: game.hammer ?? true,
+    };
 }
 
 const map: Map<string, { instance: Instance, timestamp: number }> = new Map();
@@ -49,8 +74,9 @@ export async function getInstance(id: string) {
 
     const globalRef = ref.collection('settings').doc('game');
     const globalDoc = await globalRef.get();
-    const global = globalDoc.data() ? globalDoc.data() as Global : undefined;
-    if(global == undefined) throw new Error("Database not setup.");
+    const data = globalDoc.data();
+    if(data == undefined) throw new Error("Database not setup.");
+    const global: Global = { admin: data.admin ?? [] };
 
     console.log("STEP i4", new Date().valueOf() - timestamp);
 
