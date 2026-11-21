@@ -26,6 +26,27 @@ async function getGuildRoles(guildId: string): Promise<any[]> {
     return roles;
 }
 
+function toHex(color: number) {
+    return "#" + color.toString(16).padStart(6, '0');
+}
+
+// Discord's enhanced role styles: a secondary color makes a gradient role, and a
+// tertiary color makes a holographic role. Returns a CSS gradient for the name, or
+// null for a solid color.
+function roleGradient(colors: { primary_color: number, secondary_color: number | null, tertiary_color: number | null } | undefined): string | null {
+    if (!colors || colors.secondary_color == null) return null;
+
+    const primary = toHex(colors.primary_color);
+    const secondary = toHex(colors.secondary_color);
+
+    if (colors.tertiary_color != null) {
+        const tertiary = toHex(colors.tertiary_color);
+        return `linear-gradient(to right, ${primary}, ${secondary}, ${tertiary}, ${primary})`;
+    }
+
+    return `linear-gradient(to right, ${primary}, ${secondary}, ${primary})`;
+}
+
 function getDefaultAvatar(id: string) {
     try {
         const index = Number((BigInt(id) >> 22n) % 6n);
@@ -94,12 +115,15 @@ export async function getUser(instance: Instance, id: string, failProof: boolean
     const databaseUser = data && data.nickname ? data as User : undefined;
 
     let userColor = "#ffffff";
+    let userGradient: string | null = null;
     if (discordUser && discordUser.roles && discordUser.roles.length > 0) {
         const roles = await getGuildRoles(instance.setup.primary.guild.id);
-        const memberRoles = roles.filter((r: any) => discordUser.roles.includes(r.id) && r.color !== 0);
+        const memberRoles = roles.filter((r: any) => discordUser.roles.includes(r.id) && (r.colors?.primary_color ?? r.color) !== 0);
         if (memberRoles.length > 0) {
             memberRoles.sort((a: any, b: any) => b.position - a.position);
-            userColor = "#" + memberRoles[0].color.toString(16).padStart(6, '0');
+            const top = memberRoles[0];
+            userColor = toHex(top.colors?.primary_color ?? top.color);
+            userGradient = roleGradient(top.colors);
         }
     }
 
@@ -107,12 +131,14 @@ export async function getUser(instance: Instance, id: string, failProof: boolean
         return {
             ...databaseUser,
             color: userColor,
+            gradient: userGradient,
             pfp: discordUser.avatar ? `https://cdn.discordapp.com/guilds/${instance.setup.primary.guild.id}/users/${id}/avatars/${discordUser.avatar}.webp?size=160` : (discordUser.user.avatar ? `https://cdn.discordapp.com/avatars/${id}/${discordUser.user.avatar}.webp?size=160` : getDefaultAvatar(id))
         }
     } else if (databaseUser != undefined && discordUser == undefined && failProof) {
         return {
             ...databaseUser,
             color: "#ffffff",
+            gradient: null as string | null,
             pfp: getDefaultAvatar(id),
         }
     } else if (databaseUser == undefined && discordUser != undefined && allProof) {
@@ -125,6 +151,7 @@ export async function getUser(instance: Instance, id: string, failProof: boolean
             channel: null,
             state: 0,
             color: userColor,
+            gradient: userGradient,
             pfp: discordUser.avatar ? `https://cdn.discordapp.com/guilds/${instance.setup.primary.guild.id}/users/${id}/avatars/${discordUser.avatar}.webp?size=160` : (discordUser.user.avatar ? `https://cdn.discordapp.com/avatars/${id}/${discordUser.user.avatar}.webp?size=160` : getDefaultAvatar(id))
         }
     } else if (allProof) {
@@ -136,6 +163,7 @@ export async function getUser(instance: Instance, id: string, failProof: boolean
             channel: null,
             state: 0,
             color: "#ffffff",
+            gradient: null as string | null,
             pfp: getDefaultAvatar(id)
         }
     } else {

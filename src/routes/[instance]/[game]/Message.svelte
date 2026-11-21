@@ -32,7 +32,10 @@
         <div class="w-full mb-0">
             <div class="items-center justify-between flex">
                 <p style="color:{user.color};" class="font-bold -mt-1">
-                    <span class="text-black dark:text-inherit"
+                    <span
+                        class="text-black dark:text-inherit"
+                        class:role-gradient={user.gradient}
+                        style:--role-gradient={user.gradient}
                         >{user.nickname}</span
                     ><span
                         class="text-black dark:text-white opacity-50 text-xs ml-2"

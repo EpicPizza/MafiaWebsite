@@ -99,3 +99,32 @@ textarea {
     display: inherit;
   }
 }
+
+/* Discord gradient and holographic role colors, set with --role-gradient. Light mode keeps names black. */
+@media (prefers-color-scheme: dark) {
+  .role-gradient {
+    background-image: var(--role-gradient);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .group:hover .role-gradient,
+  .role-gradient:hover {
+    animation: role-gradient-shift 3s linear infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .role-gradient {
+    animation: none !important;
+  }
+}
+
+@keyframes role-gradient-shift {
+  to {
+    background-position: 200% center;
+  }
+}

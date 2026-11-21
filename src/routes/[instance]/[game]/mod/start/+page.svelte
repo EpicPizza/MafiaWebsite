@@ -48,7 +48,7 @@
                         <div class="flex items-center gap-2 ml-0.5">
                             <img src="{user.pfp}" alt="{user.nickname}'s profile" class="w-6 h-6 rounded-full">
 
-                            <p class="font-bold text-base" style="color: {user.color};">{user.nickname}</p>
+                            <p class="font-bold text-base" style="color: {user.color};" class:role-gradient={user.gradient} style:--role-gradient={user.gradient}>{user.nickname}</p>
                         </div>
                     {:else}
                         {signup}

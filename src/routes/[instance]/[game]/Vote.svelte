@@ -17,6 +17,7 @@
             pfp: string;
             id: string;
             color: string;
+            gradient?: string | null;
         },
         top: boolean,
         bottom: boolean,

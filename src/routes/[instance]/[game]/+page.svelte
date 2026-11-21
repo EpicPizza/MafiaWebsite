@@ -142,6 +142,7 @@
                 pfp: "/favicon.png",
                 id: nickname,
                 color: "#ffffff",
+                gradient: null,
             } satisfies Omit<
                 (typeof data)["users"][0],
                 "pronouns" | "state" | "lName" | "channel" | "i"
