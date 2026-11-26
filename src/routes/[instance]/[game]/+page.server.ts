@@ -307,11 +307,18 @@ async function getTimeStats(instance: Instance, game: Game, users: User[], day: 
 
     const fiveMinutes = 5 * 60 * 1000;
 
+    // Upper bound for this day: next day's start, else the game's end, else now.
+    // Without this, the last day of a finished game kept reading every main-chat message posted since.
+    const dayEnd = nextData && nextData.start ? nextData.start : (game.end ?? new Date().valueOf());
+
     let countingFrom = Math.round(currentData.start / fiveMinutes) * fiveMinutes;
-    let countingTo = Math.round((nextData && nextData.start ? nextData.start : new Date().valueOf()) / fiveMinutes) * fiveMinutes;
+    let countingTo = Math.round(dayEnd / fiveMinutes) * fiveMinutes;
 
     const cacheRef = ref.doc(day.toString()).collection('etc').doc('increments');
-    const cache = (await cacheRef.get()).data() as { countingFrom: number, countingTo: number, stats: { [key: string]: number }[] } | undefined;
+    let cache = (await cacheRef.get()).data() as { countingFrom: number, countingTo: number, stats: { [key: string]: number }[] } | undefined;
+
+    // Caches built before the bound existed can run past the day's end; rebuild those once.
+    if (cache != undefined && cache.countingTo > countingTo) cache = undefined;
 
     const stats = [] as { [key: string]: number }[];
 
@@ -326,11 +333,7 @@ async function getTimeStats(instance: Instance, game: Game, users: User[], day: 
         }
     }
 
-    let query = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'desc');
-
-    if (nextData && nextData.start) {
-        query = query.startAt(nextData.start);
-    }
+    let query = db.collection('channels').doc(instance.setup.primary.chat.id).collection('messages').orderBy('createdTimestamp', 'desc').startAt(dayEnd);
 
     if (cache) {
         query = query.endAt(countingFrom);
